@@ -1,3 +1,37 @@
+addMovingElement(calcDiv, calcMoverDiv)
+addConsoleElement(consoleTextarea, function(args)
+{
+	switch(args[0])
+	{
+		case "button":
+			var result = ""
+			var button
+			var n = 0
+			switch(args[++n])
+			{
+				case "byname":
+					button = this["calcKeyboardKey" + args[++n]]
+					break
+			}
+			switch(args[++n])
+			{
+				case "settext":
+					button.innerText = args[++n]
+					result += "Text = " + button.innerText + "\n"
+					n++
+					break
+			}
+			switch(args[n])
+			{
+				case "setaction":
+					button.onclick = new Function('event', args[++n])
+					result += "Action = " + (button.onclick+"").replace(/\n/g,"") + "\n"
+					break
+			}
+			return result + "Successfully setted!"
+	}
+},{"button":["byname","settext","setaction"]})
+//
 expressionInput.onkeydown=function(e)
 {
 	if(e.key=="Enter")

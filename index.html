@@ -27,99 +27,102 @@
 	</style>
 </head>
 <body>
-	<table>
-		<tr>
-			<td colspan=4>
-				<textarea class="maxSize" id="historyTextarea"></textarea>
-			</td>
-		</tr>
-		<tr>
-			<td colspan=4>
-				<input class="maxSize" readonly id="resultInput"></input>
-			</td>
-		</tr>
-		<tr>
-			<td colspan=4>
-				<input class="maxSize" readonly id="numbersExpressionInput"></input>
-			</td>
-		</tr>
-		<tr>
-			<td colspan=4>
-				<input class="maxSize" id="expressionInput"></input>
-			</td>
-		</tr>
-		<tr>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyRoot" onclick="enter('V')">V</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyPower" onclick="enter('^')">^</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyPercent" onclick="enter('%')">%</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyFactorial" onclick="enter('!')">!</button>
-			</td>
-		</tr>
-		<tr>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyDivide" onclick="enter('/')">/</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKey7" onclick="enter('7')">7</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKey8" onclick="enter('8')">8</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKey9" onclick="enter('9')">9</button>
-			</td>
-		</tr>
-		<tr>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyMultiply" onclick="enter('*')">*</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKey4" onclick="enter('4')">4</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKey5" onclick="enter('5')">5</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKey6" onclick="enter('6')">6</button>
-			</td>
-		</tr>
-		<tr>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyPlus" onclick="enter('+')">+</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKey1" onclick="enter('1')">1</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKey2" onclick="enter('2')">2</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKey3" onclick="enter('3')">3</button>
-			</td>
-		</tr>
-		<tr>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyMinus" onclick="enter('-')">-</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKey0" onclick="enter('0')">0</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyDot" onclick="enter('.')">.</button>
-			</td>
-			<td width="25%">
-				<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyEquals" onclick="result()">=</button>
-			</td>
-		</tr>
-	</table>
-	<table>
+	<div style="position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%)" id="calcDiv">
+		<div id="calcMoverDiv">Move</div>
+		<table id="calcKeyboardTable">
+			<tr>
+				<td colspan=4>
+					<textarea class="maxSize" id="historyTextarea"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td colspan=4>
+					<input class="maxSize" readonly id="resultInput"></input>
+				</td>
+			</tr>
+			<tr>
+				<td colspan=4>
+					<input class="maxSize" readonly id="numbersExpressionInput"></input>
+				</td>
+			</tr>
+			<tr>
+				<td colspan=4>
+					<input class="maxSize" id="expressionInput"></input>
+				</td>
+			</tr>
+			<tr>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyRoot" onclick="enter('V')">V</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyPower" onclick="enter('^')">^</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyPercent" onclick="enter('%')">%</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyFactorial" onclick="enter('!')">!</button>
+				</td>
+			</tr>
+			<tr>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyDivide" onclick="enter('/')">/</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKey7" onclick="enter('7')">7</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKey8" onclick="enter('8')">8</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKey9" onclick="enter('9')">9</button>
+				</td>
+			</tr>
+			<tr>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyMultiply" onclick="enter('*')">*</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKey4" onclick="enter('4')">4</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKey5" onclick="enter('5')">5</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKey6" onclick="enter('6')">6</button>
+				</td>
+			</tr>
+			<tr>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyPlus" onclick="enter('+')">+</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKey1" onclick="enter('1')">1</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKey2" onclick="enter('2')">2</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKey3" onclick="enter('3')">3</button>
+				</td>
+			</tr>
+			<tr>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyMinus" onclick="enter('-')">-</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKey0" onclick="enter('0')">0</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyDot" onclick="enter('.')">.</button>
+				</td>
+				<td width="25%">
+					<button class="maxSize calcKeyboardKey" id="calcKeyboardKeyEquals" onclick="result()">=</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<table style="display: none;">
 		<tr>
 			<td>
 				<textarea readonly id="getSaveJsonArea"></textarea>
@@ -140,15 +143,9 @@
 			</td>
 		</tr>
 	</table>
-	<table>
-		<tr>
-			<td>
-				<input id="commandLine"></input>
-				<textarea id="commandResult"></textarea>
-			</td>
-		</tr>
-	</table>
+	<textarea id="consoleTextarea"></textarea>
 
+	<script src="functions.js"></script>
 	<script src="index.js"></script>
 
 </body>
