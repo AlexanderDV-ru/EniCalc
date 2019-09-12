@@ -1,19 +1,22 @@
 //Element moving
 var addMovingElement = function(moving, mover, onmousedownRealisation, ondragstartRealisation, getCoordsRealisation, moveAtRealisation, onmousemoveRealisation, onmouseupRealisation)
 {
+	mover.ondragstart = ondragstartRealisation || function() 
+	{
+		return false
+	}
+	
+	var getCoords = getCoordsRealisation || function(elem) 
+	{
+		var box = elem.getBoundingClientRect()
+		return {
+			top: box.top + pageYOffset,
+			left: box.left + pageXOffset
+		}
+	}
+	
 	mover.onmousedown = onmousedownRealisation || function(e) 
 	{
-		var coords = getCoords(moving)
-		var shiftX = e.pageX - coords.left
-		var shiftY = e.pageY - coords.top
-	
-		moving.style=""
-		moving.style.position = 'absolute'
-		document.body.appendChild(moving)
-		moveAt(e)
-	
-		moving.style.zIndex = 1000
-	
 		var moveAt = moveAtRealisation || function(e) 
 		{
 			moving.style.left = e.pageX - shiftX + 'px'
@@ -30,21 +33,16 @@ var addMovingElement = function(moving, mover, onmousedownRealisation, ondragsta
 			document.onmousemove = null
 			mover.onmouseup = null
 		}
+		
+		var coords = getCoords(moving)
+		var shiftX = e.pageX - coords.left
+		var shiftY = e.pageY - coords.top
 	
-	}
+		moving.style.position = 'absolute'
+		//document.body.appendChild(moving)
+		moveAt(e)
 	
-	mover.ondragstart = ondragstartRealisation || function() 
-	{
-		return false
-	}
-	
-	var getCoords = getCoordsRealisation || function(elem) 
-	{
-		var box = elem.getBoundingClientRect()
-		return {
-			top: box.top + pageYOffset,
-			left: box.left + pageXOffset
-		}
+		moving.style.zIndex = 1000
 	}
 }
 //Console element
@@ -74,23 +72,19 @@ var addConsoleElement = function(consoleElement, onCommand, vars, getTabVarReali
 	}
 	if(vars)
 		if(!vars.allVars)
-			if(lastVars&&lastVars.allVars==vars)
-				vars=lastVars
-			else
-			{
-				vars = {"allVars" : vars,"allVarsArray0": [], "allVarsArray1": []}
-				for(var v in vars.allVars)
-					vars.allVarsArray0.push(v)
-				for(var v in vars.allVars)
-					for(var v2 in vars.allVars[v])
-					{
-						vars.allVarsArray0.push(vars.allVars[v][v2])
-						vars.allVarsArray1.push(vars.allVars[v][v2])
-					}
-				for(var v in vars.allVars)
-					vars.allVarsArray1.push(v)
-				lastVars=vars
-			}
+		{
+			vars = {"allVars" : vars,"allVarsArray0": [], "allVarsArray1": []}
+			for(var v in vars.allVars)
+				vars.allVarsArray0.push(v)
+			for(var v in vars.allVars)
+				for(var v2 in vars.allVars[v])
+				{
+					vars.allVarsArray0.push(vars.allVars[v][v2])
+					vars.allVarsArray1.push(vars.allVars[v][v2])
+				}
+			for(var v in vars.allVars)
+				vars.allVarsArray1.push(v)
+		}
 	var getTabVar = getTabVarRealisation || function(args, n)
 	{
 		var levelVars = args.length > 1 ? (vars.allVars[args[0]] || vars.allVarsArray1) : (Object.keys(vars.allVars) || vars.allVarsArray0)
