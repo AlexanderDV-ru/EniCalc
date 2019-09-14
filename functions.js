@@ -124,3 +124,24 @@ var addConsoleElement = function(consoleElement, onCommand, vars, getTabVarReali
 			}
 	}
 }
+//
+var fromUpperCase=function(str)
+{
+	return (str+"")[0].toUpperCase()+(str+"").substring(1)
+}
+var objectToJson=function(object)
+{
+	return JSON.stringify(object).replace(/{/g,"{\n\t").replace(/\[/g,"[\n\t").replace(/,/g,",\n\t").replace(/:/g," : ").replace(/}/g,"\n}").replace(/]/g,"\n]")
+}
+var makeClone=function(orig) 
+{
+	if ("object"!==typeof orig)
+		return orig
+	let clone = (orig instanceof Array)?[]:{} // Создаем новый пустой объект или массив
+	for (let prop in orig) // Перебираем все свойства копируемого объекта
+		if (orig.hasOwnProperty(prop))
+			if("object"!==typeof orig[prop])
+				clone[prop] = orig[prop]
+			else clone[prop] = makeClone(orig[prop]) // Делаем клон свойства
+	return clone
+}

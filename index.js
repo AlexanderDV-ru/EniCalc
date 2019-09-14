@@ -1,3 +1,6 @@
+//Get objects
+var storage = window.localStorage
+//
 var editmode=false
 //
 addMovingElement(calcDiv, calcMoverDiv)
@@ -44,9 +47,36 @@ addConsoleElement(consoleTextarea, function(args)
 				case "invert":
 					editmode=!editmode
 					return "Edit mode successfully inverted to "+editmode+"!"
+				default:
+					return "Command '"+args[0]+" "+args[1]+"' not exists!"
 			}
+		case "calckeyboard":
+			switch(args[1])
+			{
+				case "save":
+					if(args[2])
+						storage["calculatorAndMath.calcKeyboard.last"]=args[2]
+					if(!storage["calculatorAndMath.calcKeyboard.last"])
+						storage["calculatorAndMath.calcKeyboard.last"]="newsave"
+					storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]]=JSON.stringify(calcKeyboard)
+					return "Calc keyboard successfully saved to "+storage["calculatorAndMath.calcKeyboard.last"]+"!"
+				case "load":
+					if(args[2])
+						storage["calculatorAndMath.calcKeyboard.last"]=args[2]
+					if(!storage["calculatorAndMath.calcKeyboard.last"])
+						storage["calculatorAndMath.calcKeyboard.last"]="newsave"
+					var loaded=storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]]
+					if(!loaded)
+						return "Calc keyboard save not exist!"
+					updateCalcKeyboard(JSON.parse(loaded))
+					return "Calc keyboard successfully loaded from "+storage["calculatorAndMath.calcKeyboard.last"]+"!"
+				default:
+					return "Command '"+args[0]+" "+args[1]+"' not exists!"
+			}
+		default:
+			return "Command '"+args[0]+"' not exists!"
 	}
-},{"button":["byname","settext","setaction"],"editmode":["set","get","invert"]})
+},{"button":["byname","settext","setaction"],"editmode":["set","get","invert"],"calcKeyboard":[]})
 //
 expressionInput.onkeydown=function(e)
 {
@@ -111,11 +141,77 @@ var replaceVals=function(expression)
 }
 var countExpression=function(expression)
 {
-	var spl=expression.split("+")
+	var spl=expression.replace(/\b-\b/g,"+-").split("+")
+	console.log(spl)
 	var result=0
 	for(var v in spl)
 		result+=Number(spl[v])
 	return result
+}
+var calcKeyboard
+var createCalcKeyboardButton = function(currentCalcKeyboard, v, v2)
+{
+	var button = document.createElement("button")
+	button.className="maxSize"
+	button.id="calcKeyboardKey"+currentCalcKeyboard[v][v2].info.name
+	button.innerText=currentCalcKeyboard[v][v2].info.text
+	button.onclick=new Function("calcKeyboard["+v+"]["+v2+"].generated.func()") //new Function(calcKeyboard[v][v2].action)
+	
+	currentCalcKeyboard[v][v2].generated.btn=button
+	currentCalcKeyboard[v][v2].generated.func=function()
+	{
+		var btn=currentCalcKeyboard[v][v2].generated.btn
+		if(editmode)
+		{
+			if(btn.children.length==0)
+			{
+				btn.appendChild(document.createElement('textarea'))
+				//btn.children[0].value=currentCalcKeyboard[v][v2].info.name+"\n"+currentCalcKeyboard[v][v2].info.text+"\n"+currentCalcKeyboard[v][v2].info.action
+				btn.children[0].onclick=function(){btn.appendChild(document.createElement('label'))}
+				btn.children[0].value=objectToJson(currentCalcKeyboard[v][v2].info)
+				btn.children[0].focus()
+			}
+			else if(btn.children.length==1)
+			{
+				//currentCalcKeyboard[v][v2]={"info":{"name":btn.children[0].value.split("\n")[0],
+				//		"text":btn.children[0].value.split("\n")[1],
+				//		"action":btn.children[0].value.split("\n")[2]},"generated":{}}
+				currentCalcKeyboard[v][v2]={"info":JSON.parse(btn.children[0].value),"generated":{}}
+				btn.parentNode.appendChild(createCalcKeyboardButton(currentCalcKeyboard, v, v2))
+				btn.parentNode.removeChild(btn)
+			}
+			else btn.removeChild(btn.children[1])
+		}
+		else new Function(currentCalcKeyboard[v][v2].info.action)()
+	}
+	return button
+}
+var createCalcKeyboardTd = function(currentCalcKeyboard, v, v2)
+{
+	var td = document.createElement("td")
+	td.height=100/calcKeyboard.length+"%"
+	td.width=100/calcKeyboard[v].length+"%"
+
+	currentCalcKeyboard[v][v2]={"info":(currentCalcKeyboard[v][v2].info||currentCalcKeyboard[v][v2]),"generated":{}}
+	td.appendChild(createCalcKeyboardButton(currentCalcKeyboard, v, v2))
+		
+	return td
+}
+var updateCalcKeyboard = function(currentCalcKeyboard)
+{
+	while(calcKeyboardTable.children.length>0)
+		calcKeyboardTable.removeChild(calcKeyboardTable.children[0])
+	calcKeyboard=makeClone(currentCalcKeyboard)
+	for(var v in calcKeyboard)
+	{
+		var tr = document.createElement("tr")
+		tr.height=100/calcKeyboard.length+"%"
+		
+		for(var v2 in calcKeyboard[v])
+			tr.appendChild(createCalcKeyboardTd(calcKeyboard, v, v2))
+		
+		calcKeyboardTable.appendChild(tr)
+	}
 }
 //Init calc keyboard
 var defaultCalcKeyboard = [
@@ -149,32 +245,12 @@ var defaultCalcKeyboard = [
 		{"name":"Zero",		"text":"0",	"action":"enter('0')"},
 		{"name":"Equals",	"text":"=",	"action":"result();"}
 	]]
-for(var v in defaultCalcKeyboard)
-{
-	var tr = document.createElement("tr")
-	tr.height=100/defaultCalcKeyboard.length+"%"
-	
-	for(var v2 in defaultCalcKeyboard[v])
-	{
-		var td = document.createElement("td")
-		td.height=100/defaultCalcKeyboard.length+"%"
-		td.width=100/defaultCalcKeyboard[v].length+"%"
-		
-		var button = document.createElement("button")
-		button.className="maxSize"
-		button.id="calcKeyboardKey"+defaultCalcKeyboard[v][v2].name
-		button.innerText=defaultCalcKeyboard[v][v2].text
-		button.onclick=new Function(defaultCalcKeyboard[v][v2].action)
-		//button.onclick=new Function("editmode?function(btn){if(btn.children.length!=1){btn.appendChild(document.createElement('textarea'));btn.children[0].focus()}else {defaultCalcKeyboard[0][0]={\"name\":btn.children[0].value.split(\"\\n\")[0],\"text\":btn.children[0].value.split(\"\\n\")[1],\"action\":btn.children[0].value.split(\"\\n\")[2]} btn.removeChild(btn.children[0])}}(this):function(){"+defaultCalcKeyboard[v][v2].action+"}()")
-		console.log(button.onclick)
-		
-		td.appendChild(button)
-		
-		tr.appendChild(td)
-	}
-	
-	calcKeyboardTable.appendChild(tr)
-}
+var loadedCalcKeyboard=storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]]
+console.log(storage["calculatorAndMath.calcKeyboard.last"])
+console.log(storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]])
+if(loadedCalcKeyboard)
+	loadedCalcKeyboard=JSON.parse(loadedCalcKeyboard)
+updateCalcKeyboard(loadedCalcKeyboard||defaultCalcKeyboard)
 
 
 calcDiv.style.left=document.documentElement.clientWidth/2-calcDiv.getBoundingClientRect().width/2+"px"
