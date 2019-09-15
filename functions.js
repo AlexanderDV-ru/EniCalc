@@ -125,6 +125,13 @@ var addConsoleElement = function(consoleElement, onCommand, vars, getTabVarReali
 	}
 }
 //
+var multiply=function(a, b)
+{
+	var str=""
+	for(;a.length*b>str.length;)
+		str+=a[str.length%a.length]
+	return str
+}
 var fromUpperCase=function(str)
 {
 	return (str+"")[0].toUpperCase()+(str+"").substring(1)

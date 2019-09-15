@@ -12,9 +12,6 @@
 			width: 300px;
 			height: 120px;
 		}
-		select {
-			height: 160px;
-		}
 		.maxSize {
 			width: 100%;
 		}
@@ -33,34 +30,60 @@
 		.withoutPadding{
 			padding: 0px;
 		}
-		.bb{
-		-webkit-appearance: button;
-    -webkit-writing-mode: horizontal-tb !important;
-    text-rendering: auto;
-    color: buttontext;
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-indent: 0px;
-    text-shadow: none;
-    display: inline-block;
-    text-align: center;
-    align-items: flex-start;
-    cursor: default;
-    background-color: buttonface;
-    box-sizing: border-box;
-    margin: 0em;
-    font: 400 13.3333px Arial;
-    padding: 1px 6px;
-    border-width: 2px;
-    border-style: outset;
-    border-color: buttonface;
-    border-image: initial;
-    }
-		
 	</style>
 </head>
 <body>
+	<div style="position:absolute;background-color: rgb(200,210,255)" id="unitsDiv">
+		<div id="unitsMoverDiv">Move</div>
+		<table id="unitsTable">
+			<tr>
+				<td colspan="2">
+					<select class="maxSize" id="unitTypeSelect"></select>
+				</td>
+			</tr>
+			<tr>
+				<td width="50%">
+					<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="firstInput"></input>
+				</td>
+				<td width="50%">
+					<select class="maxSize" id="firstUnitPowerSelect"></select>
+				</td>
+			</tr>
+			<tr>
+				<td width="50%">
+					<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="secondInput"></input>
+				</td>
+				<td width="50%">
+					<select class="maxSize" id="secondUnitPowerSelect"></select>
+				</td>
+			</tr>
+			<tr id="thirdTr" style="display: none">
+				<td width="50%">
+					<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="thirdInput"></input>
+				</td>
+				<td width="50%">
+					<select class="maxSize" id="thirdUnitPowerSelect"></select>
+				</td>
+			</tr>
+			<tr id="fourthTr" style="display: none">
+				<td width="50%">
+					<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="fourthInput"></input>
+				</td>
+				<td width="50%">
+					<select class="maxSize" id="fourthUnitPowerSelect"></select>
+				</td>
+			</tr>
+			<tr id="fifthTr" style="display: none">
+				<td width="50%">
+					<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="fifthInput"></input>
+				</td>
+				<td width="50%">
+					<select class="maxSize" id="fifthUnitPowerSelect"></select>
+				</td>
+			</tr>
+		</table>
+		<button onclick="if(thirdTr.style.display=='none')thirdTr.style.display='';else if(fourthTr.style.display=='none')fourthTr.style.display='';else if(fifthTr.style.display=='none')fifthTr.style.display=''">Add</button>
+	</div>
 	<div style="position:absolute;background-color: rgb(200,210,255)" id="calcDiv">
 		<div id="calcMoverDiv">Move</div>
 		<table id="calcTable">

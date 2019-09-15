@@ -3,6 +3,7 @@ var storage = window.localStorage
 //
 var editmode=false
 //
+addMovingElement(unitsDiv, unitsMoverDiv)
 addMovingElement(calcDiv, calcMoverDiv)
 addConsoleElement(consoleTextarea, function(args)
 {
@@ -50,6 +51,54 @@ addConsoleElement(consoleTextarea, function(args)
 				default:
 					return "Command '"+args[0]+" "+args[1]+"' not exists!"
 			}
+		case "showresult":
+			switch(args[1])
+			{
+				case "set":
+					resultInput.style.display = Boolean(args[2])?"":"none"
+					return "Show result successfully setted to "+(resultInput.style.display!='none')+"!"
+				case "get":
+					return "Show result = "+(resultInput.style.display!='none')
+				case undefined:
+				case "":
+				case "invert":
+					resultInput.style.display = (resultInput.style.display=='none')?"":"none"
+					return "Show result successfully inverted to "+(resultInput.style.display!='none')+"!"
+				default:
+					return "Command '"+args[0]+" "+args[1]+"' not exists!"
+			}
+		case "shownumbersexpression":
+			switch(args[1])
+			{
+				case "set":
+					numbersExpressionInput.style.display = Boolean(args[2])?"":"none"
+						return "Show result successfully setted to "+(numbersExpressionInput.style.display!='none')+"!"
+				case "get":
+					return "Show result = "+(numbersExpressionInput.style.display!='none')
+				case undefined:
+				case "":
+				case "invert":
+					numbersExpressionInput.style.display = (numbersExpressionInput.style.display=='none')?"":"none"
+					return "Show result successfully inverted to "+(numbersExpressionInput.style.display!='none')+"!"
+				default:
+					return "Command '"+args[0]+" "+args[1]+"' not exists!"
+			}
+		case "showexpression":
+			switch(args[1])
+			{
+				case "set":
+					expressionInput.style.display = Boolean(args[2])?"":"none"
+						return "Show result successfully setted to "+(expressionInput.style.display!='none')+"!"
+				case "get":
+					return "Show result = "+(expressionInput.style.display!='none')
+				case undefined:
+				case "":
+				case "invert":
+					expressionInput.style.display = (expressionInput.style.display=='none')?"":"none"
+					return "Show result successfully inverted to "+(expressionInput.style.display!='none')+"!"
+				default:
+					return "Command '"+args[0]+" "+args[1]+"' not exists!"
+			}
 		case "calckeyboard":
 			switch(args[1])
 			{
@@ -65,10 +114,15 @@ addConsoleElement(consoleTextarea, function(args)
 						storage["calculatorAndMath.calcKeyboard.last"]=args[2]
 					if(!storage["calculatorAndMath.calcKeyboard.last"])
 						storage["calculatorAndMath.calcKeyboard.last"]="newsave"
-					var loaded=storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]]
-					if(!loaded)
-						return "Calc keyboard save not exist!"
-					updateCalcKeyboard(JSON.parse(loaded))
+					if(storage["calculatorAndMath.calcKeyboard.last"]=="default")
+						updateCalcKeyboard(defaultCalcKeyboard)
+					else
+					{
+						var loaded=storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]]
+						if(!loaded)
+							return "Calc keyboard save not exist!"
+						updateCalcKeyboard(JSON.parse(loaded))
+					}
 					return "Calc keyboard successfully loaded from "+storage["calculatorAndMath.calcKeyboard.last"]+"!"
 				default:
 					return "Command '"+args[0]+" "+args[1]+"' not exists!"
@@ -76,7 +130,13 @@ addConsoleElement(consoleTextarea, function(args)
 		default:
 			return "Command '"+args[0]+"' not exists!"
 	}
-},{"button":["byname","settext","setaction"],"editmode":["set","get","invert"],"calcKeyboard":[]})
+},{
+	"button":["byname","settext","setaction"],
+	"editmode":["set","get","invert"],
+	"showresult":["set","get","invert"],
+	"shownumbersexpression":["set","get","invert"],
+	"showexpression":["set","get","invert"],
+	"calcKeyboard":["save","load"]})
 //
 expressionInput.onkeydown=function(e)
 {
@@ -103,14 +163,50 @@ var getValName=function(n)
 	}
 	return res
 }
+var enterSelStart=expressionInput.selectionStart
+var enterSelEnd=expressionInput.selectionEnd
+var moveCaretTo=function(position)
+{
+	expressionInput.selectionStart=enterSelStart=expressionInput.selectionEnd=enterSelEnd=position
+}
+var updateSelection=function()
+{
+	expressionInput.selectionStart=enterSelStart
+	expressionInput.selectionEnd=enterSelEnd
+}
 var enter=function(value)
 {
-	var selStart=expressionInput.selectionStart
-	var selEnd=expressionInput.selectionEnd
+	updateSelection()
 	expressionInput.value=expressionInput.value.substring(0,expressionInput.selectionStart)+value+expressionInput.value.substring(expressionInput.selectionEnd)
 	expressionInput.oninput()
-	expressionInput.selectionStart=selStart+1
-	expressionInput.selectionEnd=selEnd+1
+	moveCaretTo(enterSelStart+value.length)
+}
+var left=function()
+{
+	moveCaretTo(enterSelStart-1)
+}
+var right=function()
+{
+	moveCaretTo(enterSelStart+1)
+}
+var clear=function()
+{
+	updateSelection()
+	expressionInput.value=""
+	expressionInput.oninput()
+	moveCaretTo(0)
+}
+var backspace=function()
+{
+	updateSelection()
+	expressionInput.value=expressionInput.value.substring(0,expressionInput.selectionStart==expressionInput.selectionEnd?expressionInput.selectionStart-1:expressionInput.selectionStart)+expressionInput.value.substring(expressionInput.selectionEnd)
+	expressionInput.oninput()
+	moveCaretTo(expressionInput.selectionStart==expressionInput.selectionEnd?enterSelStart-1:enterSelStart)
+}
+expressionInput.onmousemove=expressionInput.onmousedown=function(e)
+{
+	enterSelStart=expressionInput.selectionStart
+	enterSelEnd=expressionInput.selectionEnd
 }
 expressionInput.oninput=function(e)
 {
@@ -141,12 +237,108 @@ var replaceVals=function(expression)
 }
 var countExpression=function(expression)
 {
+	return multilineCount(expression)
 	var spl=expression.replace(/\b-\b/g,"+-").split("+")
-	console.log(spl)
 	var result=0
 	for(var v in spl)
 		result+=Number(spl[v])
 	return result
+}
+var calcActions=[
+	[
+		{"symbol":"^","defaultA":10,"defaultB":2,"function":function(a,b){return Math.pow(a,b)}},
+		{"symbol":"V","defaultA":2,"defaultB":0,"function":function(a,b){return Math.pow(b,1/a)}}
+	],
+	[
+		{"symbol":"*","defaultA":0,"defaultB":0,"function":function(a,b){return a*b}},
+		{"symbol":"/","defaultA":1,"defaultB":0,"function":function(a,b){return a/b}}
+	],
+	[
+		{"symbol":"+","defaultA":0,"defaultB":0,"function":function(a,b){return a+b}},
+		{"symbol":"-","defaultA":0,"defaultB":0,"function":function(a,b){return a-b}}
+	]]
+var multilineCount=function(expression)
+{
+	//console.log(expression)
+	var lines=[expression+""]
+	var move=function(start, end)
+	{
+		var last=multiply("#",end-start)
+		for(var v=0;lines.length>v;v++)
+		{
+			var subs=lines[v].substring(start, end)
+			lines[v]=lines[v].substring(0, start)+last+lines[v].substring(end)
+			last=subs
+			if(v+1==lines.length)
+				lines[v+1]=multiply("_",start)+subs+multiply("_",lines[v].length-end)
+			else continue
+			break
+		}
+	}
+	var numberRegExp="([-]|)(\\d*[.]\\d*|\\d+)"
+	//console.log("--------------")
+	for(;lines[0].match(/[(][^()]+[)]/);)
+		lines[0]=lines[0].replace(/[(][^()]+[)]/,function(match){return multilineCount(match.substring(1,match.length-1))})
+	for(var v=0;calcActions.length>v;v++)
+		for(;;)
+		{
+			var actions=[]
+			for(var v2 in calcActions[v])
+				actions.push(calcActions[v][v2].symbol)
+			var actionsRegExp=actions.join("|").replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^").replace(/\[\|\]/g,"|")
+			//console.log(actionsRegExp)
+			var result=lines[0].match(new RegExp("("+numberRegExp+"|#+)"+"("+actionsRegExp+")"+"("+numberRegExp+"|#+)"))
+			//console.log(lines)
+			//console.log(result)
+			console.log(actionsRegExp)
+			if(!result)
+				break
+			move(result.index,result.index+result[0].length)
+		}
+	var resultLines=[]
+	for(var v=lines.length-1;v>0;v--)
+	{
+				//console.log(v)
+		for(var v2=0;calcActions.length>v2;v2++)
+			for(var v34 in calcActions[v2])
+			{
+				var v3=calcActions[v2][v34].symbol
+				//console.log(new RegExp(""+numberRegExp+"[ ]*("+v3.replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*"))
+				//console.log(lines[v].match(new RegExp(""+numberRegExp+"[ ]*("+v3.replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*")))
+				//console.log(lines[v])
+				lines[v]=lines[v].replace(new RegExp(""+numberRegExp+"[ ]*("+v3.replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*"),function(match)
+						{
+					//console.log("v3");
+					return calcActions[v2][v34]["function"](Number(match.split(v3)[0]),Number(match.split(v3)[1]))+multiply(" ",match.length-(calcActions[v2][v34]["function"](Number(match.split(v3)[0]),Number(match.split(v3)[1]))+"").length)
+					})
+			//console.log(lines[v])
+			}
+				if(!resultLines[v])
+		resultLines[v]=[]
+		resultLines[v-1]=[]
+		for(var v2=0;lines[v].length>v2;v2++)
+		{
+//			///console.log(lines[v-1][v2]=="#")
+			//if(lines[v-1][v2]=="#")
+			{
+				////console.log(v)
+				////console.log(v2)
+				////console.log(lines[v-1][v2])
+				resultLines[v-1][v2]=lines[v-1][v2]=="#"?lines[v][v2]:lines[v-1][v2]
+				resultLines[v][v2]=lines[v][v2]=="#"?"_":lines[v][v2]
+				////console.log(lines[v-1][v2])
+				////console.log(lines[v][v2])
+				//resultLines[v][v2]="_"
+				////console.log(lines[v][v2])
+			}
+		}
+		lines[v]=resultLines[v].join('')
+		lines[v-1]=resultLines[v-1].join('')
+	}
+			
+	//console.log(lines)
+	//console.log(resultLines)
+	return Number(lines[0])
 }
 var calcKeyboard
 var createCalcKeyboardButton = function(currentCalcKeyboard, v, v2)
@@ -213,8 +405,134 @@ var updateCalcKeyboard = function(currentCalcKeyboard)
 		calcKeyboardTable.appendChild(tr)
 	}
 }
+var unitTypes= {
+		"Масса":[
+			{"short":"мкг","long":"Микрограммы","func":0.000000001},
+			{"short":"мг","long":"Миллиграммы","func":0.000001},
+			{"short":"г","long":"Граммы","func":0.001},
+			{"short":"кг","long":"Килограммы","func":1},
+			{"short":"ц","long":"Центнеры","func":100},
+			{"short":"т","long":"Тонны","func":1000},
+		],
+		"Время":[ 
+			{"short":"c","long":"Секунды","func":1},
+			{"short":"м","long":"Минуты","func":60},
+			{"short":"ч","long":"Часы","func":60*60},
+			{"short":"-","long":"Дни, Половины суток","func":60*60*12},
+			{"short":"-","long":"Сутки","func":60*60*12*2},
+			{"short":"-","long":"Недели","func":60*60*12*2*7},
+			{"short":"-","long":"Месяцы, 31 день","func":60*60*12*2*31},
+			{"short":"-","long":"Месяцы, 30 дней","func":60*60*12*2*30},
+			{"short":"-","long":"Месяцы, 1/12 года","func":60*60*12*2*365.25/12},
+			{"short":"-","long":"Года, 365.25 дней","func":60*60*12*2*365.25},
+			{"short":"-","long":"Года, 365 дней","func":60*60*12*2*365},
+			{"short":"-","long":"Висакосные года, 366 дней","func":60*60*12*2*366},
+			{"short":"-","long":"Века","func":60*60*12*2*365.25*100},
+		],
+		"Давление":[ 
+			{"short":"-","long":"Паскали","func":1}
+		],
+		"Скорость":[ 
+			{"short":"м/с","long":"Метры в секунду","func":1}
+		],
+		"Скорость передачи данных":[ 
+			{"short":"-","long":"Биты в секунду","func":1}
+		],
+		"Расстояние":[ 
+			{"short":"м","long":"Метры","func":1}
+		],
+		"Мощность":[ 
+			{"short":"-","long":"Ватты","func":1}
+		],
+		"Объем":[ 
+			{"short":"м^3","long":"Кубометры","func":1}
+		],
+		"Объем информации":[ 
+			{"short":"-","long":"Байты","func":1}
+		],
+		"Площадь":[ 
+			{"short":"м^2","long":"Квадратные метры","func":1}
+		],
+		"Температура":[ 
+			{"short":"-","long":"Градусы цельсия","func":1}
+		],
+		"Расход топлива":[ 
+			{"short":"-","long":"Километры на литр","func":1}
+		],
+		"Угол":[ 
+			{"short":"-","long":"Градусы","func":1}
+		],
+		"Частота":[ 
+			{"short":"-","long":"Герцы","func":1}
+		],
+		"Энергия":[ 
+			{"short":"-","long":"Джоули","func":1}
+		]
+}
+for(var v in unitTypes)
+	unitTypeSelect.innerHTML+="<option>"+v+"</option>"
+var form="$short$ ($long$)"
+unitTypeSelect.oninput=function(e)
+{
+	firstUnitPowerSelect.innerHTML=""
+	secondUnitPowerSelect.innerHTML=""
+	var unitSelects=[firstUnitPowerSelect,secondUnitPowerSelect,thirdUnitPowerSelect,fourthUnitPowerSelect,fifthUnitPowerSelect]
+	for(var v2 in unitSelects)
+		for(var v in unitTypes[unitTypeSelect.value])
+			unitSelects[v2].innerHTML+="<option>"+form.replace("$short$",unitTypes[unitTypeSelect.value][v].short).replace("$long$",unitTypes[unitTypeSelect.value][v].long)+"</option>"
+}
+unitTypeSelect.oninput()
+var lastUnitInput=firstInput
+var updateUnits=function(currentInput,currentSelect,otherInputs,otherSelects)
+{
+	var value=Number(currentInput.value)
+	for(var v in unitTypes[unitTypeSelect.value])
+	{
+		var crt=unitTypes[unitTypeSelect.value][v]
+		if(form.replace("$short$",crt.short).replace("$long$",crt.long)==currentSelect.value)
+			value=("function" !=typeof crt.func)?value*crt.func:crt.func(value)
+	}
+	for(var v2 in otherInputs)
+		for(var v in unitTypes[unitTypeSelect.value])
+		{
+			var crt=unitTypes[unitTypeSelect.value][v]
+			if(form.replace("$short$",crt.short).replace("$long$",crt.long)==otherSelects[v2].value)
+				otherInputs[v2].value=("function" !=typeof crt.func)?value/crt.func:crt.func(value)
+		}
+	lastUnitInput=currentInput
+}
+firstInput.oninput=function(e)
+{
+	updateUnits(firstInput,firstUnitPowerSelect,[secondInput,thirdInput,fourthInput,fifthInput],[secondUnitPowerSelect,thirdUnitPowerSelect,fourthUnitPowerSelect,fifthUnitPowerSelect])
+}
+secondInput.oninput=function(e)
+{
+	updateUnits(secondInput,secondUnitPowerSelect,[firstInput,thirdInput,fourthInput,fifthInput],[firstUnitPowerSelect,thirdUnitPowerSelect,fourthUnitPowerSelect,fifthUnitPowerSelect])
+}
+thirdInput.oninput=function(e)
+{
+	updateUnits(thirdInput,thirdUnitPowerSelect,[firstInput,secondInput,fourthInput,fifthInput],[firstUnitPowerSelect,secondUnitPowerSelect,fourthUnitPowerSelect,fifthUnitPowerSelect])
+}
+fourthInput.oninput=function(e)
+{
+	updateUnits(fourthInput,fourthUnitPowerSelect,[firstInput,secondInput,thirdInput,fifthInput],[firstUnitPowerSelect,secondUnitPowerSelect,thirdUnitPowerSelect,fifthUnitPowerSelect])
+}
+fifthInput.oninput=function(e)
+{
+	updateUnits(fifthInput,fifthUnitPowerSelect,[firstInput,secondInput,thirdInput,fourthInput],[firstUnitPowerSelect,secondUnitPowerSelect,thirdUnitPowerSelect,fourthUnitPowerSelect])
+}
+firstUnitPowerSelect.oninput=secondUnitPowerSelect.oninput=thirdUnitPowerSelect.oninput=fourthUnitPowerSelect.oninput=fifthUnitPowerSelect.oninput=function(e)
+{
+	lastUnitInput.oninput()
+}
 //Init calc keyboard
 var defaultCalcKeyboard = [
+	[
+		{"name":"Left",		"text":"<",	"action":"left()"},
+		{"name":"Right",	"text":">",	"action":"right()"},
+		{"name":"Clear",	"text":"C",	"action":"clear()"},
+		{"name":"Backspace","text":"<-","action":"backspace()"}
+	],
 	[
 		{"name":"Root",		"text":"V",	"action":"enter('V')"},
 		{"name":"Power",	"text":"^",	"action":"enter('^')"},
@@ -243,11 +561,11 @@ var defaultCalcKeyboard = [
 		{"name":"Minus",	"text":"-",	"action":"enter('-')"},
 		{"name":"Dot",		"text":".",	"action":"enter('.')"},
 		{"name":"Zero",		"text":"0",	"action":"enter('0')"},
-		{"name":"Equals",	"text":"=",	"action":"result();"}
+		{"name":"Equals",	"text":"=",	"action":"result()"}
 	]]
 var loadedCalcKeyboard=storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]]
-console.log(storage["calculatorAndMath.calcKeyboard.last"])
-console.log(storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]])
+//console.log(storage["calculatorAndMath.calcKeyboard.last"])
+//console.log(storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]])
 if(loadedCalcKeyboard)
 	loadedCalcKeyboard=JSON.parse(loadedCalcKeyboard)
 updateCalcKeyboard(loadedCalcKeyboard||defaultCalcKeyboard)
@@ -255,4 +573,4 @@ updateCalcKeyboard(loadedCalcKeyboard||defaultCalcKeyboard)
 
 calcDiv.style.left=document.documentElement.clientWidth/2-calcDiv.getBoundingClientRect().width/2+"px"
 calcDiv.style.top=document.documentElement.clientHeight/2-calcDiv.getBoundingClientRect().height/2+"px"
-console.log(calcDiv)
+//console.log(calcDiv)
