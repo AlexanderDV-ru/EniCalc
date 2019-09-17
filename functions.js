@@ -125,6 +125,56 @@ var addConsoleElement = function(consoleElement, onCommand, vars, getTabVarReali
 	}
 }
 //
+var defaultNumbersForm={"digits":"0123456789","direction":false,"minus":"-","dot":".","minusPos":false}
+var stringToNumber=function(value, digits, direction, minus, dot, minusPos)
+{
+	if(!digits)
+		digits=defaultNumbersForm.digits
+	if(!direction)
+		direction=defaultNumbersForm.direction
+	if(!minus)
+		minus=defaultNumbersForm.minus
+	if(!dot)
+		dot=defaultNumbersForm.dot
+	if(!minusPos)
+		minusPos=defaultNumbersForm.minusPos
+	var val=""
+	for(var v=0;value.length>v;v++)
+		val=direction?value[v]+val:val+value[v]
+	var num=0
+	var min=value[0]==minus?minus:""
+	var d
+	for(var v=(minusPos?0:min.length);val.length-(minusPos?min.length:0)>v;v++)
+		if(val[v]==dot)
+			d=true
+		else num+=d?1/digits.match(val[v]).index*Math.pow(digits.length,val.length-1-v):digits.match(val[v]).index*Math.pow(digits.length,val.length-1-v)
+	return min?-num:num
+}
+var numberToString=function(value, digits, direction, minus, dot, minusPos)
+{
+	if(!digits)
+		digits=defaultNumbersForm.digits
+	if(!direction)
+		direction=defaultNumbersForm.direction
+	if(!minus)
+		minus=defaultNumbersForm.minus
+	if(!dot)
+		dot=defaultNumbersForm.dot
+	if(!minusPos)
+		minusPos=defaultNumbersForm.minusPos
+	var str=""
+	var min=0>value?minus:""
+	for(;value!=0;)
+	{
+		str=digits[value%digits.length]+str
+		value=(value-value%digits.length)/digits.length
+	}
+	str=min+str
+	var val=""
+	for(var v=0;str.length>v;v++)
+		val=direction?str[v]+val:val+str[v]
+	return val
+}
 var multiply=function(a, b)
 {
 	var str=""

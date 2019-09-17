@@ -1,12 +1,72 @@
 //Get objects
 var storage = window.localStorage
 //
-var editmode=false
+var props={"editmode":false,"expressionNumbersForm":{
+	"digits":"0123456789",
+	"direction":false,
+	"minus":"-",
+	"dot":".",
+	"minusPos":false,
+	},"resultNumbersForm":{
+		"digits":"0123456789",
+		"direction":false,
+		"minus":"-",
+		"dot":".",
+		"minusPos":false,
+		}}
 //
 addMovingElement(unitsDiv, unitsMoverDiv)
 addMovingElement(calcDiv, calcMoverDiv)
 addConsoleElement(consoleTextarea, function(args)
 {
+	var defaultBooleanPropCommand=function(prop)
+	{
+		switch(args[1])
+		{
+			case "set":
+				props[prop] = Boolean(args[2])
+				return "Property '"+prop+"' successfully setted to "+props[prop]+"!"
+			case "get":
+				return "Property '"+prop+"' = "+props[prop]
+			case undefined:
+			case "":
+			case "invert":
+				props[prop]=!props[prop]
+				return "Property '"+prop+"' successfully inverted to "+props[prop]+"!"
+			default:
+				return "Command '"+args[0]+" "+args[1]+"' not exists!"
+		}
+	}
+	var defaultStringPropCommand=function(prop)
+	{
+		switch(args[1])
+		{
+			case "set":
+				props[prop] = args[2]
+				return "Property '"+prop+"' successfully setted to "+props[prop]+"!"
+			case undefined:
+			case "":
+			case "get":
+				return "Property '"+prop+"' = "+props[prop]
+			default:
+				return "Command '"+args[0]+" "+args[1]+"' not exists!"
+		}
+	}
+	var defaultNumberPropCommand=function(prop)
+	{
+		switch(args[1])
+		{
+			case "set":
+				props[prop] = Number(args[2])
+				return "Property '"+prop+"' successfully setted to "+props[prop]+"!"
+			case undefined:
+			case "":
+			case "get":
+				return "Property '"+prop+"' = "+props[prop]
+			default:
+				return "Command '"+args[0]+" "+args[1]+"' not exists!"
+		}
+	}
 	switch(args[0])
 	{
 		case "button":
@@ -36,21 +96,15 @@ addConsoleElement(consoleTextarea, function(args)
 			}
 			return result + "Successfully setted!"
 		case "editmode":
-			switch(args[1])
-			{
-				case "set":
-					editmode = Boolean(args[2])
-					return "Edit mode successfully setted to "+editmode+"!"
-				case "get":
-					return "Edit mode = "+editmode
-				case undefined:
-				case "":
-				case "invert":
-					editmode=!editmode
-					return "Edit mode successfully inverted to "+editmode+"!"
-				default:
-					return "Command '"+args[0]+" "+args[1]+"' not exists!"
-			}
+			return defaultBooleanPropCommand("editmode")
+		case "resultdigits":
+			return defaultStringPropCommand("resultDigits")
+		case "resultdirection":
+			return defaultBooleanPropCommand("resultDirection")
+		case "expressiondigits":
+			return defaultStringPropCommand("expressionDigits")
+		case "expressiondirection":
+			return defaultBooleanPropCommand("expressionDirection")
 		case "showresult":
 			switch(args[1])
 			{
@@ -136,8 +190,12 @@ addConsoleElement(consoleTextarea, function(args)
 	"showresult":["set","get","invert"],
 	"shownumbersexpression":["set","get","invert"],
 	"showexpression":["set","get","invert"],
+	"expressiondigits":["set","get"],
+	"expressiondirection":["set","get","invert"],
+	"resultdigits":["set","get"],
+	"resultdirection":["set","get","invert"],
 	"calcKeyboard":["save","load"]})
-//
+// calc
 expressionInput.onkeydown=function(e)
 {
 	if(e.key=="Enter")
@@ -148,7 +206,7 @@ var result=function(e)
 	var n=historyTextarea.value.split("\n").length-1
 	var expr=expressionInput.value
 	expressionInput.value=getValName(n)
-	historyTextarea.value+=expressionInput.value+"="+expr+"="+countExpression(replaceVals(expr))+"\n"
+	historyTextarea.value+=expressionInput.value+"="+expr+"="+expressionNumberToString(multilineCount(replaceVals(expr),props.expressionNumbersForm.digits,props.expressionNumbersForm.direction,props.expressionNumbersForm.minus,props.expressionNumbersForm.dot,props.expressionNumbersForm.minusPos))+"\n"
 	expressionInput.oninput()
 }
 var getValName=function(n)
@@ -211,7 +269,7 @@ expressionInput.onmousemove=expressionInput.onmousedown=function(e)
 expressionInput.oninput=function(e)
 {
 	numbersExpressionInput.value=replaceVals(expressionInput.value)
-	resultInput.value=countExpression(replaceVals(expressionInput.value))
+	resultInput.value=resultNumberToString(multilineCount(replaceVals(expressionInput.value),props.expressionNumbersForm.digits,props.expressionNumbersForm.direction,props.expressionNumbersForm.minus,props.expressionNumbersForm.dot,props.expressionNumbersForm.minusPos))
 }
 historyTextarea.oninput=function(e)
 {
@@ -228,21 +286,17 @@ historyTextarea.oninput=function(e)
 		historyTextarea.selectionEnd=selEnd
 	}
 }
+// functions
+var expressionNumberToString=function(value){return numberToString(value,props.expressionNumbersForm.digits,props.expressionNumbersForm.direction,props.expressionNumbersForm.minus,props.expressionNumbersForm.dot,props.expressionNumbersForm.minusPos)}
+var expressionStringToNumber=function(value){return stringToNumber(value,props.expressionNumbersForm.digits,props.expressionNumbersForm.direction,props.expressionNumbersForm.minus,props.expressionNumbersForm.dot,props.expressionNumbersForm.minusPos)}
+var resultNumberToString=function(value){return numberToString(value,props.resultNumbersForm.digits,props.resultNumbersForm.direction,props.resultNumbersForm.minus,props.resultNumbersForm.dot,props.resultNumbersForm.minusPos)}
+var resultStringToNumber=function(value){return stringToNumber(value,props.resultNumbersForm.digits,props.resultNumbersForm.direction,props.resultNumbersForm.minus,props.resultNumbersForm.dot,props.resultNumbersForm.minusPos)}
 var replaceVals=function(expression)
 {
 	for(var v in historyTextarea.value.split("\n"))
 		if(historyTextarea.value.split("\n")[v].split("=")[0])
 			expression=expression.replace(new RegExp("\\b"+historyTextarea.value.split("\n")[v].split("=")[0]+"\\b","g"),historyTextarea.value.split("\n")[v].split("=")[2])
 	return expression
-}
-var countExpression=function(expression)
-{
-	return multilineCount(expression)
-	var spl=expression.replace(/\b-\b/g,"+-").split("+")
-	var result=0
-	for(var v in spl)
-		result+=Number(spl[v])
-	return result
 }
 var calcActions=[
 	[
@@ -257,28 +311,45 @@ var calcActions=[
 		{"symbol":"+","defaultA":0,"defaultB":0,"function":function(a,b){return a+b}},
 		{"symbol":"-","defaultA":0,"defaultB":0,"function":function(a,b){return a-b}}
 	]]
-var multilineCount=function(expression)
+var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 {
-	//console.log(expression)
-	var lines=[expression+""]
+	if(!digits)
+		digits="0123456789"
+	// console.log(expression)
+	var lines=[[{"start":0,"end":expression.length,"value":expression+""}]]
 	var move=function(start, end)
 	{
-		var last=multiply("#",end-start)
+		var last=[[{"start":start,"end":end,"value":multiply("#",end-start)}]]
 		for(var v=0;lines.length>v;v++)
 		{
-			var subs=lines[v].substring(start, end)
-			lines[v]=lines[v].substring(0, start)+last+lines[v].substring(end)
-			last=subs
-			if(v+1==lines.length)
-				lines[v+1]=multiply("_",start)+subs+multiply("_",lines[v].length-end)
-			else continue
-			break
+			last.push([])
+			var ok
+			for(var v2=0;lines[v].length>v2;v2++)
+			{
+				if(lines[v][v2].end>=start&&end>=lines[v][v2].start)
+				{
+					var subsl={"start":Math.max(lines[v][v2].start,start),"end":Math.min(lines[v][v2].end,end),"value":lines[v][v2].value.substring(start-lines[v][v2].start, end-lines[v][v2].start)}
+					lines[v][v2].value=lines[v][v2].value.substring(0, Math.max(lines[v][v2].start,start)-lines[v][v2].start)+last[v][0].value+lines[v][v2].value.substring(Math.min(lines[v][v2].end,end)-lines[v][v2].start)
+					lines[v][v2].start=Math.min(lines[v][v2].start,last[v][0].start)
+					lines[v][v2].end=Math.max(lines[v][v2].end,last[v][0].end)
+					last[v+1].push(makeClone(subsl))
+					if(v+1==lines.length)
+						lines[++v]=[makeClone(subsl)]
+					console.log("last: "+JSON.stringify(last))
+					console.log("lines: "+JSON.stringify(lines))
+					ok=true
+				}
+				if(v2+1==lines[v].length&&!ok)
+					lines[v].push({"start":start,"end":end,"value":""})
+			}
 		}
+		//console.log("lines: "+JSON.stringify(lines))
 	}
-	var numberRegExp="([-]|)(\\d*[.]\\d*|\\d+)"
-	//console.log("--------------")
-	for(;lines[0].match(/[(][^()]+[)]/);)
-		lines[0]=lines[0].replace(/[(][^()]+[)]/,function(match){return multilineCount(match.substring(1,match.length-1))})
+	var numberRegExp="(:?[-]|)(:?["+digits+"]*[.]["+digits+"]*|["+digits+"]+)"
+	console.log("--------------")
+	console.log(JSON.stringify(lines))
+	for(;lines[0][0].value.match(/[(][^()]+[)]/);)
+		lines[0][0].value=lines[0][0].value.replace(/[(][^()]+[)]/,function(match){return multilineCount(match.substring(1,match.length-1))})
 	for(var v=0;calcActions.length>v;v++)
 		for(;;)
 		{
@@ -286,60 +357,55 @@ var multilineCount=function(expression)
 			for(var v2 in calcActions[v])
 				actions.push(calcActions[v][v2].symbol)
 			var actionsRegExp=actions.join("|").replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^").replace(/\[\|\]/g,"|")
-			//console.log(actionsRegExp)
-			var result=lines[0].match(new RegExp("("+numberRegExp+"|#+)"+"("+actionsRegExp+")"+"("+numberRegExp+"|#+)"))
-			//console.log(lines)
-			//console.log(result)
-			console.log(actionsRegExp)
+			// console.log(actionsRegExp)
+			var result=lines[0][0].value.match(new RegExp("(:?"+numberRegExp+"|#+)"+"(:?"+actionsRegExp+")"+"(:?"+numberRegExp+"|#+)"))
+			// console.log(result)
 			if(!result)
 				break
 			move(result.index,result.index+result[0].length)
 		}
 	var resultLines=[]
 	for(var v=lines.length-1;v>0;v--)
+		for(var v22=0;lines[v].length>v22;v22++)
 	{
-				//console.log(v)
+			console.log(JSON.stringify(lines))
+				// console.log(v)
 		for(var v2=0;calcActions.length>v2;v2++)
 			for(var v34 in calcActions[v2])
 			{
 				var v3=calcActions[v2][v34].symbol
-				//console.log(new RegExp(""+numberRegExp+"[ ]*("+v3.replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*"))
-				//console.log(lines[v].match(new RegExp(""+numberRegExp+"[ ]*("+v3.replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*")))
-				//console.log(lines[v])
-				lines[v]=lines[v].replace(new RegExp(""+numberRegExp+"[ ]*("+v3.replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*"),function(match)
+				// console.log(new RegExp(""+numberRegExp+"[
+				// ]*("+v3.replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[
+				// ]*"))
+				// console.log(lines[v].match(new RegExp(""+numberRegExp+"[
+				// ]*("+v3.replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[
+				// ]*")))
+				// console.log(lines[v])
+				// console.log(lines[v][v22].value)
+				// console.log(lines)
+				lines[v][v22].value=lines[v][v22].value.replace(new RegExp(""+numberRegExp+"[ ]*(:?"+v3.replace(/[^]/g,"[$&]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*"),function(match)
 						{
-					//console.log("v3");
-					return calcActions[v2][v34]["function"](Number(match.split(v3)[0]),Number(match.split(v3)[1]))+multiply(" ",match.length-(calcActions[v2][v34]["function"](Number(match.split(v3)[0]),Number(match.split(v3)[1]))+"").length)
+					// console.log("v3");
+					return numberToString(calcActions[v2][v34]["function"](stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)), digits, direction, minus, dot, minusPos)
 					})
-			//console.log(lines[v])
+			// console.log(lines[v])
 			}
-				if(!resultLines[v])
-		resultLines[v]=[]
-		resultLines[v-1]=[]
-		for(var v2=0;lines[v].length>v2;v2++)
+			console.log(JSON.stringify(lines))
+		for(var v222=0;lines[v-1].length>v222;v222++)
 		{
-//			///console.log(lines[v-1][v2]=="#")
-			//if(lines[v-1][v2]=="#")
-			{
-				////console.log(v)
-				////console.log(v2)
-				////console.log(lines[v-1][v2])
-				resultLines[v-1][v2]=lines[v-1][v2]=="#"?lines[v][v2]:lines[v-1][v2]
-				resultLines[v][v2]=lines[v][v2]=="#"?"_":lines[v][v2]
-				////console.log(lines[v-1][v2])
-				////console.log(lines[v][v2])
-				//resultLines[v][v2]="_"
-				////console.log(lines[v][v2])
-			}
+			if(lines[v][v22].start>=lines[v-1][v222].start && lines[v-1][v222].end>=lines[v][v22].end)
+				lines[v-1][v222].value=lines[v-1][v222].value.substring(0,lines[v][v22].start-lines[v-1][v222].start)+lines[v][v22].value+lines[v-1][v222].value.substring(lines[v][v22].end-lines[v-1][v222].start)
 		}
-		lines[v]=resultLines[v].join('')
-		lines[v-1]=resultLines[v-1].join('')
+		lines[v].splice(v22)
+		console.log(JSON.stringify(lines))
 	}
 			
-	//console.log(lines)
-	//console.log(resultLines)
-	return Number(lines[0])
+	// console.log(lines)
+	// console.log(resultLines)
+	return stringToNumber(lines[0][0].value, digits, direction, minus, dot, minusPos)
 }
+console.log(resultNumberToString(123))
+console.log(resultStringToNumber(123+""))
 var calcKeyboard
 var createCalcKeyboardButton = function(currentCalcKeyboard, v, v2)
 {
@@ -347,27 +413,29 @@ var createCalcKeyboardButton = function(currentCalcKeyboard, v, v2)
 	button.className="maxSize"
 	button.id="calcKeyboardKey"+currentCalcKeyboard[v][v2].info.name
 	button.innerText=currentCalcKeyboard[v][v2].info.text
-	button.onclick=new Function("calcKeyboard["+v+"]["+v2+"].generated.func()") //new Function(calcKeyboard[v][v2].action)
+	button.disabled=currentCalcKeyboard[v][v2].info.disabled
+	button.onclick=new Function("calcKeyboard["+v+"]["+v2+"].generated.func()") // new
+																				// Function(calcKeyboard[v][v2].action)
 	
 	currentCalcKeyboard[v][v2].generated.btn=button
 	currentCalcKeyboard[v][v2].generated.func=function()
 	{
 		var btn=currentCalcKeyboard[v][v2].generated.btn
-		if(editmode)
+		if(props.editmode)
 		{
 			if(btn.children.length==0)
 			{
 				btn.appendChild(document.createElement('textarea'))
-				//btn.children[0].value=currentCalcKeyboard[v][v2].info.name+"\n"+currentCalcKeyboard[v][v2].info.text+"\n"+currentCalcKeyboard[v][v2].info.action
+				// btn.children[0].value=currentCalcKeyboard[v][v2].info.name+"\n"+currentCalcKeyboard[v][v2].info.text+"\n"+currentCalcKeyboard[v][v2].info.action
 				btn.children[0].onclick=function(){btn.appendChild(document.createElement('label'))}
 				btn.children[0].value=objectToJson(currentCalcKeyboard[v][v2].info)
 				btn.children[0].focus()
 			}
 			else if(btn.children.length==1)
 			{
-				//currentCalcKeyboard[v][v2]={"info":{"name":btn.children[0].value.split("\n")[0],
-				//		"text":btn.children[0].value.split("\n")[1],
-				//		"action":btn.children[0].value.split("\n")[2]},"generated":{}}
+				// currentCalcKeyboard[v][v2]={"info":{"name":btn.children[0].value.split("\n")[0],
+				// "text":btn.children[0].value.split("\n")[1],
+				// "action":btn.children[0].value.split("\n")[2]},"generated":{}}
 				currentCalcKeyboard[v][v2]={"info":JSON.parse(btn.children[0].value),"generated":{}}
 				btn.parentNode.appendChild(createCalcKeyboardButton(currentCalcKeyboard, v, v2))
 				btn.parentNode.removeChild(btn)
@@ -525,47 +593,60 @@ firstUnitPowerSelect.oninput=secondUnitPowerSelect.oninput=thirdUnitPowerSelect.
 {
 	lastUnitInput.oninput()
 }
-//Init calc keyboard
+// Init calc keyboard
 var defaultCalcKeyboard = [
 	[
-		{"name":"Left",		"text":"<",	"action":"left()"},
-		{"name":"Right",	"text":">",	"action":"right()"},
-		{"name":"Clear",	"text":"C",	"action":"clear()"},
-		{"name":"Backspace","text":"<-","action":"backspace()"}
+		{"name":"MemoryClear",	"text":"MC",	"action":"",				"disabled": true},
+		{"name":"MemoryR",		"text":"MR",	"action":"",				"disabled": true},
+		{"name":"MemorySave",	"text":"MS",	"action":"",				"disabled": true},
+		{"name":"MemoryMinus",	"text":"M-",	"action":"",				"disabled": true},
+		{"name":"MemoryPlus",	"text":"M+",	"action":"",				"disabled": true}
 	],
 	[
-		{"name":"Root",		"text":"V",	"action":"enter('V')"},
-		{"name":"Power",	"text":"^",	"action":"enter('^')"},
-		{"name":"Percent",	"text":"%",	"action":"enter('%')"},
-		{"name":"Factorial","text":"!",	"action":"enter('!')"}
+		{"name":"Left",			"text":"<",		"action":"left()",							},
+		{"name":"Right",		"text":">",		"action":"right()",							},
+		{"name":"ClearHistory",	"text":"CH",	"action":"clearHistory()",	"disabled": true},
+		{"name":"Clear",		"text":"C",		"action":"clear()",							},
+		{"name":"Backspace",	"text":"<-",	"action":"backspace()",						}
 	],
 	[
-		{"name":"Divide",	"text":"/",	"action":"enter('/')"},
-		{"name":"Seven",	"text":"7",	"action":"enter('7')"},
-		{"name":"Eight",	"text":"8",	"action":"enter('8')"},
-		{"name":"Nine",		"text":"9",	"action":"enter('9')"}
+		{"name":"BracketLeft",	"text":"(",		"action":"enter('(')",		"disabled": true},
+		{"name":"BracketRight",	"text":")",		"action":"enter(')')",		"disabled": true},
+		{"name":"Comma",		"text":",",		"action":"enter(',')",		"disabled": true}
 	],
 	[
-		{"name":"Multiply",	"text":"*",	"action":"enter('*')"},
-		{"name":"Four",		"text":"4",	"action":"enter('4')"},
-		{"name":"Five",		"text":"5",	"action":"enter('5')"},
-		{"name":"Six",		"text":"6",	"action":"enter('6')"}
+		{"name":"Root",			"text":"V",		"action":"enter('V')",						},
+		{"name":"Power",		"text":"^",		"action":"enter('^')",						},
+		{"name":"Percent",		"text":"%",		"action":"enter('%')",		"disabled": true},
+		{"name":"Factorial",	"text":"!",		"action":"enter('!')",		"disabled": true}
 	],
 	[
-		{"name":"Plus",		"text":"+",	"action":"enter('+')"},
-		{"name":"One",		"text":"1",	"action":"enter('1')"},
-		{"name":"Two",		"text":"2",	"action":"enter('2')"},
-		{"name":"Three",	"text":"3",	"action":"enter('3')"}
+		{"name":"Divide",		"text":"/",		"action":"enter('/')",						},
+		{"name":"Seven",		"text":"7",		"action":"enter('7')",						},
+		{"name":"Eight",		"text":"8",		"action":"enter('8')",						},
+		{"name":"Nine",			"text":"9",		"action":"enter('9')",						}
 	],
 	[
-		{"name":"Minus",	"text":"-",	"action":"enter('-')"},
-		{"name":"Dot",		"text":".",	"action":"enter('.')"},
-		{"name":"Zero",		"text":"0",	"action":"enter('0')"},
-		{"name":"Equals",	"text":"=",	"action":"result()"}
+		{"name":"Multiply",		"text":"*",		"action":"enter('*')",						},
+		{"name":"Four",			"text":"4",		"action":"enter('4')",						},
+		{"name":"Five",			"text":"5",		"action":"enter('5')",						},
+		{"name":"Six",			"text":"6",		"action":"enter('6')",						}
+	],
+	[
+		{"name":"Plus",			"text":"+",		"action":"enter('+')",						},
+		{"name":"One",			"text":"1",		"action":"enter('1')",						},
+		{"name":"Two",			"text":"2",		"action":"enter('2')",						},
+		{"name":"Three",		"text":"3",		"action":"enter('3')",						}
+	],
+	[	
+		{"name":"Minus",		"text":"-",		"action":"enter('-')",						},
+		{"name":"Dot",			"text":".",		"action":"enter('.')",						},
+		{"name":"Zero",			"text":"0",		"action":"enter('0')",						},
+		{"name":"Equals",		"text":"=",		"action":"result()",						}
 	]]
 var loadedCalcKeyboard=storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]]
-//console.log(storage["calculatorAndMath.calcKeyboard.last"])
-//console.log(storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]])
+// console.log(storage["calculatorAndMath.calcKeyboard.last"])
+// console.log(storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.calcKeyboard.last"]])
 if(loadedCalcKeyboard)
 	loadedCalcKeyboard=JSON.parse(loadedCalcKeyboard)
 updateCalcKeyboard(loadedCalcKeyboard||defaultCalcKeyboard)
@@ -573,4 +654,4 @@ updateCalcKeyboard(loadedCalcKeyboard||defaultCalcKeyboard)
 
 calcDiv.style.left=document.documentElement.clientWidth/2-calcDiv.getBoundingClientRect().width/2+"px"
 calcDiv.style.top=document.documentElement.clientHeight/2-calcDiv.getBoundingClientRect().height/2+"px"
-//console.log(calcDiv)
+// console.log(calcDiv)
