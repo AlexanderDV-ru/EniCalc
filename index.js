@@ -357,10 +357,12 @@ if(storage["calculatorAndMath.calcKeyboard.save."+storage["calculatorAndMath.cal
 //
 addMovingElement(unitsDiv, unitsMoverDiv)
 addMovingElement(calcDiv, calcMoverDiv)
-addConsoleElement(consoleTextarea, function(args)
-{
-	var defaultBooleanPropCommand = function(prop)
+//
+var propCmdHandlers = {"boolean":function(args, variants, current, prop)
 	{
+		if(!prop)
+			prop=args[current-1]
+		console.log(args)
 		switch (args[1])
 		{
 			case "set":
@@ -376,9 +378,10 @@ addConsoleElement(consoleTextarea, function(args)
 			default:
 				return "Command '" + args[0] + " " + args[1] + "' not exists!"
 		}
-	}
-	var defaultStringPropCommand = function(prop)
+	},"string": function(args, variants, current, prop)
 	{
+		if(!prop)
+			prop=args[current-1]
 		switch (args[1])
 		{
 			case "set":
@@ -391,9 +394,10 @@ addConsoleElement(consoleTextarea, function(args)
 			default:
 				return "Command '" + args[0] + " " + args[1] + "' not exists!"
 		}
-	}
-	var defaultNumberPropCommand = function(prop)
+	},"number":function(args, variants, current, prop)
 	{
+		if(!prop)
+			prop=args[current-1]
 		switch (args[1])
 		{
 			case "set":
@@ -407,111 +411,169 @@ addConsoleElement(consoleTextarea, function(args)
 				return "Command '" + args[0] + " " + args[1] + "' not exists!"
 		}
 	}
-	switch (args[0])
-	{
-		case "editmode":
-			return defaultBooleanPropCommand("editmode")
-		case "polishmode":
-			return defaultBooleanPropCommand("polishmode")
-		case "resultdigits":
-			return defaultStringPropCommand("resultDigits")
-		case "resultdirection":
-			return defaultBooleanPropCommand("resultDirection")
-		case "expressiondigits":
-			return defaultStringPropCommand("expressionDigits")
-		case "expressiondirection":
-			return defaultBooleanPropCommand("expressionDirection")
-		case "showresult":
-			switch (args[1])
-			{
-				case "set":
-					resultInput.style.display = Boolean(args[2]) ? "" : "none"
-					return "Show result successfully setted to " + (resultInput.style.display != 'none') + "!"
-				case "get":
-					return "Show result = " + (resultInput.style.display != 'none')
-				case undefined:
-				case "":
-				case "invert":
-					resultInput.style.display = (resultInput.style.display == 'none') ? "" : "none"
-					return "Show result successfully inverted to " + (resultInput.style.display != 'none') + "!"
-				default:
-					return "Command '" + args[0] + " " + args[1] + "' not exists!"
-			}
-		case "shownumbersexpression":
-			switch (args[1])
-			{
-				case "set":
-					numbersExpressionInput.style.display = Boolean(args[2]) ? "" : "none"
-					return "Show result successfully setted to " + (numbersExpressionInput.style.display != 'none') + "!"
-				case "get":
-					return "Show result = " + (numbersExpressionInput.style.display != 'none')
-				case undefined:
-				case "":
-				case "invert":
-					numbersExpressionInput.style.display = (numbersExpressionInput.style.display == 'none') ? "" : "none"
-					return "Show result successfully inverted to " + (numbersExpressionInput.style.display != 'none') + "!"
-				default:
-					return "Command '" + args[0] + " " + args[1] + "' not exists!"
-			}
-		case "showexpression":
-			switch (args[1])
-			{
-				case "set":
-					expressionInput.style.display = Boolean(args[2]) ? "" : "none"
-					return "Show result successfully setted to " + (expressionInput.style.display != 'none') + "!"
-				case "get":
-					return "Show result = " + (expressionInput.style.display != 'none')
-				case undefined:
-				case "":
-				case "invert":
-					expressionInput.style.display = (expressionInput.style.display == 'none') ? "" : "none"
-					return "Show result successfully inverted to " + (expressionInput.style.display != 'none') + "!"
-				default:
-					return "Command '" + args[0] + " " + args[1] + "' not exists!"
-			}
-		case "calckeyboard":
-			switch (args[1])
-			{
-				case "save":
-					if (args[2])
-						storage["calculatorAndMath.calcKeyboard.last"] = args[2]
-					if (!storage["calculatorAndMath.calcKeyboard.last"])
-						storage["calculatorAndMath.calcKeyboard.last"] = "newsave"
-					storage["calculatorAndMath.calcKeyboard.save." + storage["calculatorAndMath.calcKeyboard.last"]] = JSON.stringify(calcKeyboard)
-					return "Calc keyboard successfully saved to " + storage["calculatorAndMath.calcKeyboard.last"] + "!"
-				case "load":
-					if (args[2])
-						storage["calculatorAndMath.calcKeyboard.last"] = args[2]
-					if (!storage["calculatorAndMath.calcKeyboard.last"])
-						storage["calculatorAndMath.calcKeyboard.last"] = "newsave"
-					if (storage["calculatorAndMath.calcKeyboard.last"] == "default")
-						updateCalcKeyboard(defaultCalcKeyboard)
-					else
-					{
-						var loaded = storage["calculatorAndMath.calcKeyboard.save." + storage["calculatorAndMath.calcKeyboard.last"]]
-						if (!loaded)
-							return "Calc keyboard save not exist!"
-						updateCalcKeyboard(JSON.parse(loaded))
-					}
-					return "Calc keyboard successfully loaded from " + storage["calculatorAndMath.calcKeyboard.last"] + "!"
-				default:
-					return "Command '" + args[0] + " " + args[1] + "' not exists!"
-			}
-		default:
-			return "Command '" + args[0] + "' not exists!"
+}
+var propCmdVariants = {"boolean":{"set":{"handler":function(args, variants, current){props[prop] = Boolean(args[2]);console.log(123)
+					return "Property '" + prop + "' successfully setted to " + props[prop] + "!"}},"get":{"handler":function(args, variants, current){
+					return "Property '" + prop + "' = " + props[prop]}},"invert|":{"handler":function(args, variants, current){
+					props[args[current-2]] = !props[args[current-2]]
+					return "Property '" + args[current-2] + "' successfully inverted to " + props[args[current-2]] + "!"}},
+				"":{"handler":function(args, variants, current){
+					return "Command '" + args[0] + " " + args[1] + "' not exists!"}}
+			
+					
+		},"string": {"set":{"handler":function(args){
+					props[prop] = args[2]
+					return "Property '" + prop + "' successfully setted to " + props[prop] + "!"
+				}},"get":{"handler":function(args){
+					return "Property '" + prop + "' = " + props[prop]}},
+				"":{"handler":function(args){
+					return "Command '" + args[0] + " " + args[1] + "' not exists!"}}
+			
+		},"number":{"set":{"handler":function(args){
+					props[prop] = Number(args[2])
+					return "Property '" + prop + "' successfully setted to " + props[prop] + "!"}},
+				"get":{"handler":function(args){
+					return "Property '" + prop + "' = " + props[prop]}},
+				"":{"handler":function(args){
+				return "Command '" + args[0] + " " + args[1] + "' not exists!"}}
+			
+		}
 	}
-}, {
-	"editmode" : ["set", "get", "invert"],
-	"polishmode" : ["set", "get", "invert"],
-	"showresult" : ["set", "get", "invert"],
-	"shownumbersexpression" : ["set", "get", "invert"],
-	"showexpression" : ["set", "get", "invert"],
-	"expressiondigits" : ["set", "get"],
-	"expressiondirection" : ["set", "get", "invert"],
-	"resultdigits" : ["set", "get"],
-	"resultdirection" : ["set", "get", "invert"],
-	"calcKeyboard" : ["save", "load"]
-})
+var commands={"'editmode'":{"vars":"editmode","variants":propCmdVariants.boolean},
+		"polishmode":{"variants":propCmdVariants.boolean},
+		"resultdigits":{"variants":propCmdVariants.string},
+		"resultdirection":{"variants":propCmdVariants.boolean},
+		"expressiondigits":{"variants":propCmdVariants.string},
+		"expressiondirection":{"variants":propCmdVariants.boolean}}
+// function(args)
+// {
+// switch (args[0])
+// {
+//		
+// case "showresult":
+// switch (args[1])
+// {
+// case "set":
+// resultInput.style.display = Boolean(args[2]) ? "" : "none"
+// return "Show result successfully setted to " + (resultInput.style.display !=
+// 'none') + "!"
+// case "get":
+// return "Show result = " + (resultInput.style.display != 'none')
+// case undefined:
+// case "":
+// case "invert":
+// resultInput.style.display = (resultInput.style.display == 'none') ? "" :
+// "none"
+// return "Show result successfully inverted to " + (resultInput.style.display
+// != 'none') + "!"
+// default:
+// return "Command '" + args[0] + " " + args[1] + "' not exists!"
+// }
+// case "shownumbersexpression":
+// switch (args[1])
+// {
+// case "set":
+// numbersExpressionInput.style.display = Boolean(args[2]) ? "" : "none"
+// return "Show result successfully setted to " +
+// (numbersExpressionInput.style.display != 'none') + "!"
+// case "get":
+// return "Show result = " + (numbersExpressionInput.style.display != 'none')
+// case undefined:
+// case "":
+// case "invert":
+// numbersExpressionInput.style.display = (numbersExpressionInput.style.display
+// == 'none') ? "" : "none"
+// return "Show result successfully inverted to " +
+// (numbersExpressionInput.style.display != 'none') + "!"
+// default:
+// return "Command '" + args[0] + " " + args[1] + "' not exists!"
+// }
+// case "showexpression":
+// switch (args[1])
+// {
+// case "set":
+// expressionInput.style.display = Boolean(args[2]) ? "" : "none"
+// return "Show result successfully setted to " + (expressionInput.style.display
+// != 'none') + "!"
+// case "get":
+// return "Show result = " + (expressionInput.style.display != 'none')
+// case undefined:
+// case "":
+// case "invert":
+// expressionInput.style.display = (expressionInput.style.display == 'none') ?
+// "" : "none"
+// return "Show result successfully inverted to " +
+// (expressionInput.style.display != 'none') + "!"
+// default:
+// return "Command '" + args[0] + " " + args[1] + "' not exists!"
+// }
+// case "calckeyboard":
+// switch (args[1])
+// {
+// case "save":
+// if (args[2])
+// storage["calculatorAndMath.calcKeyboard.last"] = args[2]
+// if (!storage["calculatorAndMath.calcKeyboard.last"])
+// storage["calculatorAndMath.calcKeyboard.last"] = "newsave"
+// storage["calculatorAndMath.calcKeyboard.save." +
+// storage["calculatorAndMath.calcKeyboard.last"]] =
+// JSON.stringify(calcKeyboard)
+// return "Calc keyboard successfully saved to " +
+// storage["calculatorAndMath.calcKeyboard.last"] + "!"
+// case "load":
+// if (args[2])
+// storage["calculatorAndMath.calcKeyboard.last"] = args[2]
+// if (!storage["calculatorAndMath.calcKeyboard.last"])
+// storage["calculatorAndMath.calcKeyboard.last"] = "newsave"
+// if (storage["calculatorAndMath.calcKeyboard.last"] == "default")
+// updateCalcKeyboard(defaultCalcKeyboard)
+// else
+// {
+// var loaded = storage["calculatorAndMath.calcKeyboard.save." +
+// storage["calculatorAndMath.calcKeyboard.last"]]
+// if (!loaded)
+// return "Calc keyboard save not exist!"
+// updateCalcKeyboard(JSON.parse(loaded))
+// }
+// return "Calc keyboard successfully loaded from " +
+// storage["calculatorAndMath.calcKeyboard.last"] + "!"
+// default:
+// return "Command '" + args[0] + " " + args[1] + "' not exists!"
+// }
+// default:
+// return "Command '" + args[0] + "' not exists!"
+// }
+// }, {
+// "editmode" : ["set", "get", "invert"],
+// "polishmode" : ["set", "get", "invert"],
+// "showresult" : ["set", "get", "invert"],
+// "shownumbersexpression" : ["set", "get", "invert"],
+// "showexpression" : ["set", "get", "invert"],
+// "expressiondigits" : ["set", "get"],
+// "expressiondirection" : ["set", "get", "invert"],
+// "resultdigits" : ["set", "get"],
+// "resultdirection" : ["set", "get", "invert"],
+// "calcKeyboard" : ["save", "load"]
+// }
+var handler=function(args, variants, current)
+{
+	if(!variants)
+		variants=commands
+	if(!current)
+		current=0
+	for(var cmdRegExp in variants)
+		{
+		var matching=(typeof args[current]=="string"?"'"+args[current]+"'":args[current]+"")
+		var match=matching.match(new RegExp(cmdRegExp.split("/")[0],cmdRegExp.split("/")[1]))
+		if(match&&match.length==matching)
+		{
+			var ret=((variants[cmdRegExp].handler instanceof Function)?variants[cmdRegExp].handler:handler)(args, variants[cmdRegExp].variants, current+1)
+			console.log(variants[cmdRegExp].handler)
+			if(ret)
+				return ret
+		}}
+}
+addConsoleElement(consoleTextarea, handler, commands)
 // calc
 expressionInput.onkeydown = function(e)
 {
@@ -781,8 +843,29 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 				lines[v][v22].value=lines[v][v22].value.replace(new RegExp(""+numberRegExp+"[ ]*(?:"+v3.replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*"),function(match)
 						{
 					// console.log("v3");
-					//console.log(new Function("a","b","return "+props.calculator.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)))
-					return numberToString(action(undefined,[stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)],v2,v34), digits, direction, minus, dot, minusPos)// numberToString(new Function("a","b","return "+props.calculator.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)), digits, direction, minus, dot, minusPos)
+					// console.log(new Function("a","b","return
+					// "+props.calculator.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0],
+					// digits, direction, minus, dot,
+					// minusPos),stringToNumber(match.split(v3)[1], digits,
+					// direction, minus, dot, minusPos)))
+					return numberToString(action(undefined,[stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)],v2,v34), digits, direction, minus, dot, minusPos)// numberToString(new
+																																																																		// Function("a","b","return
+																																																																		// "+props.calculator.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0],
+																																																																		// digits,
+																																																																		// direction,
+																																																																		// minus,
+																																																																		// dot,
+																																																																		// minusPos),stringToNumber(match.split(v3)[1],
+																																																																		// digits,
+																																																																		// direction,
+																																																																		// minus,
+																																																																		// dot,
+																																																																		// minusPos)),
+																																																																		// digits,
+																																																																		// direction,
+																																																																		// minus,
+																																																																		// dot,
+																																																																		// minusPos)
 					})
 			// console.log(lines[v])
 			}
