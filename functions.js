@@ -178,11 +178,13 @@ var numberToString = function(value, digits, direction, minus, dot, minusPos)
 		minusPos = defaultProperties.numberForm["default"].minusPos
 	var str = ""
 	var min = 0 > value ? minus : ""
-	for (; value != 0;)
-	{
-		str = digits[value % digits.length] + str
-		value = (value - value % digits.length) / digits.length
-	}
+	if(value instanceof Number)
+		for (; value != 0;)
+		{
+			str = digits[value % digits.length] + str
+			value = (value - value % digits.length) / digits.length
+		}
+	else return value
 	str = min + str
 	var val = ""
 	for (var v = 0; str.length > v; v++)

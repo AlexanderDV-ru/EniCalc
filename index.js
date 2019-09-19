@@ -14,8 +14,8 @@ var defaultProperties = {
 		"expression" : {},
 		"result" : {},
 	},
-	"calculator":
-		{
+		"polishmode":false,
+	"calculator":{
 	"actions" : {
 		"default" : {
 			"a" : 0,
@@ -110,18 +110,15 @@ var defaultProperties = {
 		}], [{
 			"name" : "BracketLeft",
 			"text" : "(",
-			"func" : "enter('(')",
-			"disabled" : true
+			"func" : "enter('(')"
 		}, {
 			"name" : "BracketRight",
 			"text" : ")",
-			"func" : "enter(')')",
-			"disabled" : true
+			"func" : "enter(')')"
 		}, {
 			"name" : "Comma",
 			"text" : ",",
-			"func" : "enter(',')",
-			"disabled" : true
+			"func" : "enter(',')"
 		}], [{
 			"name" : "Root",
 			"text" : "V",
@@ -412,34 +409,10 @@ addConsoleElement(consoleTextarea, function(args)
 	}
 	switch (args[0])
 	{
-		case "button":
-			var result = ""
-			var button
-			var n = 0
-			switch (args[++n])
-			{
-				case "byname":
-					button = this["calcKeyboardKey" + args[++n]]
-					break
-			}
-			switch (args[++n])
-			{
-				case "settext":
-					button.innerText = args[++n]
-					result += "Text = " + button.innerText + "\n"
-					n++
-					break
-			}
-			switch (args[n])
-			{
-				case "setaction":
-					button.onclick = new Function('event', args[++n])
-					result += "Action = " + (button.onclick + "").replace(/\n/g, "") + "\n"
-					break
-			}
-			return result + "Successfully setted!"
 		case "editmode":
 			return defaultBooleanPropCommand("editmode")
+		case "polishmode":
+			return defaultBooleanPropCommand("polishmode")
 		case "resultdigits":
 			return defaultStringPropCommand("resultDigits")
 		case "resultdirection":
@@ -528,8 +501,8 @@ addConsoleElement(consoleTextarea, function(args)
 			return "Command '" + args[0] + "' not exists!"
 	}
 }, {
-	"button" : ["byname", "settext", "setaction"],
 	"editmode" : ["set", "get", "invert"],
+	"polishmode" : ["set", "get", "invert"],
 	"showresult" : ["set", "get", "invert"],
 	"shownumbersexpression" : ["set", "get", "invert"],
 	"showexpression" : ["set", "get", "invert"],
@@ -547,15 +520,26 @@ expressionInput.onkeydown = function(e)
 }
 var result = function(e)
 {
-	var n = historyTextarea.value.split("\n").length - 1
 	var expr = expressionInput.value
-	expressionInput.value = getValName(n)
-	historyTextarea.value += expressionInput.value + "=" + expr + "=" + expressionNumberToString(multilineCount(replaceVals(expr))) + "\n"
+	var other=[]
+	for ( var v in historyTextarea.value.split("\n"))
+		if (historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0])
+			other.push(historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0])
+	expressionInput.value = getValName(other)
+	historyTextarea.value += expressionInput.value + "=" + expr + "=" + expressionNumberToString(props.polishmode?polishCount(replaceVals(expr)):multilineCount(replaceVals(expr))) + "\n"
 	expressionInput.oninput()
 }
-var getValName = function(n)
+var getValName = function(other)
 {
-	n++
+	var max=0
+	for(var v in other)
+	{
+		var c=0
+		for(var v2 in other[v])
+			c+=("abcdefghijklmnopqrstuvwxyz".match(other[v][v2]).index+1)*Math.pow(26,other[v].length-1-v2)
+		max=Math.max(c,max)
+	}
+	var n=max+1
 	var res = ""
 	while (n != 0)
 	{
@@ -613,7 +597,7 @@ expressionInput.onmousemove = expressionInput.onmousedown = function(e)
 expressionInput.oninput = function(e)
 {
 	numbersExpressionInput.value = replaceVals(expressionInput.value)
-	resultInput.value = resultNumberToString(multilineCount(replaceVals(expressionInput.value)))
+	resultInput.value = resultNumberToString(props.polishmode?polishCount(replaceVals(expressionInput.value)):multilineCount(replaceVals(expressionInput.value)))
 }
 historyTextarea.oninput = function(e)
 {
@@ -623,8 +607,24 @@ historyTextarea.oninput = function(e)
 		var selEnd = historyTextarea.selectionEnd
 		var val = ""
 		for ( var v in historyTextarea.value.split("\n"))
-			if (historyTextarea.value.split("\n")[v].split("=")[0])
-				val += (v != v1 ? historyTextarea.value.split("\n")[v] : historyTextarea.value.split("\n")[v].split("=")[0] + "=" + historyTextarea.value.split("\n")[v].split("=")[1] + "=" + countExpression(replaceVals(historyTextarea.value.split("\n")[v].split("=")[1]))) + "\n"
+			if (historyTextarea.value.split("\n")[v])
+				if(v != v1)
+					val+=historyTextarea.value.split("\n")[v] + "\n"
+				else switch(historyTextarea.value.split("\n")[v].split("=")[0].split(":")[1])
+				{
+					case "default":
+						val += historyTextarea.value.split("\n")[v].split("=")[0] + "=" + historyTextarea.value.split("\n")[v].split("=")[1] + "=" + multilineCount(replaceVals(historyTextarea.value.split("\n")[v].split("=")[1])) + "\n"
+						break
+					case "polish":
+						val += historyTextarea.value.split("\n")[v].split("=")[0] + "=" + historyTextarea.value.split("\n")[v].split("=")[1] + "=" + polishCount(replaceVals(historyTextarea.value.split("\n")[v].split("=")[1])) + "\n"
+						break
+					case "value":
+						val += historyTextarea.value.split("\n")[v].split("=")[0] + "=" + historyTextarea.value.split("\n")[v].split("=")[1] + "=" + historyTextarea.value.split("\n")[v].split("=")[1] + "\n"
+						break
+					default:
+						val+=historyTextarea.value.split("\n")[v] + "\n"
+						break
+				}
 		historyTextarea.value = val
 		historyTextarea.selectionStart = selStart
 		historyTextarea.selectionEnd = selEnd
@@ -655,8 +655,43 @@ var replaceVals = function(expression)
 {
 	for ( var v in historyTextarea.value.split("\n"))
 		if (historyTextarea.value.split("\n")[v].split("=")[0])
-			expression = expression.replace(new RegExp("\\b" + historyTextarea.value.split("\n")[v].split("=")[0] + "\\b", "g"), historyTextarea.value.split("\n")[v].split("=")[2])
+			expression = expression.replace(new RegExp("\\b" + historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0] + "\\b", "g"), historyTextarea.value.split("\n")[v].split("=")[2])
 	return expression
+}
+var action=function(operator, args, priority, number)
+{
+	if(!priority&&!number&&operator)
+		for(var v2=0;props.calculator.actions.byPriority.length>v2;v2++)
+			for(var v34 in props.calculator.actions.byPriority[v2])
+				if(props.calculator.actions.byPriority[v2][v34].text==operator)
+				{
+					priority=v2
+					number=v34
+				}
+	for(;args.length>1;)
+		args.splice(0,2,new Function("a","b","return "+props.calculator.actions.byPriority[priority][number].func)(args[0],args[1]))
+	return args[0]
+}
+var polishCount=function(expression, digits, direction, minus, dot, minusPos)
+{
+	if (!digits)
+		digits = props.numberForm["default"].digits
+	if (!direction)
+		direction = props.numberForm["default"].direction
+	if (!minus)
+		minus = props.numberForm["default"].minus
+	if (!dot)
+		dot = props.numberForm["default"].dot
+	if (!minusPos)
+		minusPos = props.numberForm["default"].minusPos
+	
+	var stack=[]
+	var spl=expression.split(",")
+	for(var v in spl)
+		if(function(){try{return stringToNumber(spl[v], digits, direction, minus, dot, minusPos);}catch(Exception){return false;}}())
+			stack.push(stringToNumber(spl[v], digits, direction, minus, dot, minusPos))
+		else stack=[action(spl[v],stack)]
+	return stack[0]
 }
 var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 {
@@ -670,6 +705,7 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 		dot = props.numberForm["default"].dot
 	if (!minusPos)
 		minusPos = props.numberForm["default"].minusPos
+		
 	// console.log(expression)
 	var lines=[[{"start":0,"end":expression.length,"value":expression+""}]]
 	var move=function(start, end)
@@ -698,8 +734,8 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 					console.log("lines: "+JSON.stringify(lines))
 					ok=true
 				}
-				//if(!(!(v2+1==lines[v].length)||(!ok)))
-				//	lines[v].push({"start":start,"end":end,"value":""})
+				// if(!(!(v2+1==lines[v].length)||(!ok)))
+				// lines[v].push({"start":start,"end":end,"value":""})
 			}
 		}
 		 console.log("lines: "+JSON.stringify(lines))
@@ -745,8 +781,8 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 				lines[v][v22].value=lines[v][v22].value.replace(new RegExp(""+numberRegExp+"[ ]*(?:"+v3.replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*"),function(match)
 						{
 					// console.log("v3");
-					console.log(new Function("a","b","return "+props.calculator.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)))
-					return numberToString(new Function("a","b","return "+props.calculator.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)), digits, direction, minus, dot, minusPos)
+					//console.log(new Function("a","b","return "+props.calculator.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)))
+					return numberToString(action(undefined,[stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)],v2,v34), digits, direction, minus, dot, minusPos)// numberToString(new Function("a","b","return "+props.calculator.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)), digits, direction, minus, dot, minusPos)
 					})
 			// console.log(lines[v])
 			}
@@ -806,7 +842,10 @@ var createCalcKeyboardTd = function(v, v2)
 {
 	var td = document.createElement("td")
 	td.height=100/props.calculator.keyboard.table.length+"%"
-	td.width=100/props.calculator.keyboard.table[v].length+"%"
+	var width=0
+	for(var v22 in props.calculator.keyboard.table)
+		width=Math.max(width,props.calculator.keyboard.table[v22].length)
+	td.width=100/width+"%"
 	td.appendChild(createCalcKeyboardButton(v, v2))
 	return td
 }
@@ -835,6 +874,8 @@ var setCalculatorKeyboard=function(keyboard)
 
 calcDiv.style.left=document.documentElement.clientWidth/2-calcDiv.getBoundingClientRect().width/2+"px"
 calcDiv.style.top=document.documentElement.clientHeight/2-calcDiv.getBoundingClientRect().height/2+"px"
+
+unitsDiv.style.left=document.documentElement.clientWidth/2-unitsDiv.getBoundingClientRect().width/2+"px"
 // console.log(calcDiv)
 // Unit converter
 var updateUnitConverter=function()
