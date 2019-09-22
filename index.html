@@ -1,34 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
+  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" charset="UTF-8">
 	<title>Calculator and Math</title>
+	
+	<script type="text/javascript" src="lib/functions.js"></script>
 
 	<style>
 		body {
 			background-color: #333;
 		}
+		label {
+			color: white;
+		}
 		textarea {
 			width: 300px;
 			height: 120px;
 		}
-		.maxSize {
+		.maxWidth {
 			width: 100%;
 		}
-		.calcKeyboardKey {
-			height: 32px;
-		}
-		.input {
-			width: 99%;
-		}
-		.withoutAnyHorizOffsets {
-			margin-left: 0px;
-			margin-right: 0px;
-			//border-left-width: 0px;
-			//border-right-width: 0px;
-		}
-		.withoutPadding{
-			padding: 0px;
+		.maxHeight {
+			height: 100%;
 		}
 	</style>
 </head>
@@ -38,76 +31,76 @@
 		<table id="unitsTable">
 			<tr>
 				<td colspan="2">
-					<select class="maxSize" id="unitTypeSelect"></select>
+					<select class="maxWidth" id="unitTypeSelect"></select>
 				</td>
 			</tr>
 			<tr>
 				<td width="50%">
-					<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="firstInput"></input>
+					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="firstInput"></input>
 				</td>
 				<td width="50%">
-					<select class="maxSize" id="firstUnitPowerSelect"></select>
+					<select class="maxWidth" id="firstUnitPowerSelect"></select>
 				</td>
 			</tr>
 			<tr>
 				<td width="50%">
-					<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="secondInput"></input>
+					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="secondInput"></input>
 				</td>
 				<td width="50%">
-					<select class="maxSize" id="secondUnitPowerSelect"></select>
+					<select class="maxWidth" id="secondUnitPowerSelect"></select>
 				</td>
 			</tr>
 			<tr id="thirdTr" style="display: none">
 				<td width="50%">
-					<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="thirdInput"></input>
+					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="thirdInput"></input>
 				</td>
 				<td width="50%">
-					<select class="maxSize" id="thirdUnitPowerSelect"></select>
+					<select class="maxWidth" id="thirdUnitPowerSelect"></select>
 				</td>
 			</tr>
 			<tr id="fourthTr" style="display: none">
 				<td width="50%">
-					<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="fourthInput"></input>
+					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="fourthInput"></input>
 				</td>
 				<td width="50%">
-					<select class="maxSize" id="fourthUnitPowerSelect"></select>
+					<select class="maxWidth" id="fourthUnitPowerSelect"></select>
 				</td>
 			</tr>
 			<tr id="fifthTr" style="display: none">
 				<td width="50%">
-					<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="fifthInput"></input>
+					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="fifthInput"></input>
 				</td>
 				<td width="50%">
-					<select class="maxSize" id="fifthUnitPowerSelect"></select>
+					<select class="maxWidth" id="fifthUnitPowerSelect"></select>
 				</td>
 			</tr>
 		</table>
-		<button onclick="if(thirdTr.style.display=='none')thirdTr.style.display='';else if(fourthTr.style.display=='none')fourthTr.style.display='';else if(fifthTr.style.display=='none')fifthTr.style.display=''">Add</button>
+		<button id="addButton" onclick="if(thirdTr.style.display=='none')thirdTr.style.display='';else if(fourthTr.style.display=='none')fourthTr.style.display='';else if(fifthTr.style.display=='none')fifthTr.style.display=''">Add</button>
 	</div>
 	<div style="position:absolute;background-color: rgb(200,210,255)" id="calcDiv">
 		<div id="calcMoverDiv">Move</div>
 		<table id="calcTable">
 			<tr>
 				<td>
-					<table class="maxSize" id="calcFieldsTable">
+					<table class="maxWidth" id="calcFieldsTable">
 						<tr>
 							<td>
-								<textarea class="maxSize" style="min-width: 193px;border-width: 2px 0px 2px 0px;" id="historyTextarea"></textarea>
+								<textarea class="maxWidth" style="min-width: 193px;border-width: 2px 0px 2px 0px;" id="historyTextarea"></textarea>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input class="maxSize" style="border-width: 2px 0px 2px 0px;" readonly id="resultInput"></input>
+								<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" readonly id="resultInput"></input>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input class="maxSize" style="border-width: 2px 0px 2px 0px;" readonly id="numbersExpressionInput"></input>
+								<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" readonly id="numbersExpressionInput"></input>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<input class="maxSize" style="border-width: 2px 0px 2px 0px;" id="expressionInput"></input>
+								<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="expressionInput"></input>
 							</td>
 						</tr>
 					</table>
@@ -115,7 +108,7 @@
 			</tr>
 			<tr>
 				<td>
-					<table class="maxSize" id="calcKeyboardTable"></table>
+					<table class="maxWidth" id="calcKeyboardTable"></table>
 				</td>
 			</tr>
 		</table>
@@ -143,7 +136,6 @@
 	</table>
 	<textarea id="consoleTextarea"></textarea>
 
-	<script src="functions.js"></script>
 	<script src="index.js"></script>
 
 </body>
