@@ -1,10 +1,10 @@
-//--- Name: CalculatorAndMath/Vesion: 0.1.5a/Authors: AlexanderDV/Description: Main CalculatorAndMath file. ---
+//--- Name: CalculatorAndMath/Vesion: 0.1.6a/Authors: AlexanderDV/Description: Main CalculatorAndMath file. ---
 //--- Start of standard initialization
 //Program info
 var programInfo={
 	"packet" : "calculatorAndMath",
 	"name" : "Calculator and Math",
-	"version" : "0.1.5a",
+	"version" : "0.1.6a",
 	"authors" : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -1106,7 +1106,6 @@ var updateUnits=function(currentInput,currentSelect,otherInputs,otherSelects)
 		}
 	lastUnitInput=currentInput
 }
-}
 firstInput.oninput = function(e)
 {
 	updateUnits(firstInput, firstUnitPowerSelect, [secondInput, thirdInput, fourthInput, fifthInput], [secondUnitPowerSelect, thirdUnitPowerSelect, fourthUnitPowerSelect, fifthUnitPowerSelect])
@@ -1130,6 +1129,7 @@ fifthInput.oninput = function(e)
 firstUnitPowerSelect.oninput = secondUnitPowerSelect.oninput = thirdUnitPowerSelect.oninput = fourthUnitPowerSelect.oninput = fifthUnitPowerSelect.oninput = function(e)
 {
 	lastUnitInput.oninput()
+}
 }
 //
 updateCalculatorKeyboard()
