@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" charset="UTF-8">
-	<title>Calculator and Math</title>
-	
+	<title>EniCalc - Optional Calculator</title>
+
 	<script type="text/javascript" src="lib/functions.js"></script>
 
 	<style>
@@ -30,52 +30,23 @@
 		<div id="unitsMoverDiv">Move</div>
 		<table id="unitsTable">
 			<tr>
-				<td colspan="2">
+				<td colspan="3">
 					<select class="maxWidth" id="unitTypeSelect"></select>
 				</td>
 			</tr>
-			<tr>
-				<td width="50%">
-					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="firstInput"></input>
+			<tr id="unitFieldNum0">
+				<td width="33%">
+					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="unitInputNum0"></input>
 				</td>
-				<td width="50%">
-					<select class="maxWidth" id="firstUnitPowerSelect"></select>
+				<td width="33%">
+					<select class="maxWidth" id="unitPowerSelectNum0"></select>
 				</td>
-			</tr>
-			<tr>
-				<td width="50%">
-					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="secondInput"></input>
-				</td>
-				<td width="50%">
-					<select class="maxWidth" id="secondUnitPowerSelect"></select>
-				</td>
-			</tr>
-			<tr id="thirdTr" style="display: none">
-				<td width="50%">
-					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="thirdInput"></input>
-				</td>
-				<td width="50%">
-					<select class="maxWidth" id="thirdUnitPowerSelect"></select>
-				</td>
-			</tr>
-			<tr id="fourthTr" style="display: none">
-				<td width="50%">
-					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="fourthInput"></input>
-				</td>
-				<td width="50%">
-					<select class="maxWidth" id="fourthUnitPowerSelect"></select>
-				</td>
-			</tr>
-			<tr id="fifthTr" style="display: none">
-				<td width="50%">
-					<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" id="fifthInput"></input>
-				</td>
-				<td width="50%">
-					<select class="maxWidth" id="fifthUnitPowerSelect"></select>
+				<td width="33%">
+					<select class="maxWidth" id="unitPowerSelectEx1Num0"></select>
 				</td>
 			</tr>
 		</table>
-		<button id="addButton" onclick="if(thirdTr.style.display=='none')thirdTr.style.display='';else if(fourthTr.style.display=='none')fourthTr.style.display='';else if(fifthTr.style.display=='none')fifthTr.style.display=''">Add</button>
+		<button id="addUnitFieldButton">Add</button>
 	</div>
 	<div style="position:absolute;background-color: rgb(200,210,255)" id="calcDiv">
 		<div id="calcMoverDiv">Move</div>
@@ -113,29 +84,9 @@
 			</tr>
 		</table>
 	</div>
-	<table style="display: none;">
-		<tr>
-			<td>
-				<textarea readonly id="getSaveJsonArea"></textarea>
-			</td>
-			<td>
-				<textarea id="setSaveJsonArea"></textarea>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<button id="getSaveJSON">Get save JSON</button>
-			</td>
-			<td>
-				<button id="setSaveJSON">Set save JSON</button>
-				<input id="saveAddress"></input>
-				<button id="saveJSONtoAddress">Save JSON to Address</button>
-				<button id="loadJSONfromAddress">Load JSON from Address</button>
-			</td>
-		</tr>
-	</table>
 	<textarea id="consoleTextarea"></textarea>
-
+  <!-- Main scripts -->
+  <script src="properties.js"></script>
 	<script src="index.js"></script>
 
 </body>

@@ -1,388 +1,23 @@
-//--- Name: CalculatorAndMath/Vesion: 0.1.6a/Authors: AlexanderDV/Description: Main CalculatorAndMath file. ---
+//--- Name: EniCalc/Vesion: 0.2.0a/Authors: AlexanderDV/Description: Main EniCalc file. ---
 //--- Start of standard initialization
 //Program info
 var programInfo={
-	"packet" : "calculatorAndMath",
-	"name" : "Calculator and Math",
-	"version" : "0.1.6a",
+	"packet" : "eniCalc",
+	"name" : "EniCalc",
+	"version" : "0.2.0a",
 	"authors" : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
 document.title=programInfo.title
 // Universal local storage initialization
 var storage = window.localStorage
-// Default properties
-var defaultProperties = {
-		"editmode" : false,
-		"numberForm" : {
-			"default" : {
-				"digits" : "0123456789",
-				"direction" : false,
-				"minus" : "-",
-				"dot" : ".",
-				"minusPos" : false,
-			},
-			"expression" : {},
-			"result" : {},
-		},
-			"polishmode":false,
-		"calculator":{
-		"actions" : {
-			"default" : {
-				"a" : 0,
-				"b" : 0
-			},
-			"byPriority" : [[{
-				"name" : "Power",
-				"text" : "^",
-				"func" : "Math.pow(a,b)",
-				"a" : 10,
-				"b" : 2
-			}, {
-				"name" : "Root",
-				"text" : "V",
-				"func" : "Math.pow(b,1/a)",
-				"a" : 2,
-				"b" : 0
-			}], [{
-				"name" : "Multiply",
-				"text" : "*",
-				"func" : "a*b",
-				"a" : 1,
-				"b" : 1
-			}, {
-				"name" : "Divide",
-				"text" : "/",
-				"func" : "a/b",
-				"a" : 1,
-				"b" : 1
-			}], [{
-				"name" : "Plus",
-				"text" : "+",
-				"func" : "a+b"
-			}, {
-				"name" : "Minus",
-				"text" : "-",
-				"func" : "a-b"
-			}]]
-		},
-		"keyboard" : {
-			"default" : {
-				"text" : null,
-				"func" : "enter(key.text)",
-				"disabled" : false
-			},
-			"table" : [[{
-				"name" : "MemoryClear",
-				"text" : "MC",
-				"func" : "",
-				"disabled" : true
-			}, {
-				"name" : "MemoryR",
-				"text" : "MR",
-				"func" : "",
-				"disabled" : true
-			}, {
-				"name" : "MemorySave",
-				"text" : "MS",
-				"func" : "",
-				"disabled" : true
-			}, {
-				"name" : "MemoryMinus",
-				"text" : "M-",
-				"func" : "",
-				"disabled" : true
-			}, {
-				"name" : "MemoryPlus",
-				"text" : "M+",
-				"func" : "",
-				"disabled" : true
-			}], [{
-				"name" : "Left",
-				"text" : "\u003C",
-				"func" : "left()",
-			}, {
-				"name" : "Right",
-				"text" : ">",
-				"func" : "right()",
-			}], [{
-				"name" : "ClearHistory",
-				"text" : "CH",
-				"func" : "clearHistory()"
-			}, {
-				"name" : "ClearAll",
-				"text" : "CA",
-				"func" : "clear();clearHistory()"
-			}, {
-				"name" : "Clear",
-				"text" : "C",
-				"func" : "clear()",
-			}, {
-				"name" : "Backspace",
-				"text" : "\u003C-",
-				"func" : "backspace()",
-			}], [{
-				"name" : "BracketLeft",
-				"text" : "(",
-				"func" : "enter('(')"
-			}, {
-				"name" : "BracketRight",
-				"text" : ")",
-				"func" : "enter(')')"
-			}, {
-				"name" : "Comma",
-				"text" : ",",
-				"func" : "enter(',')"
-			}], [{
-				"name" : "Root",
-				"text" : "V",
-				"func" : "enter('V')",
-			}, {
-				"name" : "Power",
-				"text" : "^",
-				"func" : "enter('^')",
-			}, {
-				"name" : "Percent",
-				"text" : "%",
-				"func" : "enter('%')",
-				"disabled" : true
-			}, {
-				"name" : "Factorial",
-				"text" : "!",
-				"func" : "enter('!')",
-				"disabled" : true
-			}], [{
-				"name" : "Divide",
-				"text" : "/",
-				"func" : "enter('/')",
-			}, {
-				"name" : "Seven",
-				"text" : "7",
-				"func" : "enter('7')",
-			}, {
-				"name" : "Eight",
-				"text" : "8",
-				"func" : "enter('8')",
-			}, {
-				"name" : "Nine",
-				"text" : "9",
-				"func" : "enter('9')",
-			}], [{
-				"name" : "Multiply",
-				"text" : "*",
-				"func" : "enter('*')",
-			}, {
-				"name" : "Four",
-				"text" : "4",
-				"func" : "enter('4')",
-			}, {
-				"name" : "Five",
-				"text" : "5",
-				"func" : "enter('5')",
-			}, {
-				"name" : "Six",
-				"text" : "6",
-				"func" : "enter('6')",
-			}], [{
-				"name" : "Plus",
-				"text" : "+",
-				"func" : "enter('+')",
-			}, {
-				"name" : "One",
-				"text" : "1",
-				"func" : "enter('1')",
-			}, {
-				"name" : "Two",
-				"text" : "2",
-				"func" : "enter('2')",
-			}, {
-				"name" : "Three",
-				"text" : "3",
-				"func" : "enter('3')",
-			}], [{
-				"name" : "Minus",
-				"text" : "-",
-				"func" : "enter('-')",
-			}, {
-				"name" : "Dot",
-				"text" : ".",
-				"func" : "enter('.')",
-			}, {
-				"name" : "Zero",
-				"text" : "0",
-				"func" : "enter('0')",
-			}, {
-				"name" : "Equals",
-				"text" : "=",
-				"func" : "result()",
-			}]]
-		}},	
-		"unitconverter" : {
-			"units":{
-			"Масса" : [{
-				"short" : "мкг",
-				"long" : "Микрограммы",
-				"func" : 0.000000001
-			}, {
-				"short" : "мг",
-				"long" : "Миллиграммы",
-				"func" : 0.000001
-			}, {
-				"short" : "г",
-				"long" : "Граммы",
-				"func" : 0.001
-			}, {
-				"short" : "кг",
-				"long" : "Килограммы",
-				"func" : 1
-			}, {
-				"short" : "ц",
-				"long" : "Центнеры",
-				"func" : 100
-			}, {
-				"short" : "т",
-				"long" : "Тонны",
-				"func" : 1000
-			}, ],
-			"Время" : [{
-				"short" : "c",
-				"long" : "Секунды",
-				"func" : 1
-			}, {
-				"short" : "м",
-				"long" : "Минуты",
-				"func" : 60
-			}, {
-				"short" : "ч",
-				"long" : "Часы",
-				"func" : 60 * 60
-			}, {
-				"short" : "-",
-				"long" : "Дни, Половины суток",
-				"func" : 60 * 60 * 12
-			}, {
-				"short" : "-",
-				"long" : "Сутки",
-				"func" : 60 * 60 * 12 * 2
-			}, {
-				"short" : "-",
-				"long" : "Недели",
-				"func" : 60 * 60 * 12 * 2 * 7
-			}, {
-				"short" : "-",
-				"long" : "Месяцы, 31 день",
-				"func" : 60 * 60 * 12 * 2 * 31
-			}, {
-				"short" : "-",
-				"long" : "Месяцы, 30 дней",
-				"func" : 60 * 60 * 12 * 2 * 30
-			}, {
-				"short" : "-",
-				"long" : "Месяцы, 1/12 года",
-				"func" : 60 * 60 * 12 * 2 * 365.25 / 12
-			}, {
-				"short" : "-",
-				"long" : "Года, 365.25 дней",
-				"func" : 60 * 60 * 12 * 2 * 365.25
-			}, {
-				"short" : "-",
-				"long" : "Года, 365 дней",
-				"func" : 60 * 60 * 12 * 2 * 365
-			}, {
-				"short" : "-",
-				"long" : "Висакосные года, 366 дней",
-				"func" : 60 * 60 * 12 * 2 * 366
-			}, {
-				"short" : "-",
-				"long" : "Века",
-				"func" : 60 * 60 * 12 * 2 * 365.25 * 100
-			}, ],
-			"Давление" : [{
-				"short" : "-",
-				"long" : "Паскали",
-				"func" : 1
-			}],
-			"Скорость" : [{
-				"short" : "м/с",
-				"long" : "Метры в секунду",
-				"func" : 1
-			}],
-			"Скорость передачи данных" : [{
-				"short" : "-",
-				"long" : "Биты в секунду",
-				"func" : 1
-			}],
-			"Расстояние" : [{
-				"short" : "м",
-				"long" : "Метры",
-				"func" : 1
-			}],
-			"Мощность" : [{
-				"short" : "-",
-				"long" : "Ватты",
-				"func" : 1
-			}],
-			"Объем" : [{
-				"short" : "м^3",
-				"long" : "Кубометры",
-				"func" : 1
-			}],
-			"Объем информации" : [{
-				"short" : "-",
-				"long" : "Байты",
-				"func" : 1
-			}],
-			"Площадь" : [{
-				"short" : "м^2",
-				"long" : "Квадратные метры",
-				"func" : 1
-			}],
-			"Температура" : [{
-				"short" : "-",
-				"long" : "Градусы цельсия",
-				"func" : 1
-			}],
-			"Расход топлива" : [{
-				"short" : "-",
-				"long" : "Километры на литр",
-				"func" : 1
-			}],
-			"Угол" : [{
-				"short" : "-",
-				"long" : "Градусы",
-				"func" : 1
-			}],
-			"Частота" : [{
-				"short" : "-",
-				"long" : "Герцы",
-				"func" : 1
-			}],
-			"Энергия" : [{
-				"short" : "-",
-				"long" : "Джоули",
-				"func" : 1
-			}]}
-		}
-	}
-// Properties from default properties
-var props = makeClone(defaultProperties)
-// Messages value-by-key for different languages
-var msgs={
-	"en":{
-		"add":"Add",
-		"move":"Move"
-	},
-	"ru":{
-		"add":"Добавить",
-		"move":"Двигать"
-	}
-}
+
 // Messages language initialization by default value
 var messagesLanguage='ru'
 // Function for getting message by key
 var getMsg=function(key, lang)
 {
-	return msgs[lang||messagesLanguage][key]
+	return props.msgs[lang||messagesLanguage][key]
 }
 // End of standard initialization ---
 
@@ -395,7 +30,7 @@ addMovingElement(calcDiv, calcMoverDiv)
 //
 unitsMoverDiv.innerText=getMsg("move")
 calcMoverDiv.innerText=getMsg("move")
-addButton.innerText=getMsg("add")
+addUnitFieldButton.innerText=getMsg("add")
 //
 var propCmdHandlers = {"boolean":function(args, variants, current, prop)
 	{
@@ -552,7 +187,7 @@ var commands={
 // {
 // switch (args[0])
 // {
-//		
+//
 // case "showresult":
 // switch (args[1])
 // {
@@ -691,7 +326,7 @@ var result = function(e)
 		if (historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0])
 			other.push(historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0])
 	expressionInput.value = getValName(other)
-	historyTextarea.value += expressionInput.value + "=" + expr + "=" + expressionNumberToString(props.polishmode?polishCount(replaceVals(expr)):multilineCount(replaceVals(expr))) + "\n"
+	historyTextarea.value += expressionInput.value + "=" + expr + "=" + expressionNumberToString(props.misc.polishmode?polishCount(replaceVals(expr)):multilineCount(replaceVals(expr))) + "\n"
 	expressionInput.oninput()
 }
 var getValName = function(other)
@@ -769,7 +404,7 @@ expressionInput.onmousemove = expressionInput.onmousedown = function(e)
 expressionInput.oninput = function(e)
 {
 	numbersExpressionInput.value = replaceVals(expressionInput.value)
-	resultInput.value = resultNumberToString(props.polishmode?polishCount(replaceVals(expressionInput.value)):multilineCount(replaceVals(expressionInput.value)))||""
+	resultInput.value = resultNumberToString(props.misc.polishmode?polishCount(replaceVals(expressionInput.value)):multilineCount(replaceVals(expressionInput.value)))||""
 }
 historyTextarea.oninput = function(e)
 {
@@ -805,22 +440,22 @@ historyTextarea.oninput = function(e)
 // functions
 var expressionNumberToString = function(value)
 {
-	var cur = props.numberForm.expression, def = props.numberForm["default"]
+	var cur = props.misc.numberForm.expression, def = props.misc.numberForm["default"]
 	return numberToString(value, cur.digits || def.digits, cur.direction || def.direction, cur.minus || def.minus, cur.dot || def.dot, cur.minusPos || def.minusPos)
 }
 var expressionStringToNumber = function(value)
 {
-	var cur = props.numberForm.expression, def = props.numberForm["default"]
+	var cur = props.misc.numberForm.expression, def = props.misc.numberForm["default"]
 	return stringToNumber(value, cur.digits || def.digits, cur.direction || def.direction, cur.minus || def.minus, cur.dot || def.dot, cur.minusPos || def.minusPos)
 }
 var resultNumberToString = function(value)
 {
-	var cur = props.numberForm.result, def = props.numberForm["default"]
+	var cur = props.misc.numberForm.result, def = props.misc.numberForm["default"]
 	return numberToString(value, cur.digits || def.digits, cur.direction || def.direction, cur.minus || def.minus, cur.dot || def.dot, cur.minusPos || def.minusPos)
 }
 var resultStringToNumber = function(value)
 {
-	var cur = props.numberForm.result, def = props.numberForm["default"]
+	var cur = props.misc.numberForm.result, def = props.misc.numberForm["default"]
 	return stringToNumber(value, cur.digits || def.digits, cur.direction || def.direction, cur.minus || def.minus, cur.dot || def.dot, cur.minusPos || def.minusPos)
 }
 var replaceVals = function(expression)
@@ -833,30 +468,30 @@ var replaceVals = function(expression)
 var action=function(operator, args, priority, number)
 {
 	if(!priority&&!number&&operator)
-		for(var v2=0;props.calculator.actions.byPriority.length>v2;v2++)
-			for(var v34 in props.calculator.actions.byPriority[v2])
-				if(props.calculator.actions.byPriority[v2][v34].text==operator)
+		for(var v2=0;props.actions.byPriority.length>v2;v2++)
+			for(var v34 in props.actions.byPriority[v2])
+				if(props.actions.byPriority[v2][v34].text==operator)
 				{
 					priority=v2
 					number=v34
 				}
 	for(;args.length>1;)
-		args.splice(0,2,new Function("a","b","return "+props.calculator.actions.byPriority[priority][number].func)(args[0],args[1]))
+		args.splice(0,2,new Function("a","b","return "+props.actions.byPriority[priority][number].func)(args[0],args[1]))
 	return args[0]
 }
 var polishCount=function(expression, digits, direction, minus, dot, minusPos)
 {
 	if (!digits)
-		digits = props.numberForm["default"].digits
+		digits = props.misc.numberForm["default"].digits
 	if (!direction)
-		direction = props.numberForm["default"].direction
+		direction = props.misc.numberForm["default"].direction
 	if (!minus)
-		minus = props.numberForm["default"].minus
+		minus = props.misc.numberForm["default"].minus
 	if (!dot)
-		dot = props.numberForm["default"].dot
+		dot = props.misc.numberForm["default"].dot
 	if (!minusPos)
-		minusPos = props.numberForm["default"].minusPos
-	
+		minusPos = props.misc.numberForm["default"].minusPos
+
 	var stack=[]
 	var spl=expression.split(",")
 	for(var v in spl)
@@ -868,16 +503,16 @@ var polishCount=function(expression, digits, direction, minus, dot, minusPos)
 var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 {
 	if (!digits)
-		digits = props.numberForm["default"].digits
+		digits = props.misc.numberForm["default"].digits
 	if (!direction)
-		direction = props.numberForm["default"].direction
+		direction = props.misc.numberForm["default"].direction
 	if (!minus)
-		minus = props.numberForm["default"].minus
+		minus = props.misc.numberForm["default"].minus
 	if (!dot)
-		dot = props.numberForm["default"].dot
+		dot = props.misc.numberForm["default"].dot
 	if (!minusPos)
-		minusPos = props.numberForm["default"].minusPos
-		
+		minusPos = props.misc.numberForm["default"].minusPos
+
 	// console.log(expression)
 	var lines=[[{"start":0,"end":expression.length,"value":expression+""}]]
 	var move=function(start, end)
@@ -917,12 +552,12 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 	console.log(JSON.stringify(lines))
 	for(;lines[0][0].value.match(/[(][^()]+[)]/);)
 		lines[0][0].value=lines[0][0].value.replace(/[(][^()]+[)]/,function(match){return multilineCount(match.substring(1,match.length-1))})
-	for(var v=0;props.calculator.actions.byPriority.length>v;v++)
+	for(var v=0;props.actions.byPriority.length>v;v++)
 		for(;;)
 		{
 			var actions=[]
-			for(var v2 in props.calculator.actions.byPriority[v])
-				actions.push(props.calculator.actions.byPriority[v][v2].text)
+			for(var v2 in props.actions.byPriority[v])
+				actions.push(props.actions.byPriority[v][v2].text)
 			var actionsRegExp=actions.join("|").replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^").replace(/\[\|\]/g,"|")
 			// console.log(actionsRegExp)
 			var result=lines[0][0].value.match(new RegExp("(?:"+numberRegExp+"|#+)"+"(?:"+actionsRegExp+")"+"(?:"+numberRegExp+"|#+)"))
@@ -937,10 +572,10 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 			console.log("dsf")
 			console.log(JSON.stringify(lines))
 				// console.log(v)
-		for(var v2=0;props.calculator.actions.byPriority.length>v2;v2++)
-			for(var v34 in props.calculator.actions.byPriority[v2])
+		for(var v2=0;props.actions.byPriority.length>v2;v2++)
+			for(var v34 in props.actions.byPriority[v2])
 			{
-				var v3=props.calculator.actions.byPriority[v2][v34].text
+				var v3=props.actions.byPriority[v2][v34].text
 				// console.log(new RegExp(""+numberRegExp+"[
 				// ]*("+v3.replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[
 				// ]*"))
@@ -954,13 +589,13 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 						{
 					// console.log("v3");
 					// console.log(new Function("a","b","return
-					// "+props.calculator.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0],
+					// "+props.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0],
 					// digits, direction, minus, dot,
 					// minusPos),stringToNumber(match.split(v3)[1], digits,
 					// direction, minus, dot, minusPos)))
 					return numberToString(action(undefined,[stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)],v2,v34), digits, direction, minus, dot, minusPos)// numberToString(new
 																																																																		// Function("a","b","return
-																																																																		// "+props.calculator.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0],
+																																																																		// "+props.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0],
 																																																																		// digits,
 																																																																		// direction,
 																																																																		// minus,
@@ -988,7 +623,7 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 		lines[v].splice(v22)
 		console.log(JSON.stringify(lines))
 	}
-			
+
 	// console.log(lines)
 	// console.log(resultLines)
 	console.log(lines[0][0].value, digits, direction, minus, dot, minusPos)
@@ -1001,44 +636,44 @@ var createCalcKeyboardButton = function(v, v2)
 {
 	var button = document.createElement("button")
 	button.className="maxWidth"
-	button.id="calcKeyboardKey"+props.calculator.keyboard.table[v][v2].name
-	button.title=props.calculator.keyboard.table[v][v2].name+"\nDoes: "+(props.calculator.keyboard.table[v][v2].func||"-")
-	button.innerText=props.calculator.keyboard.table[v][v2].text
-	button.disabled=props.calculator.keyboard.table[v][v2].disabled
+	button.id="calcKeyboardKey"+props.keyboard.table[v][v2].name
+	button.title=props.keyboard.table[v][v2].name+"\nDoes: "+(props.keyboard.table[v][v2].func||"-")
+	button.innerText=props.keyboard.table[v][v2].text
+	button.disabled=props.keyboard.table[v][v2].disabled
 	button.onclick=new Function("temp["+v+"]["+v2+"]()")
-	
-	
+
+
 	temp[v][v2]=function()
 	{
 		var btn=button
-		if(props.editmode)
+		if(props.misc.editmode)
 		{
 			if(btn.children.length==0)
 			{
 				btn.appendChild(document.createElement('textarea'))
 				btn.children[0].onclick=function(){btn.appendChild(document.createElement('label'))}
-				btn.children[0].value=objectToJson(props.calculator.keyboard.table[v][v2])
+				btn.children[0].value=objectToJson(props.keyboard.table[v][v2])
 				btn.children[0].focus()
 			}
 			else if(btn.children.length==1)
 			{
-				props.calculator.keyboard.table[v][v2]=JSON.parse(btn.children[0].value)
+				props.keyboard.table[v][v2]=JSON.parse(btn.children[0].value)
 				btn.parentNode.appendChild(createCalcKeyboardButton(currentCalcKeyboard, v, v2))
 				btn.parentNode.removeChild(btn)
 			}
 			else btn.removeChild(btn.children[1])
 		}
-		else new Function(props.calculator.keyboard.table[v][v2].func)()
+		else new Function(props.keyboard.table[v][v2].func)()
 	}
 	return button
 }
 var createCalcKeyboardTd = function(v, v2)
 {
 	var td = document.createElement("td")
-	td.height=100/props.calculator.keyboard.table.length+"%"
+	td.height=100/props.keyboard.table.length+"%"
 	var width=0
-	for(var v22 in props.calculator.keyboard.table)
-		width=Math.max(width,props.calculator.keyboard.table[v22].length)
+	for(var v22 in props.keyboard.table)
+		width=Math.max(width,props.keyboard.table[v22].length)
 	td.width=100/width+"%"
 	td.appendChild(createCalcKeyboardButton(v, v2))
 	return td
@@ -1047,21 +682,21 @@ var updateCalculatorKeyboard = function()
 {
 	temp=[]
 	calcKeyboardTable.innerHTML=""
-	for(var v in props.calculator.keyboard.table)
+	for(var v in props.keyboard.table)
 	{
 		temp[v]=[]
-		
+
 		var tr = document.createElement("tr")
-		tr.height=100/props.calculator.keyboard.table.length+"%"
+		tr.height=100/props.keyboard.table.length+"%"
 		calcKeyboardTable.appendChild(tr)
-		
-		for(var v2 in props.calculator.keyboard.table[v])
+
+		for(var v2 in props.keyboard.table[v])
 			tr.appendChild(createCalcKeyboardTd(v, v2))
 	}
 }
 var setCalculatorKeyboard=function(keyboard)
 {
-	props.calculator.keyboard=keyboard
+	props.keyboard=keyboard
 	updateCalculatorKeyboard()
 }
 //
@@ -1072,64 +707,73 @@ calcDiv.style.top=document.documentElement.clientHeight/2-calcDiv.getBoundingCli
 unitsDiv.style.left=document.documentElement.clientWidth/2-unitsDiv.getBoundingClientRect().width/2+"px"
 // console.log(calcDiv)
 // Unit converter
+for(var v2=0;document.getElementById("unitFieldNum"+v2);v2++)
+{
+	document.getElementById("unitPowerSelectNum"+v2).oninput = new Function("updateUnits(lastUnitFieldNum)")
+	document.getElementById("unitPowerSelectEx1Num"+v2).oninput = new Function("updateUnits(lastUnitFieldNum)")
+	document.getElementById("unitInputNum"+v2).oninput = new Function("updateUnits("+v2+")")
+}
+var form="short (long)"
+var lastUnitFieldNum=0
+addUnitFieldButton.onclick=function()
+{
+	var v2=0
+	for(;document.getElementById("unitFieldNum"+v2);v2++);
+	var newUnitField=document.createElement("tr")
+	unitFieldNum0.parentNode.appendChild(newUnitField)
+	newUnitField.id="unitFieldNum"+v2
+	newUnitField.innerHTML=unitFieldNum0.innerHTML.replace(/Num0/g,"Num"+v2)
+	document.getElementById("unitPowerSelectNum"+v2).oninput = new Function("updateUnits(lastUnitFieldNum)")
+	document.getElementById("unitPowerSelectEx1Num"+v2).oninput = new Function("updateUnits(lastUnitFieldNum)")
+	document.getElementById("unitInputNum"+v2).oninput = new Function("updateUnits("+v2+")")
+}
+var updateUnits=function(currentNum)
+{
+	var currentInput=document.getElementById("unitInputNum"+currentNum)
+	var currentSelect=document.getElementById("unitPowerSelectNum"+currentNum)
+	var value
+	var currentUnitPower=props.units[unitTypeSelect.value][currentSelect.value.split(" (")[0]]
+
+	var inner=""
+	for(var v in currentUnitPower)
+		inner+="<option>"+(form.replace("short",v).replace("long",currentUnitPower[v].long))+"</option>"
+	if(document.getElementById("unitPowerSelectEx1Num"+currentNum).innerHTML!=inner)
+		document.getElementById("unitPowerSelectEx1Num"+currentNum).innerHTML=inner
+	document.getElementById("unitPowerSelectEx1Num"+currentNum).oninput=currentSelect.oninput
+	if(!currentUnitPower.long&&!currentUnitPower.func)
+	{
+		document.getElementById("unitPowerSelectEx1Num"+currentNum).style.display=""
+		currentUnitPower=currentUnitPower[document.getElementById("unitPowerSelectEx1Num"+currentNum).value.split(" (")[0]]
+	}
+	else if(document.getElementById("unitPowerSelectEx1Num"+currentNum))
+		document.getElementById("unitPowerSelectEx1Num"+currentNum).style.display="none"
+	value=("function" !=typeof currentUnitPower.func)?Number(currentInput.value)*currentUnitPower.func:currentUnitPower.func(Number(currentInput.value))
+
+	for(var v2=0;document.getElementById("unitFieldNum"+v2);v2++)
+		if(v2!=currentNum)
+		{
+			var crt = props.units[unitTypeSelect.value][document.getElementById("unitPowerSelectNum"+v2).value.split(" (")[0]]
+			if(!crt.long)
+				crt=crt[document.getElementById("unitPowerSelectEx1Num"+v2).value.split(" (")[0]]
+			document.getElementById("unitInputNum"+v2).value=("function" !=typeof crt.func)?value/crt.func:crt.anti(Number(currentInput.value))
+		}
+	lastUnitFieldNum=currentNum
+	console.log(lastUnitFieldNum)
+}
 var updateUnitConverter=function()
 {
-for(var v in props.unitconverter.units)
-	unitTypeSelect.innerHTML+="<option>"+v+"</option>"
-var form="$short$ ($long$)"
-unitTypeSelect.oninput=function(e)
-{
-	firstUnitPowerSelect.innerHTML=""
-	secondUnitPowerSelect.innerHTML=""
-	var unitSelects=[firstUnitPowerSelect,secondUnitPowerSelect,thirdUnitPowerSelect,fourthUnitPowerSelect,fifthUnitPowerSelect]
-	for(var v2 in unitSelects)
-		for(var v in props.unitconverter.units[unitTypeSelect.value])
-			unitSelects[v2].innerHTML+="<option>"+form.replace("$short$",props.unitconverter.units[unitTypeSelect.value][v].short).replace("$long$",props.unitconverter.units[unitTypeSelect.value][v].long)+"</option>"
-}
-unitTypeSelect.oninput()
-var lastUnitInput=firstInput
-var updateUnits=function(currentInput,currentSelect,otherInputs,otherSelects)
-{
-	var value=Number(currentInput.value)
-	for(var v in props.unitconverter.units[unitTypeSelect.value])
+	for(var v in props.units)
+		unitTypeSelect.innerHTML+="<option>"+v+"</option>"
+	unitTypeSelect.oninput=function(e)
 	{
-		var crt=props.unitconverter.units[unitTypeSelect.value][v]
-		if(form.replace("$short$",crt.short).replace("$long$",crt.long)==currentSelect.value)
-			value=("function" !=typeof crt.func)?value*crt.func:crt.func(value)
-	}
-	for(var v2 in otherInputs)
-		for(var v in props.unitconverter.units[unitTypeSelect.value])
+		for(var v2=0;document.getElementById("unitPowerSelectNum"+v2);v2++)
 		{
-			var crt=props.unitconverter.units[unitTypeSelect.value][v]
-			if(form.replace("$short$",crt.short).replace("$long$",crt.long)==otherSelects[v2].value)
-				otherInputs[v2].value=("function" !=typeof crt.func)?value/crt.func:crt.func(value)
-		}
-	lastUnitInput=currentInput
-}
-firstInput.oninput = function(e)
-{
-	updateUnits(firstInput, firstUnitPowerSelect, [secondInput, thirdInput, fourthInput, fifthInput], [secondUnitPowerSelect, thirdUnitPowerSelect, fourthUnitPowerSelect, fifthUnitPowerSelect])
-}
-secondInput.oninput = function(e)
-{
-	updateUnits(secondInput, secondUnitPowerSelect, [firstInput, thirdInput, fourthInput, fifthInput], [firstUnitPowerSelect, thirdUnitPowerSelect, fourthUnitPowerSelect, fifthUnitPowerSelect])
-}
-thirdInput.oninput = function(e)
-{
-	updateUnits(thirdInput, thirdUnitPowerSelect, [firstInput, secondInput, fourthInput, fifthInput], [firstUnitPowerSelect, secondUnitPowerSelect, fourthUnitPowerSelect, fifthUnitPowerSelect])
-}
-fourthInput.oninput = function(e)
-{
-	updateUnits(fourthInput, fourthUnitPowerSelect, [firstInput, secondInput, thirdInput, fifthInput], [firstUnitPowerSelect, secondUnitPowerSelect, thirdUnitPowerSelect, fifthUnitPowerSelect])
-}
-fifthInput.oninput = function(e)
-{
-	updateUnits(fifthInput, fifthUnitPowerSelect, [firstInput, secondInput, thirdInput, fourthInput], [firstUnitPowerSelect, secondUnitPowerSelect, thirdUnitPowerSelect, fourthUnitPowerSelect])
-}
-firstUnitPowerSelect.oninput = secondUnitPowerSelect.oninput = thirdUnitPowerSelect.oninput = fourthUnitPowerSelect.oninput = fifthUnitPowerSelect.oninput = function(e)
-{
-	lastUnitInput.oninput()
-}
+			document.getElementById("unitPowerSelectNum"+v2).innerHTML=""
+			for(var v in props.units[unitTypeSelect.value])
+				document.getElementById("unitPowerSelectNum"+v2).innerHTML+="<option>"+form.replace("short",v).replace("long",props.units[unitTypeSelect.value][v].long)+"</option>"
+			}
+	}
+	unitTypeSelect.oninput()
 }
 //
 updateCalculatorKeyboard()
