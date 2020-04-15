@@ -1,10 +1,10 @@
-//--- Name: EniCalc/Vesion: 0.2.0a/Authors: AlexanderDV/Description: Main EniCalc file. ---
+//--- Name: EniCalc/Vesion: 0.2.1a/Authors: AlexanderDV/Description: Main EniCalc file. ---
 //--- Start of standard initialization
 //Program info
 var programInfo={
 	"packet" : "eniCalc",
 	"name" : "EniCalc",
-	"version" : "0.2.0a",
+	"version" : "0.2.1a",
 	"authors" : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -86,20 +86,25 @@ var propCmdHandlers = {"boolean":function(args, variants, current, prop)
 		}
 	}
 }
+var cmdGet={
+	"handler" : function(args, variants, current)
+	{
+		return "Property '" + prop + "' = " + props[prop]
+	}
+}
+var cmdNotExists={
+	"handler" : function(args)
+	{
+		return "Command '" + args[0] + " " + args[1] + "' not exists!"
+	}
+}
 var propCmdVariants = {
 		"boolean" : {
 			"set" : {
 				"handler" : function(args, variants, current)
 				{
 					props[prop] = Boolean(args[2]);
-					console.log(123)
 					return "Property '" + prop + "' successfully setted to " + props[prop] + "!"
-				}
-			},
-			"get" : {
-				"handler" : function(args, variants, current)
-				{
-					return "Property '" + prop + "' = " + props[prop]
 				}
 			},
 			"invert|" : {
@@ -109,12 +114,8 @@ var propCmdVariants = {
 					return "Property '" + args[current - 2] + "' successfully inverted to " + props[args[current - 2]] + "!"
 				}
 			},
-			"" : {
-				"handler" : function(args, variants, current)
-				{
-					return "Command '" + args[0] + " " + args[1] + "' not exists!"
-				}
-			}
+			"get" : cmdGet,
+			"" : cmdNotExists
 
 		},
 		"string" : {
@@ -125,18 +126,8 @@ var propCmdVariants = {
 					return "Property '" + prop + "' successfully setted to " + props[prop] + "!"
 				}
 			},
-			"get" : {
-				"handler" : function(args)
-				{
-					return "Property '" + prop + "' = " + props[prop]
-				}
-			},
-			"" : {
-				"handler" : function(args)
-				{
-					return "Command '" + args[0] + " " + args[1] + "' not exists!"
-				}
-			}
+			"get" : cmdGet,
+			"" : cmdNotExists
 
 		},
 		"number" : {
@@ -147,152 +138,32 @@ var propCmdVariants = {
 					return "Property '" + prop + "' successfully setted to " + props[prop] + "!"
 				}
 			},
-			"get" : {
-				"handler" : function(args)
-				{
-					return "Property '" + prop + "' = " + props[prop]
-				}
-			},
-			"" : {
-				"handler" : function(args)
-				{
-					return "Command '" + args[0] + " " + args[1] + "' not exists!"
-				}
-			}
+			"get" : cmdGet,
+			"" : cmdNotExists
 
 		}
 	}
 var commands={
-	"editmode":{
-		"vars":"editmode",
-		"variants":propCmdVariants.boolean,
+	editmode	:	{
+		vars	:	"editmode",
+		variants	:	propCmdVariants.boolean,
 	},
-	"polishmode":{
-		"variants":propCmdVariants.boolean,
+	polishmode	:	{
+		variants	:	propCmdVariants.boolean,
 	},
-	"resultdigits":{
-		"variants":propCmdVariants.string,
+	resultdigits	:	{
+		variants	:	propCmdVariants.string,
 	},
-	"resultdirection":{
-		"variants":propCmdVariants.boolean,
+	resultdirection	:	{
+		variants	:	propCmdVariants.boolean,
 	},
-	"expressiondigits":{
-		"variants":propCmdVariants.string,
+	expressiondigits	:	{
+		variants	:	propCmdVariants.string,
 	},
-	"expressiondirection":{
-		"variants":propCmdVariants.boolean,
+	expressiondirection	:	{
+		variants	:	propCmdVariants.boolean,
 	},
 }
-// function(args)
-// {
-// switch (args[0])
-// {
-//
-// case "showresult":
-// switch (args[1])
-// {
-// case "set":
-// resultInput.style.display = Boolean(args[2]) ? "" : "none"
-// return "Show result successfully setted to " + (resultInput.style.display !=
-// 'none') + "!"
-// case "get":
-// return "Show result = " + (resultInput.style.display != 'none')
-// case undefined:
-// case "":
-// case "invert":
-// resultInput.style.display = (resultInput.style.display == 'none') ? "" :
-// "none"
-// return "Show result successfully inverted to " + (resultInput.style.display
-// != 'none') + "!"
-// default:
-// return "Command '" + args[0] + " " + args[1] + "' not exists!"
-// }
-// case "shownumbersexpression":
-// switch (args[1])
-// {
-// case "set":
-// numbersExpressionInput.style.display = Boolean(args[2]) ? "" : "none"
-// return "Show result successfully setted to " +
-// (numbersExpressionInput.style.display != 'none') + "!"
-// case "get":
-// return "Show result = " + (numbersExpressionInput.style.display != 'none')
-// case undefined:
-// case "":
-// case "invert":
-// numbersExpressionInput.style.display = (numbersExpressionInput.style.display
-// == 'none') ? "" : "none"
-// return "Show result successfully inverted to " +
-// (numbersExpressionInput.style.display != 'none') + "!"
-// default:
-// return "Command '" + args[0] + " " + args[1] + "' not exists!"
-// }
-// case "showexpression":
-// switch (args[1])
-// {
-// case "set":
-// expressionInput.style.display = Boolean(args[2]) ? "" : "none"
-// return "Show result successfully setted to " + (expressionInput.style.display
-// != 'none') + "!"
-// case "get":
-// return "Show result = " + (expressionInput.style.display != 'none')
-// case undefined:
-// case "":
-// case "invert":
-// expressionInput.style.display = (expressionInput.style.display == 'none') ?
-// "" : "none"
-// return "Show result successfully inverted to " +
-// (expressionInput.style.display != 'none') + "!"
-// default:
-// return "Command '" + args[0] + " " + args[1] + "' not exists!"
-// }
-// case "calckeyboard":
-// switch (args[1])
-// {
-// case "save":
-// if (args[2])
-// storage["calculatorAndMath.calcKeyboard.last"] = args[2]
-// if (!storage["calculatorAndMath.calcKeyboard.last"])
-// storage["calculatorAndMath.calcKeyboard.last"] = "newsave"
-// storage["calculatorAndMath.calcKeyboard.save." +
-// storage["calculatorAndMath.calcKeyboard.last"]] =
-// JSON.stringify(calcKeyboard)
-// return "Calc keyboard successfully saved to " +
-// storage["calculatorAndMath.calcKeyboard.last"] + "!"
-// case "load":
-// if (args[2])
-// storage["calculatorAndMath.calcKeyboard.last"] = args[2]
-// if (!storage["calculatorAndMath.calcKeyboard.last"])
-// storage["calculatorAndMath.calcKeyboard.last"] = "newsave"
-// if (storage["calculatorAndMath.calcKeyboard.last"] == "default")
-// updateCalcKeyboard(defaultCalcKeyboard)
-// else
-// {
-// var loaded = storage["calculatorAndMath.calcKeyboard.save." +
-// storage["calculatorAndMath.calcKeyboard.last"]]
-// if (!loaded)
-// return "Calc keyboard save not exist!"
-// updateCalcKeyboard(JSON.parse(loaded))
-// }
-// return "Calc keyboard successfully loaded from " +
-// storage["calculatorAndMath.calcKeyboard.last"] + "!"
-// default:
-// return "Command '" + args[0] + " " + args[1] + "' not exists!"
-// }
-// default:
-// return "Command '" + args[0] + "' not exists!"
-// }
-// }, {
-// "editmode" : ["set", "get", "invert"],
-// "polishmode" : ["set", "get", "invert"],
-// "showresult" : ["set", "get", "invert"],
-// "shownumbersexpression" : ["set", "get", "invert"],
-// "showexpression" : ["set", "get", "invert"],
-// "expressiondigits" : ["set", "get"],
-// "expressiondirection" : ["set", "get", "invert"],
-// "resultdigits" : ["set", "get"],
-// "resultdirection" : ["set", "get", "invert"],
-// "calcKeyboard" : ["save", "load"]
-// }
 var handler=function(args, variants, current)
 {
 	if(!variants)
@@ -336,15 +207,17 @@ var getValName = function(other)
 	{
 		var c=0
 		for(var v2 in other[v])
-			c+=("abcdefghijklmnopqrstuvwxyz".match(other[v][v2]).index+1)*Math.pow(26,other[v].length-1-v2)
+			if(props.variables.names.default.match(other[v][v2]))
+				if(props.variables.names.default.match(other[v][v2]).index!=-1)
+					c+=(props.variables.names.default.match(other[v][v2]).index+1)*Math.pow(props.variables.names.default.length,other[v].length-1-v2)
 		max=Math.max(c,max)
 	}
 	var n=max+1
 	var res = ""
 	while (n != 0)
 	{
-		res = "abcdefghijklmnopqrstuvwxyz"[(n - 1) % 26] + res
-		n = (n - (n - 1) % 26) / 26
+		res = props.variables.names.default[(n - 1) % props.variables.names.default.length] + res
+		n = (n - (n - 1) % props.variables.names.default.length) / props.variables.names.default.length
 		n -= n % 1
 	}
 	return res
@@ -458,11 +331,69 @@ var resultStringToNumber = function(value)
 	var cur = props.misc.numberForm.result, def = props.misc.numberForm["default"]
 	return stringToNumber(value, cur.digits || def.digits, cur.direction || def.direction, cur.minus || def.minus, cur.dot || def.dot, cur.minusPos || def.minusPos)
 }
+var multiplyVals=function(expression)
+{
+	var start="",end="",third="",ok=0
+	for(var v in expression)
+	{
+		//console.log("start: "+start)
+		//console.log("end  : "+end)
+		//console.log("third: "+third)
+		if(ok!=1)
+			if(expression[v]=="+"||expression[v]=="-")
+			{
+				ok=0
+				start=start+end.replace(/[()]/g,"").replace(/-/g,"+-").split("+").join(third+"+")+third
+				end=third=""
+			}
+		if(expression[v]=="(")
+			ok=1
+		if(ok==2)
+			third+=expression[v]
+		else if(ok==1)
+			end+=expression[v]
+		else start+=expression[v]
+		if(expression[v]==")")
+			ok=2
+
+	}
+	start=start+end.replace(/[()]/g,"").replace(/-/g,"+-").split("+").join(third+"+")+third
+	start=moveVals(start,true)
+	return start
+}
+var moveVals=function(expression,no)
+{
+	var start="",end="",ok=false
+	for(var v in expression)
+	{
+		//console.log("start: "+start)
+		//console.log("end  : "+end)
+		if(expression[v]=="+"||expression[v]=="-")
+		{
+			start+=end
+			end=""
+		}
+		if(expression[Number(v)+1]=="«")
+			ok=true
+		if(ok)
+			end+=expression[v]
+		else start+=expression[v]
+		if(expression[v]=="»")
+			ok=false
+	}
+	start=start+end
+	if(!no)
+	start=multiplyVals(start)
+	return start
+}
 var replaceVals = function(expression)
 {
 	for ( var v in historyTextarea.value.split("\n"))
 		if (historyTextarea.value.split("\n")[v].split("=")[0])
-			expression = expression.replace(new RegExp("\\b" + historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0] + "\\b", "g"), historyTextarea.value.split("\n")[v].split("=")[2])
+			if (!historyTextarea.value.split("\n")[v].split("=")[2])
+				expression = expression.replace(new RegExp("[" + historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0].split("").join("][")+"]", "g"), "«"+historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0]+"»")
+			else expression = expression.replace(new RegExp("[" + historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0].split("").join("][")+"]", "g"), "("+historyTextarea.value.split("\n")[v].split("=")[2]+")")
+	expression=moveVals(expression)
 	return expression
 }
 var action=function(operator, args, priority, number)
@@ -500,8 +431,50 @@ var polishCount=function(expression, digits, direction, minus, dot, minusPos)
 		else stack=[action(spl[v],stack)]
 	return stack[0]
 }
+var splitCount=function(expression, digits, direction, minus, dot, minusPos)
+{
+	if (!digits)
+		digits = props.misc.numberForm["default"].digits
+	if (!direction)
+		direction = props.misc.numberForm["default"].direction
+	if (!minus)
+		minus = props.misc.numberForm["default"].minus
+	if (!dot)
+		dot = props.misc.numberForm["default"].dot
+	if (!minusPos)
+		minusPos = props.misc.numberForm["default"].minusPos
+
+	var signs=""
+	for(var v in props.actions.byPriority)
+		for(var v2 in props.actions.byPriority[v])
+			signs+=props.actions.byPriority[v][v2].text
+
+
+	var splited=[""]
+	for(var v in expression)
+		if(signs.indexOf(expression[v])!=-1)
+		{
+			splited[splited.length]=expression[v]
+			splited[splited.length]=""
+		}
+		else splited[splited.length-1]+=expression[v]
+	console.log("-------")
+	console.log(splited)
+	for(var v in props.actions.byPriority)
+		for(var v2=0;v2<splited.length;v2++)
+			for(var v3 in props.actions.byPriority[v])
+				if(splited[v2]==props.actions.byPriority[v][v3].text)
+				{
+					splited.splice(v2-1,3,(splited[v2-1]+"").indexOf("«")!=-1||(splited[v2+1]+"").indexOf("«")!=-1?splited[v2-1]+splited[v2]+splited[v2+1]:new Function("a","b","return "+props.actions.byPriority[v][v3].func)(Number(splited[v2-1]),Number(splited[v2+1])))
+		console.log(splited)
+					v2=0
+				}
+	console.log(splited)
+	return splited
+}
 var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 {
+	return splitCount(expression, digits, direction, minus, dot, minusPos)//console.log()
 	if (!digits)
 		digits = props.misc.numberForm["default"].digits
 	if (!direction)
@@ -517,7 +490,7 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 	var lines=[[{"start":0,"end":expression.length,"value":expression+""}]]
 	var move=function(start, end)
 	{
-		var last=[[{"start":start,"end":end,"value":multiply("#",end-start)}]]
+		var last=[[{"start":start,"end":end,"value":multiply("▼",end-start)}]]
 		for(var v=0;lines.length>v;v++)
 		{
 			last.push([])
@@ -537,19 +510,19 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 					last[v+1].push(makeClone(subsl))
 					if(v+1==lines.length)
 						lines[++v]=[makeClone(subsl)]
-					console.log("last: "+JSON.stringify(last))
-					console.log("lines: "+JSON.stringify(lines))
+					//console.log("last: "+JSON.stringify(last))
+					//console.log("lines: "+JSON.stringify(lines))
 					ok=true
 				}
 				// if(!(!(v2+1==lines[v].length)||(!ok)))
 				// lines[v].push({"start":start,"end":end,"value":""})
 			}
 		}
-		 console.log("lines: "+JSON.stringify(lines))
+		 //console.log("lines: "+JSON.stringify(lines))
 	}
 	var numberRegExp="(?:[-]|)(?:["+digits+"]*[.]["+digits+"]*|["+digits+"]+)"
-	console.log("--------------")
-	console.log(JSON.stringify(lines))
+	//console.log("--------------")
+	//console.log(JSON.stringify(lines))
 	for(;lines[0][0].value.match(/[(][^()]+[)]/);)
 		lines[0][0].value=lines[0][0].value.replace(/[(][^()]+[)]/,function(match){return multilineCount(match.substring(1,match.length-1))})
 	for(var v=0;props.actions.byPriority.length>v;v++)
@@ -560,8 +533,8 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 				actions.push(props.actions.byPriority[v][v2].text)
 			var actionsRegExp=actions.join("|").replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^").replace(/\[\|\]/g,"|")
 			// console.log(actionsRegExp)
-			var result=lines[0][0].value.match(new RegExp("(?:"+numberRegExp+"|#+)"+"(?:"+actionsRegExp+")"+"(?:"+numberRegExp+"|#+)"))
-			 console.log(result)
+			var result=lines[0][0].value.match(new RegExp("(?:"+numberRegExp+"|▼+)"+"(?:"+actionsRegExp+")"+"(?:"+numberRegExp+"|▼+)"))
+			 //console.log(result)
 			if(!result)
 				break
 			move(result.index,result.index+result[0].length)
@@ -569,68 +542,29 @@ var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
 	for(var v=lines.length-1;v>0;v--)
 		for(var v22=0;lines[v].length>v22;v22++)
 	{
-			console.log("dsf")
-			console.log(JSON.stringify(lines))
+			//console.log("dsf")
+			//console.log(JSON.stringify(lines))
 				// console.log(v)
 		for(var v2=0;props.actions.byPriority.length>v2;v2++)
 			for(var v34 in props.actions.byPriority[v2])
 			{
 				var v3=props.actions.byPriority[v2][v34].text
-				// console.log(new RegExp(""+numberRegExp+"[
-				// ]*("+v3.replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[
-				// ]*"))
-				// console.log(lines[v].match(new RegExp(""+numberRegExp+"[
-				// ]*("+v3.replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[
-				// ]*")))
-				// console.log(lines[v])
-				// console.log(lines[v][v22].value)
-				// console.log(lines)
 				lines[v][v22].value=lines[v][v22].value.replace(new RegExp(""+numberRegExp+"[ ]*(?:"+v3.replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*"),function(match)
 						{
-					// console.log("v3");
-					// console.log(new Function("a","b","return
-					// "+props.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0],
-					// digits, direction, minus, dot,
-					// minusPos),stringToNumber(match.split(v3)[1], digits,
-					// direction, minus, dot, minusPos)))
-					return numberToString(action(undefined,[stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)],v2,v34), digits, direction, minus, dot, minusPos)// numberToString(new
-																																																																		// Function("a","b","return
-																																																																		// "+props.actions.byPriority[v2][v34].func)(stringToNumber(match.split(v3)[0],
-																																																																		// digits,
-																																																																		// direction,
-																																																																		// minus,
-																																																																		// dot,
-																																																																		// minusPos),stringToNumber(match.split(v3)[1],
-																																																																		// digits,
-																																																																		// direction,
-																																																																		// minus,
-																																																																		// dot,
-																																																																		// minusPos)),
-																																																																		// digits,
-																																																																		// direction,
-																																																																		// minus,
-																																																																		// dot,
-																																																																		// minusPos)
+					return numberToString(action(undefined,[stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)],v2,v34), digits, direction, minus, dot, minusPos)
 					})
-			// console.log(lines[v])
 			}
-			console.log(JSON.stringify(lines))
+			//console.log(JSON.stringify(lines))
 		for(var v222=0;lines[v-1].length>v222;v222++)
-		{
 			if(!(!(lines[v][v22].start>=lines[v-1][v222].start) ||!( lines[v-1][v222].end>=lines[v][v22].end)))
 				lines[v-1][v222].value=lines[v-1][v222].value.substring(0,lines[v][v22].start-lines[v-1][v222].start)+lines[v][v22].value+lines[v-1][v222].value.substring(lines[v][v22].end-lines[v-1][v222].start)
-		}
 		lines[v].splice(v22)
-		console.log(JSON.stringify(lines))
 	}
-
-	// console.log(lines)
-	// console.log(resultLines)
-	console.log(lines[0][0].value, digits, direction, minus, dot, minusPos)
+	try{
 	return stringToNumber(lines[0][0].value, digits, direction, minus, dot, minusPos)
+}catch(e){}
+return lines[0][0].value
 }
-console.log(resultNumberToString(123))
-console.log(resultStringToNumber(123+""))
 var temp
 var createCalcKeyboardButton = function(v, v2)
 {
@@ -699,13 +633,11 @@ var setCalculatorKeyboard=function(keyboard)
 	props.keyboard=keyboard
 	updateCalculatorKeyboard()
 }
-//
-
 calcDiv.style.left=document.documentElement.clientWidth/2-calcDiv.getBoundingClientRect().width/2+"px"
 calcDiv.style.top=document.documentElement.clientHeight/2-calcDiv.getBoundingClientRect().height/2+"px"
 
 unitsDiv.style.left=document.documentElement.clientWidth/2-unitsDiv.getBoundingClientRect().width/2+"px"
-// console.log(calcDiv)
+
 // Unit converter
 for(var v2=0;document.getElementById("unitFieldNum"+v2);v2++)
 {
@@ -758,7 +690,6 @@ var updateUnits=function(currentNum)
 			document.getElementById("unitInputNum"+v2).value=("function" !=typeof crt.func)?value/crt.func:crt.anti(Number(currentInput.value))
 		}
 	lastUnitFieldNum=currentNum
-	console.log(lastUnitFieldNum)
 }
 var updateUnitConverter=function()
 {

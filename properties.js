@@ -1,207 +1,93 @@
 var misc = {
-	"editmode" : false,
-	"numberForm" : {
-		"default" : {
-		  "digits" : "0123456789",
-			"direction" : false,
-			"minus" : "-",
-			"dot" : ".",
-			"minusPos" : false,
+	editmode : false,
+	numberForm : {
+		default : {
+		  digits : "0123456789",
+			direction : false,
+			minus : "-",
+			dot : ".",
+			minusPos : false,
 		},
-		"expression" : {},
-    "result" : {},
+		expression : {},
+    result : {},
   },
-	"polishmode":false
+	polishmod	:	false
 }
-var actions={
-			"default" : {
-				"a" : 0,
-				"b" : 0
-			},
-			"byPriority" : [[{
-				"name" : "Power",
-				"text" : "^",
-				"func" : "Math.pow(a,b)",
-				"a" : 10,
-				"b" : 2
-			}, {
-				"name" : "Root",
-				"text" : "V",
-				"func" : "Math.pow(b,1/a)",
-				"a" : 2,
-				"b" : 0
-			}], [{
-				"name" : "Multiply",
-				"text" : "*",
-				"func" : "a*b",
-				"a" : 1,
-				"b" : 1
-			}, {
-				"name" : "Divide",
-				"text" : "/",
-				"func" : "a/b",
-				"a" : 1,
-				"b" : 1
-			}], [{
-				"name" : "Plus",
-				"text" : "+",
-				"func" : "a+b"
-			}, {
-				"name" : "Minus",
-				"text" : "-",
-				"func" : "a-b"
-			}]]
+var variables	=	{
+	names	:	{
+		default	:	"abcdefghijklmnopqrstuvwxyz",
+		black	: "0123456789"+"*/-+!^√%:&|#"+" ,;"+"()[]{}"+".",
+		white	: "abcdefghijklmnopqrstuvwxyz"+"ABCDEFGHIJKLMNOPQRSTUVWXYZ"+"αβγδεζηθικλμνοπρσςτυφχψω"+"ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣξΤΥΦΧΨΩ"+"_",
+		mode : "!black||white"
+	}
+}
+var actions	=	{
+			default	: {	a : 0,	b : 0	},
+			byPriority	: [
+				[
+					{	name : "Factorial",	text : "!",	func : "function(a,b){var r=1;for(var v=b+1;v<=a;v++)r*=v;return r}(a,b)",		a : 2,	b : 1	}
+				],
+				[
+					{	name : "Power",			text : "^",	func : "Math.pow(a,b)",		a : 10,	b : 2	},
+					{	name : "Root",			text : "√",	func : "Math.pow(b,1/a)",	a : 2,	b : 0	}
+				],
+				[
+					{	name : "Multiply",	text : "*",	func : "a*b",	a : 2,	b : 2	},
+					{	name : "Divide",		text : "/",	func : "a/b",	a : 1,	b : 2	},
+
+					{	name : "Percent",		text : "%",	func : "a/100*b",	a : 2,	b : 6	},
+
+					{	name : "Remainder",	text : "#",	func : "a/b-Number((a/b+'').split('.')[0])",	a : 1,	b : 2	},
+					{	name : "DivideWithoutRemainder",text : ":",	func : "Number((a/b+'').split('.')[0])",	a : 10,	b : 2	}
+				],
+				[
+					{	name : "Plus",			text : "+",	func : "a+b",	a : 1,	b : 1	},
+					{	name : "Minus",			text : "-",	func : "a-b",	a : 0,	b : 1	}
+				]
+			]
 }
 var keyboard = {
-			"default" : {
-				"text" : null,
-				"func" : "enter(key.text)",
-				"disabled" : false
-			},
-			"table" : [[{
-				"name" : "MemoryClear",
-				"text" : "MC",
-				"func" : "",
-				"disabled" : true
-			}, {
-				"name" : "MemoryR",
-				"text" : "MR",
-				"func" : "",
-				"disabled" : true
-			}, {
-				"name" : "MemorySave",
-				"text" : "MS",
-				"func" : "",
-				"disabled" : true
-			}, {
-				"name" : "MemoryMinus",
-				"text" : "M-",
-				"func" : "",
-				"disabled" : true
-			}, {
-				"name" : "MemoryPlus",
-				"text" : "M+",
-				"func" : "",
-				"disabled" : true
-			}], [{
-				"name" : "Left",
-				"text" : "\u003C",
-				"func" : "left()",
-			}, {
-				"name" : "Right",
-				"text" : ">",
-				"func" : "right()",
-			}], [{
-				"name" : "ClearHistory",
-				"text" : "CH",
-				"func" : "clearHistory()"
-			}, {
-				"name" : "ClearAll",
-				"text" : "CA",
-				"func" : "clear();clearHistory()"
-			}, {
-				"name" : "Clear",
-				"text" : "C",
-				"func" : "clear()",
-			}, {
-				"name" : "Backspace",
-				"text" : "\u003C-",
-				"func" : "backspace()",
-			}], [{
-				"name" : "BracketLeft",
-				"text" : "(",
-				"func" : "enter('(')"
-			}, {
-				"name" : "BracketRight",
-				"text" : ")",
-				"func" : "enter(')')"
-			}, {
-				"name" : "Comma",
-				"text" : ",",
-				"func" : "enter(',')"
-			}], [{
-				"name" : "Root",
-				"text" : "V",
-				"func" : "enter('V')",
-			}, {
-				"name" : "Power",
-				"text" : "^",
-				"func" : "enter('^')",
-			}, {
-				"name" : "Percent",
-				"text" : "%",
-				"func" : "enter('%')",
-				"disabled" : true
-			}, {
-				"name" : "Factorial",
-				"text" : "!",
-				"func" : "enter('!')",
-				"disabled" : true
-			}], [{
-				"name" : "Divide",
-				"text" : "/",
-				"func" : "enter('/')",
-			}, {
-				"name" : "Seven",
-				"text" : "7",
-				"func" : "enter('7')",
-			}, {
-				"name" : "Eight",
-				"text" : "8",
-				"func" : "enter('8')",
-			}, {
-				"name" : "Nine",
-				"text" : "9",
-				"func" : "enter('9')",
-			}], [{
-				"name" : "Multiply",
-				"text" : "*",
-				"func" : "enter('*')",
-			}, {
-				"name" : "Four",
-				"text" : "4",
-				"func" : "enter('4')",
-			}, {
-				"name" : "Five",
-				"text" : "5",
-				"func" : "enter('5')",
-			}, {
-				"name" : "Six",
-				"text" : "6",
-				"func" : "enter('6')",
-			}], [{
-				"name" : "Plus",
-				"text" : "+",
-				"func" : "enter('+')",
-			}, {
-				"name" : "One",
-				"text" : "1",
-				"func" : "enter('1')",
-			}, {
-				"name" : "Two",
-				"text" : "2",
-				"func" : "enter('2')",
-			}, {
-				"name" : "Three",
-				"text" : "3",
-				"func" : "enter('3')",
-			}], [{
-				"name" : "Minus",
-				"text" : "-",
-				"func" : "enter('-')",
-			}, {
-				"name" : "Dot",
-				"text" : ".",
-				"func" : "enter('.')",
-			}, {
-				"name" : "Zero",
-				"text" : "0",
-				"func" : "enter('0')",
-			}, {
-				"name" : "Equals",
-				"text" : "=",
-				"func" : "result()",
-			}]]
+			default : {	text : null,	func : "enter(key.text)",	disabled : false},
+			table : [
+				[{name : "MemoryClear",	text : "MC",	func : "",	disabled : true	},
+				{	name : "MemoryR",			text : "MR",	func : "",	disabled : true	},
+				{	name : "MemorySave",	text : "MS",	func : "",	disabled : true	},
+				{	name : "MemoryMinus",	text : "M-",	func : "",	disabled : true	},
+				{	name : "MemoryPlus",	text : "M+",	func : "",	disabled : true	}],
+				[{name : "Left",				text : "<",		func : "left()",	},
+				{	name : "Right",				text : ">",		func : "right()",	}],
+				[{name : "ClearHistory",text : "CH",	func : "clearHistory()"	},
+				{	name : "ClearAll",		text : "CA",	func : "clear();clearHistory()"	},
+			 	{	name : "Clear",				text : "C",		func : "clear()",		},
+				{	name : "Backspace",		text : "<-",	func : "backspace()",}],
+				[{name : "BracketLeft",	text : "(",		func : "enter('(')"	},
+				{	name : "BracketRight",text : ")",		func : "enter(')')"	},
+				{	name : "Comma",				text : ",",		func : "enter(',')"	}],
+				[{name : "Remainder",		text : "#",		func : "enter('#')",},
+				{	name : "Root",				text : "√",		func : "enter('√')",},
+				{	name : "Power",				text : "^",		func : "enter('^')",},
+				{	name : "Factorial",		text : "!",		func : "enter('!')",	disabled : true	}],
+				[{name : "DivideWithoutRemainder",				text : ":",		func : "enter(':')"	},
+				{	name : "Divide",			text : "/",		func : "enter('/')"	},
+				{	name : "Seven",				text : "7",		func : "enter('7')"	},
+				{	name : "Eight",				text : "8",		func : "enter('8')"	},
+				{	name : "Nine",				text : "9",		func : "enter('9')"	}],
+				[{name : "Percent",			text : "%",		func : "enter('%')"	},
+				{	name : "Multiply",		text : "*",		func : "enter('*')"	},
+				{	name : "Four",				text : "4",		func : "enter('4')"	},
+				{	name : "Five",				text : "5",		func : "enter('5')"	},
+				{	name : "Six",					text : "6",		func : "enter('6')"	}],
+				[{name : "BitAnd",			text : "&",		func : "enter('&')",	disabled : true	},
+				{	name : "Plus",				text : "+",		func : "enter('+')"	},
+				{	name : "One",					text : "1",		func : "enter('1')"	},
+				{	name : "Two",					text : "2",		func : "enter('2')"	},
+				{	name : "Three",				text : "3",		func : "enter('3')"	}],
+				[{name : "BitOr",				text : "|",		func : "enter('|')",	disabled : true	},
+				{	name : "Minus",				text : "-",		func : "enter('-')"	},
+				{	name : "Dot",					text : ".",		func : "enter('.')"	},
+				{	name : "Zero",				text : "0",		func : "enter('0')"	},
+				{	name : "Equals",			text : "=",		func : "result()"		}]
+			]
 }
 // Messages value-by-key for different languages
 var msgs={
@@ -558,10 +444,10 @@ units["Расход объема"]=Object.assign(fromAction(units["V,Объем"
 units["Расход топлива"]=Object.assign(fromAction(units["V,Объем"],units["s,Расстояние"],"/",function(a,b){return a/b}),{
 })
 var props={
-  misc:misc,
-  actions:actions,
-  keyboard:keyboard,
-  msgs:msgs,
-  units:units
+  misc	:	misc,
+  actions	:	actions,
+  keyboard	:	keyboard,
+  msgs	:	msgs,
+  units	:	units,
+	variables	:	variables
 }
-console.log(units);
