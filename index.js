@@ -1,10 +1,10 @@
-//--- Name: EniCalc/Vesion: 0.2.1a/Authors: AlexanderDV/Description: Main EniCalc file. ---
+//--- Name: EniCalc/Vesion: 0.2.2a/Authors: AlexanderDV/Description: Main EniCalc file. ---
 //--- Start of standard initialization
 //Program info
 var programInfo={
 	"packet" : "eniCalc",
 	"name" : "EniCalc",
-	"version" : "0.2.1a",
+	"version" : "0.2.2a",
 	"authors" : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -22,15 +22,24 @@ var getMsg=function(key, lang)
 // End of standard initialization ---
 
 //
-if(storage[programInfo.packet+".calcKeyboard.save."+storage[programInfo.packet+".calcKeyboard.last"]])
-	props.keyboard=JSON.parse(storage[programInfo.packet+".calcKeyboard.save."+storage[programInfo.packet+".calcKeyboard.last"]])
+if(storage[programInfo.packet+".calculatorKeyboard.save."+storage[programInfo.packet+".calculatorKeyboard.last"]])
+	props.keyboard=JSON.parse(storage[programInfo.packet+".calculatorKeyboard.save."+storage[programInfo.packet+".calculatorKeyboard.last"]])
+// Init mover-elements
+function initMovingElements()
+{
+	for(var v in document.getElementsByClassName("mover"))
+	{
+		addMovingElement(document.getElementsByClassName("mover")[v].parentNode, document.getElementsByClassName("mover")[v])
+		//document.getElementsByClassName("mover")[v].innerText=(document.getElementsByClassName("mover")[v].innerText||"").replace(/[$][m][o][v][e][$]/g,getMsg("move"))
+	}
+}
 //
-addMovingElement(unitsDiv, unitsMoverDiv)
-addMovingElement(calcDiv, calcMoverDiv)
-//
-unitsMoverDiv.innerText=getMsg("move")
-calcMoverDiv.innerText=getMsg("move")
-addUnitFieldButton.innerText=getMsg("add")
+function setElementsTextTranslates(lang)
+{
+	for(var v in props.msgs[lang||messagesLanguage])
+		for(var v2 in document.getElementsByClassName("$"+v+"$"))
+			document.getElementsByClassName("$"+v+"$")[v2].innerText=props.msgs[lang||messagesLanguage][v]
+}
 //
 var propCmdHandlers = {"boolean":function(args, variants, current, prop)
 	{
@@ -193,11 +202,11 @@ var result = function(e)
 {
 	var expr = expressionInput.value
 	var other=[]
-	for ( var v in historyTextarea.value.split("\n"))
-		if (historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0])
-			other.push(historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0])
+	for ( var v in variablesTextarea.value.split("\n"))
+		if (variablesTextarea.value.split("\n")[v].split("=")[0].split(":")[0])
+			other.push(variablesTextarea.value.split("\n")[v].split("=")[0].split(":")[0])
 	expressionInput.value = getValName(other)
-	historyTextarea.value += expressionInput.value + "=" + expr + "=" + expressionNumberToString(props.misc.polishmode?polishCount(replaceVals(expr)):multilineCount(replaceVals(expr))) + "\n"
+	variablesTextarea.value += expressionInput.value + "=" + expr + "=" + expressionNumberToString(props.misc.polishmode?polishCount(replaceVals(expr)):splitCount(replaceVals(expr))) + "\n"
 	expressionInput.oninput()
 }
 var getValName = function(other)
@@ -258,7 +267,7 @@ var clear = function()
 var clearHistory = function()
 {
 	updateSelection()
-	historyTextarea.value = ""
+	variablesTextarea.value = ""
 	expressionInput.oninput()
 	updateSelection()
 }
@@ -277,37 +286,37 @@ expressionInput.onmousemove = expressionInput.onmousedown = function(e)
 expressionInput.oninput = function(e)
 {
 	numbersExpressionInput.value = replaceVals(expressionInput.value)
-	resultInput.value = resultNumberToString(props.misc.polishmode?polishCount(replaceVals(expressionInput.value)):multilineCount(replaceVals(expressionInput.value)))||""
+	resultInput.value = resultNumberToString(props.misc.polishmode?polishCount(replaceVals(expressionInput.value)):splitCount(replaceVals(expressionInput.value)))||""
 }
-historyTextarea.oninput = function(e)
+variablesTextarea.oninput = function(e)
 {
-	for ( var v1 in historyTextarea.value.split("\n"))
+	for ( var v1 in variablesTextarea.value.split("\n"))
 	{
-		var selStart = historyTextarea.selectionStart
-		var selEnd = historyTextarea.selectionEnd
+		var selStart = variablesTextarea.selectionStart
+		var selEnd = variablesTextarea.selectionEnd
 		var val = ""
-		for ( var v in historyTextarea.value.split("\n"))
-			if (historyTextarea.value.split("\n")[v])
+		for ( var v in variablesTextarea.value.split("\n"))
+			if (variablesTextarea.value.split("\n")[v])
 				if(v != v1)
-					val+=historyTextarea.value.split("\n")[v] + "\n"
-				else switch(historyTextarea.value.split("\n")[v].split("=")[0].split(":")[1])
+					val+=variablesTextarea.value.split("\n")[v] + "\n"
+				else switch(variablesTextarea.value.split("\n")[v].split("=")[0].split(":")[1])
 				{
 					case "default":
-						val += historyTextarea.value.split("\n")[v].split("=")[0] + "=" + historyTextarea.value.split("\n")[v].split("=")[1] + "=" + multilineCount(replaceVals(historyTextarea.value.split("\n")[v].split("=")[1])) + "\n"
+						val += variablesTextarea.value.split("\n")[v].split("=")[0] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "=" + splitCount(replaceVals(variablesTextarea.value.split("\n")[v].split("=")[1])) + "\n"
 						break
 					case "polish":
-						val += historyTextarea.value.split("\n")[v].split("=")[0] + "=" + historyTextarea.value.split("\n")[v].split("=")[1] + "=" + polishCount(replaceVals(historyTextarea.value.split("\n")[v].split("=")[1])) + "\n"
+						val += variablesTextarea.value.split("\n")[v].split("=")[0] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "=" + polishCount(replaceVals(variablesTextarea.value.split("\n")[v].split("=")[1])) + "\n"
 						break
 					case "value":
-						val += historyTextarea.value.split("\n")[v].split("=")[0] + "=" + historyTextarea.value.split("\n")[v].split("=")[1] + "=" + historyTextarea.value.split("\n")[v].split("=")[1] + "\n"
+						val += variablesTextarea.value.split("\n")[v].split("=")[0] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "\n"
 						break
 					default:
-						val+=historyTextarea.value.split("\n")[v] + "\n"
+						val+=variablesTextarea.value.split("\n")[v] + "\n"
 						break
 				}
-		historyTextarea.value = val
-		historyTextarea.selectionStart = selStart
-		historyTextarea.selectionEnd = selEnd
+		variablesTextarea.value = val
+		variablesTextarea.selectionStart = selStart
+		variablesTextarea.selectionEnd = selEnd
 	}
 }
 // functions
@@ -388,11 +397,11 @@ var moveVals=function(expression,no)
 }
 var replaceVals = function(expression)
 {
-	for ( var v in historyTextarea.value.split("\n"))
-		if (historyTextarea.value.split("\n")[v].split("=")[0])
-			if (!historyTextarea.value.split("\n")[v].split("=")[2])
-				expression = expression.replace(new RegExp("[" + historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0].split("").join("][")+"]", "g"), "«"+historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0]+"»")
-			else expression = expression.replace(new RegExp("[" + historyTextarea.value.split("\n")[v].split("=")[0].split(":")[0].split("").join("][")+"]", "g"), "("+historyTextarea.value.split("\n")[v].split("=")[2]+")")
+	for ( var v in variablesTextarea.value.split("\n"))
+		if (variablesTextarea.value.split("\n")[v].split("=")[0])
+			if (!variablesTextarea.value.split("\n")[v].split("=")[2])
+				expression = expression.replace(new RegExp("[" + variablesTextarea.value.split("\n")[v].split("=")[0].split(":")[0].split("").join("][")+"]", "g"), "«"+variablesTextarea.value.split("\n")[v].split("=")[0].split(":")[0]+"»")
+			else expression = expression.replace(new RegExp("[" + variablesTextarea.value.split("\n")[v].split("=")[0].split(":")[0].split("").join("][")+"]", "g"), "("+variablesTextarea.value.split("\n")[v].split("=")[2]+")")
 	expression=moveVals(expression)
 	return expression
 }
@@ -472,105 +481,105 @@ var splitCount=function(expression, digits, direction, minus, dot, minusPos)
 	console.log(splited)
 	return splited
 }
-var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
-{
-	return splitCount(expression, digits, direction, minus, dot, minusPos)//console.log()
-	if (!digits)
-		digits = props.misc.numberForm["default"].digits
-	if (!direction)
-		direction = props.misc.numberForm["default"].direction
-	if (!minus)
-		minus = props.misc.numberForm["default"].minus
-	if (!dot)
-		dot = props.misc.numberForm["default"].dot
-	if (!minusPos)
-		minusPos = props.misc.numberForm["default"].minusPos
-
-	// console.log(expression)
-	var lines=[[{"start":0,"end":expression.length,"value":expression+""}]]
-	var move=function(start, end)
-	{
-		var last=[[{"start":start,"end":end,"value":multiply("▼",end-start)}]]
-		for(var v=0;lines.length>v;v++)
-		{
-			last.push([])
-			var ok
-			for(var v2=0;lines[v].length>v2;v2++)
-			{
-				if(lines[v][v2].end>=start&&end>=lines[v][v2].start)
-				{
-					var subsl={
-							"start":Math.max(lines[v][v2].start,start),
-							"end":Math.min(lines[v][v2].end,end),
-							"value":lines[v][v2].value.substring(start-lines[v][v2].start, end-lines[v][v2].start)
-					}
-					lines[v][v2].value=lines[v][v2].value.substring(0, Math.max(lines[v][v2].start,start)-lines[v][v2].start)+last[v][0].value+lines[v][v2].value.substring(Math.min(lines[v][v2].end,end)-lines[v][v2].start)
-					lines[v][v2].start=Math.min(lines[v][v2].start,last[v][0].start)
-					lines[v][v2].end=Math.max(lines[v][v2].end,last[v][0].end)
-					last[v+1].push(makeClone(subsl))
-					if(v+1==lines.length)
-						lines[++v]=[makeClone(subsl)]
-					//console.log("last: "+JSON.stringify(last))
-					//console.log("lines: "+JSON.stringify(lines))
-					ok=true
-				}
-				// if(!(!(v2+1==lines[v].length)||(!ok)))
-				// lines[v].push({"start":start,"end":end,"value":""})
-			}
-		}
-		 //console.log("lines: "+JSON.stringify(lines))
-	}
-	var numberRegExp="(?:[-]|)(?:["+digits+"]*[.]["+digits+"]*|["+digits+"]+)"
-	//console.log("--------------")
-	//console.log(JSON.stringify(lines))
-	for(;lines[0][0].value.match(/[(][^()]+[)]/);)
-		lines[0][0].value=lines[0][0].value.replace(/[(][^()]+[)]/,function(match){return multilineCount(match.substring(1,match.length-1))})
-	for(var v=0;props.actions.byPriority.length>v;v++)
-		for(;;)
-		{
-			var actions=[]
-			for(var v2 in props.actions.byPriority[v])
-				actions.push(props.actions.byPriority[v][v2].text)
-			var actionsRegExp=actions.join("|").replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^").replace(/\[\|\]/g,"|")
-			// console.log(actionsRegExp)
-			var result=lines[0][0].value.match(new RegExp("(?:"+numberRegExp+"|▼+)"+"(?:"+actionsRegExp+")"+"(?:"+numberRegExp+"|▼+)"))
-			 //console.log(result)
-			if(!result)
-				break
-			move(result.index,result.index+result[0].length)
-		}
-	for(var v=lines.length-1;v>0;v--)
-		for(var v22=0;lines[v].length>v22;v22++)
-	{
-			//console.log("dsf")
-			//console.log(JSON.stringify(lines))
-				// console.log(v)
-		for(var v2=0;props.actions.byPriority.length>v2;v2++)
-			for(var v34 in props.actions.byPriority[v2])
-			{
-				var v3=props.actions.byPriority[v2][v34].text
-				lines[v][v22].value=lines[v][v22].value.replace(new RegExp(""+numberRegExp+"[ ]*(?:"+v3.replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*"),function(match)
-						{
-					return numberToString(action(undefined,[stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)],v2,v34), digits, direction, minus, dot, minusPos)
-					})
-			}
-			//console.log(JSON.stringify(lines))
-		for(var v222=0;lines[v-1].length>v222;v222++)
-			if(!(!(lines[v][v22].start>=lines[v-1][v222].start) ||!( lines[v-1][v222].end>=lines[v][v22].end)))
-				lines[v-1][v222].value=lines[v-1][v222].value.substring(0,lines[v][v22].start-lines[v-1][v222].start)+lines[v][v22].value+lines[v-1][v222].value.substring(lines[v][v22].end-lines[v-1][v222].start)
-		lines[v].splice(v22)
-	}
-	try{
-	return stringToNumber(lines[0][0].value, digits, direction, minus, dot, minusPos)
-}catch(e){}
-return lines[0][0].value
-}
+//var multilineCount=function(expression, digits, direction, minus, dot, minusPos)
+//{
+//	return splitCount(expression, digits, direction, minus, dot, minusPos)//console.log()
+//	if (!digits)
+//		digits = props.misc.numberForm["default"].digits
+//	if (!direction)
+//		direction = props.misc.numberForm["default"].direction
+//	if (!minus)
+//		minus = props.misc.numberForm["default"].minus
+//	if (!dot)
+//		dot = props.misc.numberForm["default"].dot
+//	if (!minusPos)
+//		minusPos = props.misc.numberForm["default"].minusPos
+//
+//	// console.log(expression)
+//	var lines=[[{"start":0,"end":expression.length,"value":expression+""}]]
+//	var move=function(start, end)
+//	{
+//		var last=[[{"start":start,"end":end,"value":multiply("▼",end-start)}]]
+//		for(var v=0;lines.length>v;v++)
+//		{
+//			last.push([])
+//			var ok
+//			for(var v2=0;lines[v].length>v2;v2++)
+//			{
+//				if(lines[v][v2].end>=start&&end>=lines[v][v2].start)
+//				{
+//					var subsl={
+//							"start":Math.max(lines[v][v2].start,start),
+//							"end":Math.min(lines[v][v2].end,end),
+//							"value":lines[v][v2].value.substring(start-lines[v][v2].start, end-lines[v][v2].start)
+//					}
+//					lines[v][v2].value=lines[v][v2].value.substring(0, Math.max(lines[v][v2].start,start)-lines[v][v2].start)+last[v][0].value+lines[v][v2].value.substring(Math.min(lines[v][v2].end,end)-lines[v][v2].start)
+//					lines[v][v2].start=Math.min(lines[v][v2].start,last[v][0].start)
+//					lines[v][v2].end=Math.max(lines[v][v2].end,last[v][0].end)
+//					last[v+1].push(makeClone(subsl))
+//					if(v+1==lines.length)
+//						lines[++v]=[makeClone(subsl)]
+//					//console.log("last: "+JSON.stringify(last))
+//					//console.log("lines: "+JSON.stringify(lines))
+//					ok=true
+//				}
+//				// if(!(!(v2+1==lines[v].length)||(!ok)))
+//				// lines[v].push({"start":start,"end":end,"value":""})
+//			}
+//		}
+//		 //console.log("lines: "+JSON.stringify(lines))
+//	}
+//	var numberRegExp="(?:[-]|)(?:["+digits+"]*[.]["+digits+"]*|["+digits+"]+)"
+//	//console.log("--------------")
+//	//console.log(JSON.stringify(lines))
+//	for(;lines[0][0].value.match(/[(][^()]+[)]/);)
+//		lines[0][0].value=lines[0][0].value.replace(/[(][^()]+[)]/,function(match){return multilineCount(match.substring(1,match.length-1))})
+//	for(var v=0;props.actions.byPriority.length>v;v++)
+//		for(;;)
+//		{
+//			var actions=[]
+//			for(var v2 in props.actions.byPriority[v])
+//				actions.push(props.actions.byPriority[v][v2].text)
+//			var actionsRegExp=actions.join("|").replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^").replace(/\[\|\]/g,"|")
+//			// console.log(actionsRegExp)
+//			var result=lines[0][0].value.match(new RegExp("(?:"+numberRegExp+"|▼+)"+"(?:"+actionsRegExp+")"+"(?:"+numberRegExp+"|▼+)"))
+//			 //console.log(result)
+//			if(!result)
+//				break
+//			move(result.index,result.index+result[0].length)
+//		}
+//	for(var v=lines.length-1;v>0;v--)
+//		for(var v22=0;lines[v].length>v22;v22++)
+//	{
+//			//console.log("dsf")
+//			//console.log(JSON.stringify(lines))
+//				// console.log(v)
+//		for(var v2=0;props.actions.byPriority.length>v2;v2++)
+//			for(var v34 in props.actions.byPriority[v2])
+//			{
+//				var v3=props.actions.byPriority[v2][v34].text
+//				lines[v][v22].value=lines[v][v22].value.replace(new RegExp(""+numberRegExp+"[ ]*(?:"+v3.replace(/[^]/g,"[$\u0026]").replace(/\[\^\]/g,"\\^")+")"+numberRegExp+"[ ]*"),function(match)
+//						{
+//					return numberToString(action(undefined,[stringToNumber(match.split(v3)[0], digits, direction, minus, dot, minusPos),stringToNumber(match.split(v3)[1], digits, direction, minus, dot, minusPos)],v2,v34), digits, direction, minus, dot, minusPos)
+//					})
+//			}
+//			//console.log(JSON.stringify(lines))
+//		for(var v222=0;lines[v-1].length>v222;v222++)
+//			if(!(!(lines[v][v22].start>=lines[v-1][v222].start) ||!( lines[v-1][v222].end>=lines[v][v22].end)))
+//				lines[v-1][v222].value=lines[v-1][v222].value.substring(0,lines[v][v22].start-lines[v-1][v222].start)+lines[v][v22].value+lines[v-1][v222].value.substring(lines[v][v22].end-lines[v-1][v222].start)
+//		lines[v].splice(v22)
+//	}
+//	try{
+//	return stringToNumber(lines[0][0].value, digits, direction, minus, dot, minusPos)
+//}catch(e){}
+//return lines[0][0].value
+//}
 var temp
-var createCalcKeyboardButton = function(v, v2)
+var createCalculatorKeyboardButton = function(v, v2)
 {
 	var button = document.createElement("button")
 	button.className="maxWidth"
-	button.id="calcKeyboardKey"+props.keyboard.table[v][v2].name
+	button.id="calculatorKeyboardKey"+props.keyboard.table[v][v2].name
 	button.title=props.keyboard.table[v][v2].name+"\nDoes: "+(props.keyboard.table[v][v2].func||"-")
 	button.innerText=props.keyboard.table[v][v2].text
 	button.disabled=props.keyboard.table[v][v2].disabled
@@ -592,7 +601,7 @@ var createCalcKeyboardButton = function(v, v2)
 			else if(btn.children.length==1)
 			{
 				props.keyboard.table[v][v2]=JSON.parse(btn.children[0].value)
-				btn.parentNode.appendChild(createCalcKeyboardButton(currentCalcKeyboard, v, v2))
+				btn.parentNode.appendChild(createCalculatorKeyboardButton(currentCalculatorKeyboard, v, v2))
 				btn.parentNode.removeChild(btn)
 			}
 			else btn.removeChild(btn.children[1])
@@ -601,7 +610,7 @@ var createCalcKeyboardButton = function(v, v2)
 	}
 	return button
 }
-var createCalcKeyboardTd = function(v, v2)
+var createCalculatorKeyboardTd = function(v, v2)
 {
 	var td = document.createElement("td")
 	td.height=100/props.keyboard.table.length+"%"
@@ -609,23 +618,23 @@ var createCalcKeyboardTd = function(v, v2)
 	for(var v22 in props.keyboard.table)
 		width=Math.max(width,props.keyboard.table[v22].length)
 	td.width=100/width+"%"
-	td.appendChild(createCalcKeyboardButton(v, v2))
+	td.appendChild(createCalculatorKeyboardButton(v, v2))
 	return td
 }
 var updateCalculatorKeyboard = function()
 {
 	temp=[]
-	calcKeyboardTable.innerHTML=""
+	calculatorKeyboardTable.innerHTML=""
 	for(var v in props.keyboard.table)
 	{
 		temp[v]=[]
 
 		var tr = document.createElement("tr")
 		tr.height=100/props.keyboard.table.length+"%"
-		calcKeyboardTable.appendChild(tr)
+		calculatorKeyboardTable.appendChild(tr)
 
 		for(var v2 in props.keyboard.table[v])
-			tr.appendChild(createCalcKeyboardTd(v, v2))
+			tr.appendChild(createCalculatorKeyboardTd(v, v2))
 	}
 }
 var setCalculatorKeyboard=function(keyboard)
@@ -633,11 +642,21 @@ var setCalculatorKeyboard=function(keyboard)
 	props.keyboard=keyboard
 	updateCalculatorKeyboard()
 }
-calcDiv.style.left=document.documentElement.clientWidth/2-calcDiv.getBoundingClientRect().width/2+"px"
-calcDiv.style.top=document.documentElement.clientHeight/2-calcDiv.getBoundingClientRect().height/2+"px"
+// Posite moving elements in display
+function positeMovingElements()
+{
+	calculatorDiv.style.left=document.documentElement.clientWidth/2-calculatorDiv.getBoundingClientRect().width/2+"px"
+	calculatorDiv.style.top=document.documentElement.clientHeight/2-calculatorDiv.getBoundingClientRect().height/2+"px"
 
-unitsDiv.style.left=document.documentElement.clientWidth/2-unitsDiv.getBoundingClientRect().width/2+"px"
+	unitConverterDiv.style.left=document.documentElement.clientWidth/2-unitConverterDiv.getBoundingClientRect().width/2+"px"
+	unitConverterDiv.style.top=0+"px"
 
+	graphicDiv.style.right=0+"px"
+	graphicDiv.style.top=document.documentElement.clientHeight/2-graphicDiv.getBoundingClientRect().height/2+"px"
+
+	variablesDiv.style.left=0+"px"
+	variablesDiv.style.top=document.documentElement.clientHeight/2-variablesDiv.getBoundingClientRect().height/2+"px"
+}
 // Unit converter
 for(var v2=0;document.getElementById("unitFieldNum"+v2);v2++)
 {
@@ -706,6 +725,59 @@ var updateUnitConverter=function()
 	}
 	unitTypeSelect.oninput()
 }
+//Graphic
+variablesTextarea.oninput=graphicFunction0Input.oninput=graphicFunction1Input.oninput=graphicColor0Input.oninput=graphicColor1Input.oninput=graphicXOffsetInput.oninput=graphicYOffsetInput.oninput=graphicXScaleInput.oninput=graphicYScaleInput.oninput=function()
+{
+	var context=graphicCanvas.getContext('2d')
+	var image = context.getImageData(0, 0, graphicCanvas.width, graphicCanvas.height)
+	var pixels = image.data
+	var offset	=	{	x	:	Number(graphicXOffsetInput.value),	y	:	Number(graphicYOffsetInput.value)}
+	var scale	=	{	x	:	Number(graphicXScaleInput.value),	y	:	Number(graphicYScaleInput.value)}
+	var func,color,r,g,b,a
+	var args="var "
+	for(var v in variablesTextarea.value.split("\n"))
+		if(variablesTextarea.value.split("\n")[v].split("=")[0]&&variablesTextarea.value.split("\n")[v].split("=")[1])
+			args+=(v==0?"":",")+variablesTextarea.value.split("\n")[v].split("=")[0]+"="+variablesTextarea.value.split("\n")[v].split("=")[1]
+	for(var v=-1;v<2;v++)
+		if(document.getElementById("graphicFunction0Input".replace("0",v))||v==-1)
+		{
+			if(v!=-1)
+			{
+				try
+				{
+					console.log(args+";return "+document.getElementById("graphicFunction0Input".replace("0",v)).value)
+					func=new Function("x","y",args+";return "+document.getElementById("graphicFunction0Input".replace("0",v)).value)
+				}
+				catch (e)	{console.error(e)}
+				color=document.getElementById("graphicColor0Input".replace("0",v)).value
+				r=1
+				g=1
+				b=1
+				a=1
+				r=stringToNumber(color.substr(1,2),"0123456789abcdef")/255
+				g=stringToNumber(color.substr(3,2),"0123456789abcdef")/255
+				b=stringToNumber(color.substr(5,2),"0123456789abcdef")/255
+			}
+			else r=g=b=a=1
+			for(var x=0;x<graphicCanvas.width;x++)
+				for(var y=0;y<graphicCanvas.height;y++)
+				{
+					if(v!=-1)
+						a=Number(func((x+offset.x)*scale.x,(y+offset.y)*scale.y))
+
+					//console.log(func?func((x+offset.x)*scale.x,(y+offset.y)*scale.y):func,v,x,y,offset,scale,r,g,b,a)
+			    var off = ((graphicCanvas.height-1-y) * graphicCanvas.width + x) * 4
+			    pixels[off] = pixels[off]*(1-a)+r*255*a
+			    pixels[off + 1] = pixels[off+1]*(1-a)+g*255*a
+			    pixels[off + 2] = pixels[off+2]*(1-a)+b*255*a
+			    pixels[off + 3] = 255
+				}
+		}
+	context.putImageData(image, 0, 0)
+}
 //
 updateCalculatorKeyboard()
 updateUnitConverter()
+initMovingElements()
+setElementsTextTranslates()
+positeMovingElements()

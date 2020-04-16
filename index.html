@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" charset="UTF-8">
-	<title>Scripts aren't working If you see this message.</title>
+	<title>Scripts aren't working If you see this message!</title>
 
 	<script type="text/javascript" src="lib/functions.js"></script>
 
@@ -26,9 +26,12 @@
 	</style>
 </head>
 <body>
-	<div style="position:absolute;background-color: rgb(200,210,255)" id="unitsDiv">
-		<div id="unitsMoverDiv">Move</div>
-		<table id="unitsTable">
+
+  <div style="position:absolute;background-color: rgb(200,210,255)" id="unitConverterDiv">
+		<div id="unitConverterMoverDiv" class="mover">
+      <span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$unitConverter$"></span>
+    </div>
+		<table id="unitConverterTable">
 			<tr>
 				<td colspan="3">
 					<select class="maxWidth" id="unitTypeSelect"></select>
@@ -46,19 +49,42 @@
 				</td>
 			</tr>
 		</table>
-		<button id="addUnitFieldButton">Add</button>
+		<button id="addUnitFieldButton" class="$add$">Scripts aren't working If you see this message!</button>
 	</div>
-	<div style="position:absolute;background-color: rgb(200,210,255)" id="calcDiv">
-		<div id="calcMoverDiv">Move</div>
-		<table id="calcTable">
+  <div style="position:absolute;background-color: rgb(200,210,255)" id="graphicDiv">
+		<div id="graphicMoverDiv" class="mover">
+      <span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$graphicByFunction$"></span>
+    </div>
+    <canvas id="graphicCanvas"></canvas>
+    <br>
+    <input type="number" id="graphicXOffsetInput" value="-50">
+    <br>
+    <input type="number" id="graphicYOffsetInput" value="-50">
+    <br>
+    <input type="number" id="graphicXScaleInput" value="1">
+    <br>
+    <input type="number" id="graphicYScaleInput" value="1">
+    <br>
+    <input id="graphicFunction0Input" value="(y<x)*0.5">
+    <input type="color" id="graphicColor0Input">
+    <br>
+    <input id="graphicFunction1Input" value="(y==-x)*0.5">
+    <input type="color" id="graphicColor1Input">
+  </div>
+  <div style="position:absolute;background-color: rgb(200,210,255)" id="variablesDiv">
+    <div id="variablesMoverDiv" class="mover">
+      <span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$variables$"></span>
+    </div>
+    <textarea class="maxWidth" style="min-width: 193px;border-width: 2px 0px 2px 0px;" id="variablesTextarea">a=2</textarea>
+  </div>
+	<div style="position:absolute;background-color: rgb(200,210,255)" id="calculatorDiv">
+		<div id="calculatorMoverDiv" class="mover">
+      <span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$calculator$"></span>
+    </div>
+		<table id="calculatorTable">
 			<tr>
 				<td>
-					<table class="maxWidth" id="calcFieldsTable">
-						<tr>
-							<td>
-								<textarea class="maxWidth" style="min-width: 193px;border-width: 2px 0px 2px 0px;" id="historyTextarea"></textarea>
-							</td>
-						</tr>
+					<table class="maxWidth" id="calculatorFieldsTable">
 						<tr>
 							<td>
 								<input class="maxWidth" style="border-width: 2px 0px 2px 0px;" readonly id="resultInput"></input>
@@ -79,7 +105,7 @@
 			</tr>
 			<tr>
 				<td>
-					<table class="maxWidth" id="calcKeyboardTable"></table>
+					<table class="maxWidth" id="calculatorKeyboardTable"></table>
 				</td>
 			</tr>
 		</table>

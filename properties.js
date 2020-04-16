@@ -93,11 +93,19 @@ var keyboard = {
 var msgs={
 	"en":{
 		"add":"Add",
-		"move":"Move"
+		"move":"Move",
+		"graphicByFunction":"Graphic by function",
+		"unitConverter":"Unit converter",
+		"variables":"Variables",
+		"calculator":"Calculator"
 	},
 	"ru":{
 		"add":"Добавить",
-		"move":"Двигать"
+		"move":"Двигать",
+		"graphicByFunction":"График по функции",
+		"unitConverter":"Преобразователь единиц",
+		"variables":"Переменные",
+		"calculator":"Калькулятор"
 	}
 }
 //Formulas of unit finding
