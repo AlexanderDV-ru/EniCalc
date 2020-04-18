@@ -1,4 +1,4 @@
-//---	Name:	DefaultProperties/Vesion:	0.1.1a/Authors:	AlexanderDV/Description:	Default-properties	.javascript.	---
+//---	Name:	DefaultProperties/Vesion:	0.1.2a/Authors:	AlexanderDV/Description:	Default-properties	.javascript.	---
 var	props={}
 props.misc = {
 	editmode	:	false,
@@ -15,6 +15,13 @@ props.variables = {
 }
 props.actions = {
 	default	:	{	a	:	0,	b	:	0	},
+	laws	:	{
+		a	: "Associative",
+		c	: "Commutative"
+	},
+	rules	:	{
+		d	: "Distributive"
+	},
 	byPriority	:	[
 		[
 			{	name	:	"Not",	text	:	"`",	func	:	"(!b)*1",		a	:	0,	b	:	1	}
@@ -23,19 +30,19 @@ props.actions = {
 			{	name	:	"Factorial",	text	:	"!",	func	:	"function(a,b){var	r=1;for(var	v=b+1;v<=a;v++)r*=v;return	r}(a,b)",		a	:	2,	b	:	1	}
 		],
 		[
-			{	name	:	"Power",			text	:	"^",	func	:	"Math.pow(a,b)",		a	:	10,	b	:	2	},
-			{	name	:	"Root",				text	:	"√",	func	:	"Math.pow(b,1/a)",	a	:	2,	b	:	4	}
+			{	name	:	"Power",			text	:	"^",	func	:	"Math.pow(a,b)",		a	:	10,	b	:	2, pos:"√", prev:"*", rules	:	"d(*/)"	},
+			{	name	:	"Root",				text	:	"√",	func	:	"Math.pow(b,1/a)",	a	:	2,	b	:	4, neg:"^", rules	:	"d(*/)",rotated:true}
 		],
 		[
-			{	name	:	"Multiply",		text	:	"*",	func	:	"a*b",	a	:	2,	b	:	2	},
-			{	name	:	"Divide",			text	:	"/",	func	:	"a/b",	a	:	1,	b	:	2	},
+			{	name	:	"Multiply",		text	:	"*",	func	:	"a*b",	a	:	2,	b	:	2, pos:"/", prev:"+", laws	:	"ac", rules	:	"d(+-)"	},
+			{	name	:	"Divide",			text	:	"/",	func	:	"a/b",	a	:	1,	b	:	2, neg:"*", rules	:	"d(+-)"	},
 			{	name	:	"Percent",		text	:	"%",	func	:	"a/100*b",	a	:	2,	b	:	6	},
 			{	name	:	"Remainder",	text	:	"#",	func	:	"a/b-Number((a/b+'').split('.')[0])",	a	:	1,	b	:	2	},
 			{	name	:	"DivideWithoutRemainder",text	:	":",	func	:	"Number((a/b+'').split('.')[0])",	a	:	10,	b	:	2	}
 		],
 		[
-			{	name	:	"Plus",				text	:	"+",	func	:	"a+b",	a	:	1,	b	:	1	},
-			{	name	:	"Minus",			text	:	"-",	func	:	"a-b",	a	:	0,	b	:	1	}
+			{	name	:	"Plus",				text	:	"+",	func	:	"a+b",	a	:	1,	b	:	1,	pos:"-", laws	:	"ac"	},
+			{	name	:	"Minus",			text	:	"-",	func	:	"a-b",	a	:	0,	b	:	1,	neg:"+"	}
 		],
 		[
 			{	name	:	"Equals",					text	:	"==",	func	:	"(a==b)*1",	a	:	0,	b	:	0	},
@@ -136,16 +143,18 @@ props.msgs = {
 		"move"	:	"Move",
 		"graphicByFunction"	:	"Graphic by function",
 		"unitConverter"	:	"Unit converter",
+		"calculator"	:	"Calculator",
 		"variables"	:	"Variables",
-		"calculator"	:	"Calculator"
+		"byPreviousActionsDecompose"	:	"By previous action decompose"
 	},
 	"ru"	:	{
 		"add"	:	"Добавить",
 		"move"	:	"Двигать",
 		"graphicByFunction"	:	"График по функции",
 		"unitConverter"	:	"Преобразователь единиц",
+		"calculator"	:	"Калькулятор",
 		"variables"	:	"Переменные",
-		"calculator"	:	"Калькулятор"
+		"byPreviousActionsDecompose"	:	"Разложение по предыдущим действиям"
 	}
 }
 //Formulas	of	unit	finding

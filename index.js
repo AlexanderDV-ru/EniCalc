@@ -1,10 +1,10 @@
-//--- Name: EniCalc/Vesion: 0.2.3a/Authors: AlexanderDV/Description: Main EniCalc .javascript. ---
+//--- Name: EniCalc/Vesion: 0.2.5a/Authors: AlexanderDV/Description: Main EniCalc .javascript. ---
 //--- Start of standard initialization
 //Program info
 var programInfo={
 	"packet" : "eniCalc",
 	"name" : "EniCalc",
-	"version" : "0.2.3a",
+	"version" : "0.2.5a",
 	"authors" : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -19,7 +19,45 @@ var getMsg=function(key, lang){
 	return props.msgs[lang||messagesLanguage][key]
 }
 // End of standard initialization ---
-
+var expressions=["10*a+10/2*a","10+a+(15+a)","(11+a)+(8-a)","1+2*a-(5+3*a)",   "5*4+1","(1+5)*4+1","((5))","(5*(3+4))","5*(2+(3+1)*2)"],prepared=[],countedInBrackets=[],counted=[],v=0
+for(var v=0;v<expressions.length;v++)
+{
+	console.log("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+	console.log(expressions[v])
+	console.log(prepared[v]=prepare(expressions[v],props.numberForms.default,props.actions.byPriority))
+	console.log(countedInBrackets[v]=countInBrackets(prepared[v],props.numberForms.default,props.actions.byPriority))
+	console.log(counted[v]=count(countedInBrackets[v],props.numberForms.default,props.actions.byPriority))
+}
+function fCount(expr) {
+	return count(prepare(expr,props.numberForms.default,props.actions.byPriority),props.numberForms.default,props.actions.byPriority)
+}
+byPrevTextarea.oninput=function() {
+	var result=""
+	var selectionStart=byPrevTextarea.selectionStart+0
+	var selectionEnd=byPrevTextarea.selectionEnd+0
+	for(var v in byPrevTextarea.value.split("\n"))
+	{
+		var expression=byPrevTextarea.value.split("\n")[v].split("{")[0].split("=")[0]
+		var res=""
+		if(byPrevTextarea.value.split("\n")[v].indexOf("{")!=-1)
+		{
+			var act
+			for(var v2 in props.actions.byPriority)
+				for(var v3 in props.actions.byPriority[v2])
+					if(expression.indexOf(props.actions.byPriority[v2][v3].text)!=-1)
+						act=props.actions.byPriority[v2][v3]
+			var did=expression
+			var time=0
+			while (did.indexOf(act.text)!=-1&&time++<5)
+				did="("+multiplyStr(act.prev+did.split(act.text)[0],did.split(act.text)[1]).substr(1)+")"+did.substr(did.split(act.text)[0].length+act.text.length+did.split(act.text)[1].length)
+			res="="+fCount(expression)+"{"+fCount(did)+"="+did
+		}
+		result+=expression+res+"\n"
+	}
+	byPrevTextarea.value=result
+	byPrevTextarea.selectionStart=selectionStart
+	byPrevTextarea.selectionEnd=selectionEnd
+}
 //
 if(storage[programInfo.packet+".calculatorKeyboard.save."+storage[programInfo.packet+".calculatorKeyboard.last"]])
 	props.keyboard=JSON.parse(storage[programInfo.packet+".calculatorKeyboard.save."+storage[programInfo.packet+".calculatorKeyboard.last"]])
