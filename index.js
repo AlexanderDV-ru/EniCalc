@@ -29,17 +29,17 @@ for(var v=0;v<expressions.length;v++)
 	console.log(counted[v]=count(countedInBrackets[v],props.numberForms.default,props.actions.byPriority))
 }
 function fCount(expr) {
-	return count(prepare(expr,props.numberForms.default,props.actions.byPriority),props.numberForms.default,props.actions.byPriority)
+	return count(countInBrackets(prepare(expr,props.numberForms.default,props.actions.byPriority),props.numberForms.default,props.actions.byPriority),props.numberForms.default,props.actions.byPriority)
 }
-byPrevTextarea.oninput=function() {
+byPreviousActionsDecomposeTextarea.oninput=function() {
 	var result=""
-	var selectionStart=byPrevTextarea.selectionStart+0
-	var selectionEnd=byPrevTextarea.selectionEnd+0
-	for(var v in byPrevTextarea.value.split("\n"))
+	var selectionStart=byPreviousActionsDecomposeTextarea.selectionStart+0
+	var selectionEnd=byPreviousActionsDecomposeTextarea.selectionEnd+0
+	for(var v in byPreviousActionsDecomposeTextarea.value.split("\n"))
 	{
-		var expression=byPrevTextarea.value.split("\n")[v].split("{")[0].split("=")[0]
+		var expression=byPreviousActionsDecomposeTextarea.value.split("\n")[v].split("{")[0].split("=")[0]
 		var res=""
-		if(byPrevTextarea.value.split("\n")[v].indexOf("{")!=-1)
+		if(byPreviousActionsDecomposeTextarea.value.split("\n")[v].indexOf("{")!=-1)
 		{
 			var act
 			for(var v2 in props.actions.byPriority)
@@ -54,9 +54,9 @@ byPrevTextarea.oninput=function() {
 		}
 		result+=expression+res+"\n"
 	}
-	byPrevTextarea.value=result
-	byPrevTextarea.selectionStart=selectionStart
-	byPrevTextarea.selectionEnd=selectionEnd
+	byPreviousActionsDecomposeTextarea.value=result
+	byPreviousActionsDecomposeTextarea.selectionStart=selectionStart
+	byPreviousActionsDecomposeTextarea.selectionEnd=selectionEnd
 }
 //
 if(storage[programInfo.packet+".calculatorKeyboard.save."+storage[programInfo.packet+".calculatorKeyboard.last"]])
@@ -309,12 +309,12 @@ function fullCount(expression, polishmode, variables, numberForm, actionsByPrior
 	if(variables==undefined)
 		variables=getVariables(variablesTextarea.value)
 	if(numberForm==undefined)
-		numberForm=props.numberForm
+		numberForm=props.numberForms.default
 	if(actionsByPriority==undefined)
 		actionsByPriority=props.actions.byPriority
 
 	var replaced	=	replaceVariables(expression, variables)
-	var func	=	polishmode	?	polishCount	:	splitCount
+	var func	=	polishmode	?	polishCount	:	fCount
 	replaced	=	bracketsCount(replaced, numberForm, actionsByPriority, func, true)
 	return func(replaced, numberForm, actionsByPriority)	||	NaN
 }
@@ -330,6 +330,7 @@ variablesTextarea.oninput = function(e){
 					val+=variablesTextarea.value.split("\n")[v] + "\n"
 				else switch(variablesTextarea.value.split("\n")[v].split("=")[0].split(":")[1])
 				{
+					default:
 					case "default":
 						val += variablesTextarea.value.split("\n")[v].split("=")[0] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "=" + fullCount(variablesTextarea.value.split("\n")[v].split("=")[1],	false) + "\n"
 						break
@@ -338,9 +339,6 @@ variablesTextarea.oninput = function(e){
 						break
 					case "value":
 						val += variablesTextarea.value.split("\n")[v].split("=")[0] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "\n"
-						break
-					default:
-						val+=variablesTextarea.value.split("\n")[v] + "\n"
 						break
 				}
 		variablesTextarea.value = val
@@ -555,7 +553,7 @@ var updateUnitConverter=function(){
 	unitTypeSelect.oninput()
 }
 //Graphic part
-variablesTextarea.oninput=graphicFunction0Input.oninput=graphicFunction1Input.oninput=graphicColor0Input.oninput=graphicColor1Input.oninput=graphicXOffsetInput.oninput=graphicYOffsetInput.oninput=graphicXScaleInput.oninput=graphicYScaleInput.oninput=function(){
+graphicFunction0Input.oninput=graphicFunction1Input.oninput=graphicColor0Input.oninput=graphicColor1Input.oninput=graphicXOffsetInput.oninput=graphicYOffsetInput.oninput=graphicXScaleInput.oninput=graphicYScaleInput.oninput=function(){
 graphicCanvas.width=60
 graphicCanvas.height=60
 	var context=graphicCanvas.getContext('2d')
