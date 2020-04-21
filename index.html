@@ -1,4 +1,4 @@
-<!--- Name: EniCalc/Vesion: 0.2.5a/Authors: AlexanderDV/Description: Main EniCalc .html. --->
+<!--- Name: EniCalc/Vesion: 0.2.6a/Authors: AlexanderDV/Description: Main EniCalc .html. --->
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -31,6 +31,11 @@
 				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$unitConverter$"></span>
 			</div>
 			<table id="unitConverterTable">
+				<tr>
+					<td colspan="3">
+						<select class="maxWidth" id="unitTypeGroupSelect"></select>
+					</td>
+				</tr>
 				<tr>
 					<td colspan="3">
 						<select class="maxWidth" id="unitTypeSelect"></select>
@@ -108,6 +113,19 @@
 				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$variables$"></span>
 			</div>
 			<textarea class="maxWidth" style="min-width: 193px;border-width: 2px 0px 2px 0px;" id="variablesTextarea">a=0=0</textarea>
+		</div>
+		<div style="position:absolute;background-color: rgb(200,210,255)" id="settingsDiv">
+			<div id="settingsMoverDiv" class="mover">
+				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$settings$"></span>
+			</div>
+			<span class="$countType$"></span>
+			<select class="maxWidth" id="countTypeSelect">
+				<option>New default</option>
+				<option>Old default.default</option>
+				<option>Old default.polish</option>
+				<option>JavaScript code</option>
+				<option>Polish record</option>
+			</select>
 		</div>
 		<div style="position:absolute;background-color: rgb(200,210,255)" id="byPreviousActionsDecomposeDiv">
 			<div id="byPreviousActionsDecomposeMoverDiv" class="mover">

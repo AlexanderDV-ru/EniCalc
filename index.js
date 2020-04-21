@@ -1,10 +1,10 @@
-//--- Name: EniCalc/Vesion: 0.2.5a/Authors: AlexanderDV/Description: Main EniCalc .javascript. ---
+//--- Name: EniCalc/Vesion: 0.2.6a/Authors: AlexanderDV/Description: Main EniCalc .javascript. ---
 //--- Start of standard initialization
 //Program info
 var programInfo={
 	"packet" : "eniCalc",
 	"name" : "EniCalc",
-	"version" : "0.2.5a",
+	"version" : "0.2.6a",
 	"authors" : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -226,7 +226,7 @@ var result = function(e){
 		if (variablesTextarea.value.split("\n")[v].split("=")[0].split(":")[0])
 			other.push(variablesTextarea.value.split("\n")[v].split("=")[0].split(":")[0])
 	expressionInput.value = getValName(other)
-	variablesTextarea.value = (variablesTextarea.value+"\n"+expressionInput.value + "=" + expr + "=" + fullCount(expr) + "\n").replace(/\n\n/g,"\n")
+	variablesTextarea.value = (variablesTextarea.value+"\n"+expressionInput.value + "=" + expr + "=" + typedCount(expr) + "\n").replace(/\n\n/g,"\n")
 	expressionInput.oninput()
 }
 var getValName = function(other){
@@ -301,7 +301,7 @@ function getVariables(config){
 }
 expressionInput.oninput = function(e){
 	numbersExpressionInput.value = replaceVariables(expressionInput.value, getVariables(variablesTextarea.value))
-	resultInput.value	=	fullCount(expressionInput.value)
+	resultInput.value	=	typedCount(expressionInput.value)
 }
 function fullCount(expression, polishmode, variables, numberForm, actionsByPriority){
 	if(polishmode==undefined)
@@ -330,7 +330,6 @@ variablesTextarea.oninput = function(e){
 					val+=variablesTextarea.value.split("\n")[v] + "\n"
 				else switch(variablesTextarea.value.split("\n")[v].split("=")[0].split(":")[1])
 				{
-					default:
 					case "default":
 						val += variablesTextarea.value.split("\n")[v].split("=")[0] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "=" + fullCount(variablesTextarea.value.split("\n")[v].split("=")[1],	false) + "\n"
 						break
@@ -339,6 +338,9 @@ variablesTextarea.oninput = function(e){
 						break
 					case "value":
 						val += variablesTextarea.value.split("\n")[v].split("=")[0] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "\n"
+						break
+					default:
+						val += variablesTextarea.value.split("\n")[v].split("=")[0] + "=" + variablesTextarea.value.split("\n")[v].split("=")[1] + "=" + typedCount(variablesTextarea.value.split("\n")[v].split("=")[1]) + "\n"
 						break
 				}
 		variablesTextarea.value = val
@@ -498,6 +500,7 @@ addUnitFieldButton.onclick=function(){
 	document.getElementById("unitInputNum"+v2).oninput = new Function("updateUnits("+v2+")")
 }
 var updateUnits=function(currentNum){
+	currentNum=currentNum||0
 	var currentInput=document.getElementById("unitInputNum"+currentNum)
 	var currentSelect=document.getElementById("unitPowerSelectNum"+currentNum)
 	var value
@@ -518,7 +521,10 @@ var updateUnits=function(currentNum){
 	}
 	else if(document.getElementById("unitPowerSelectEx1Num"+currentNum))
 		document.getElementById("unitPowerSelectEx1Num"+currentNum).style.display="none"
-	value=("function" !=typeof currentUnitPower.func)?stringToNumber(fullCount(currentInput.value))*currentUnitPower.func:currentUnitPower.func(Number(currentInput.value))
+		console.log(currentInput.value);
+	value=typedCount(currentInput.value, "number")
+	console.log(value);
+	value=("function" !=typeof currentUnitPower.func)?value*currentUnitPower.func:currentUnitPower.func(value)
 
 	for(var v2=0;document.getElementById("unitFieldNum"+v2);v2++)
 		if(v2!=currentNum)
@@ -539,18 +545,27 @@ var updateUnits=function(currentNum){
 	lastUnitFieldNum=currentNum
 }
 var updateUnitConverter=function(){
-	for(var v in props.units)
-		unitTypeSelect.innerHTML+="<option>"+v+"</option>"
-	unitTypeSelect.oninput=function(e)
+	unitTypeGroupSelect.innerHTML=""
+	for(var v in props.unitGroups)
+		unitTypeGroupSelect.innerHTML+="<option>"+v+"</option>"
+
+	unitTypeGroupSelect.oninput=function(e)
 	{
-		for(var v2=0;document.getElementById("unitPowerSelectNum"+v2);v2++)
+		unitTypeSelect.innerHTML=""
+		for(var v in props.unitGroups[unitTypeGroupSelect.value])
+			unitTypeSelect.innerHTML+="<option>"+props.unitGroups[unitTypeGroupSelect.value][v]+"</option>"
+		unitTypeSelect.oninput=function(e)
 		{
-			document.getElementById("unitPowerSelectNum"+v2).innerHTML=""
-			for(var v in props.units[unitTypeSelect.value])
-				document.getElementById("unitPowerSelectNum"+v2).innerHTML+="<option>"+form.replace("short",v).replace("long",props.units[unitTypeSelect.value][v].long)+"</option>"
+			for(var v2=0;document.getElementById("unitPowerSelectNum"+v2);v2++)
+			{
+				document.getElementById("unitPowerSelectNum"+v2).innerHTML=""
+				for(var v in props.units[unitTypeSelect.value])
+					document.getElementById("unitPowerSelectNum"+v2).innerHTML+="<option>"+form.replace("short",v).replace("long",props.units[unitTypeSelect.value][v].long)+"</option>"
+			}
 		}
+		unitTypeSelect.oninput()
 	}
-	unitTypeSelect.oninput()
+	unitTypeGroupSelect.oninput()
 }
 //Graphic part
 graphicFunction0Input.oninput=graphicFunction1Input.oninput=graphicColor0Input.oninput=graphicColor1Input.oninput=graphicXOffsetInput.oninput=graphicYOffsetInput.oninput=graphicXScaleInput.oninput=graphicYScaleInput.oninput=function(){
@@ -563,11 +578,12 @@ graphicCanvas.height=60
 	var scale	=	{	x	:	Number(graphicXScaleInput.value),	y	:	Number(graphicYScaleInput.value)}
 	var func,color,r,g,b,a
 	var variables=getVariables(variablesTextarea.value)
+	var vars=getVariables(variablesTextarea.value)
 	for(var v=-1;v<2;v++)
 		if(document.getElementById("graphicFunction0Input".replace("0",v))||v==-1)
 		{
 			var val=v!=-1?document.getElementById("graphicFunction0Input".replace("0",v)).value:""
-			val=_splitCount(replaceVariables(val,variables),props.numberForm,props.actions.byPriority)
+			//val=_splitCount(replaceVariables(val,variables),props.numberForm,props.actions.byPriority)
 			if(v!=-1)
 			{
 				func=new Function("val","return splitCount(bracketsCount(val,props.numberForm,props.actions.byPriority,splitCount,true),props.numberForm,props.actions.byPriority)")
@@ -584,22 +600,25 @@ graphicCanvas.height=60
 			for(var x=0;x<graphicCanvas.width;x++)
 			{
 				var val2=[]
-				for(var v2 in val)
-					val2[v2]=typeof val[v2]=="string"?val[v2].replace(/[x]/g,(x+offset.x)*scale.x):val[v2]
+				//for(var v2 in val)
+				//	val2[v2]=typeof val[v2]=="string"?val[v2].replace(/[x]/g,(x+offset.x)*scale.x):val[v2]
 
-						if(v!=-1)
-						console.log(val2);
+						//if(v!=-1)
+						//console.log(val2);
 				for(var y=0;y<graphicCanvas.height;y++)
 				{
 					if(v!=-1)
 					{
-							var val3=[]
-							for(var v3 in val2)
-								val3[v3]=typeof val2[v3]=="string"?val2[v3].replace(/[y]/g,(y+offset.y)*scale.y):val2[v3]
-														if(v!=-1)
-														console.log(val3);
-							a=_splitCount2(val3,props.numberForm,props.actions.byPriority)
-							console.log(a);
+							//var val3=[]
+							//for(var v3 in val2)
+							//	val3[v3]=typeof val2[v3]=="string"?val2[v3].replace(/[y]/g,(y+offset.y)*scale.y):val2[v3]
+							//							if(v!=-1)
+							//							console.log(val3);
+							//a=_splitCount2(val3,props.numberForm,props.actions.byPriority)
+							//console.log(a);
+							vars.x=x
+							vars.y=y
+							a=typedCount(val,"number",vars)
 					}
 					var off = ((graphicCanvas.height-1-y) * graphicCanvas.width + x) * 4
 					pixels[off] = pixels[off]*(1-a)+r*255*a
@@ -610,6 +629,35 @@ graphicCanvas.height=60
 			}
 		}
 	context.putImageData(image, 0, 0)
+}
+function typedCount(expression, resultType, variables, type, variablesJs) {
+	variables=variables||getVariables(variablesTextarea.value)
+	var str,num,res
+	switch (type||countTypeSelect.value) {
+		default:
+		case "New default":
+			res	= fCount(expression)
+			break
+		case "Old default.default":
+			res	= fullCount(expression,false)
+			break
+		case "Old default.polish":
+			res	= fullCount(expression,true)
+			break
+		case "JavaScript code":
+			var varsJs=variablesJs||""
+			for(var v in variables)
+				varsJs+="var "+v+"="+variables[v]+";"
+			res	= new Function(varsJs+"return "+expression)(variables)
+			break
+		case "Polish record":
+			res	= polishCount(expression)
+			break
+	}
+	if(typeof res=="number")
+		num=res
+	else str=res
+	return (resultType=="number"?(str?stringToNumber(str):num):(resultType=="string"?(num?numberToString(num):str):res))
 }
 //
 updateCalculatorKeyboard()

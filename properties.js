@@ -1,4 +1,4 @@
-//---	Name:	DefaultProperties/Vesion:	0.1.2a/Authors:	AlexanderDV/Description:	Default-properties	.javascript.	---
+//---	Name:	DefaultProperties/Vesion:	0.1.3a/Authors:	AlexanderDV/Description:	Default-properties	.javascript.	---
 var	props={}
 props.misc = {
 	editmode	:	false,
@@ -145,6 +145,8 @@ props.msgs = {
 		"unitConverter"	:	"Unit converter",
 		"calculator"	:	"Calculator",
 		"variables"	:	"Variables",
+		"settings"	:	"Settings",
+		"countType"	:	"Count type",
 		"byPreviousActionsDecompose"	:	"By previous action decompose"
 	},
 	"ru"	:	{
@@ -154,6 +156,8 @@ props.msgs = {
 		"unitConverter"	:	"Преобразователь единиц",
 		"calculator"	:	"Калькулятор",
 		"variables"	:	"Переменные",
+		"settings"	:	"Настройки",
+		"countType"	:	"Тип вычисления",
 		"byPreviousActionsDecompose"	:	"Разложение по предыдущим действиям"
 	}
 }
@@ -352,11 +356,11 @@ props.units = {
 	},
 	"∠,Плоский Угол"	:	{
 		"Радианы(доп СИ)"	:	fromGeneral("рад",	"Радианы",	1),
-		"°О"	:	{	long	:	"Обороты",	func	:	2/3.14159265358979323846264338327950288419716939937510},
-		"°У"	:	{	long	:	"Градусы",	func	:	2/3.14159265358979323846264338327950288419716939937510/360},
-		"'"		:	{	long	:	"Минуты",		func	:	2/3.14159265358979323846264338327950288419716939937510/360/60},
-		"\""	:	{	long	:	"Секунды",	func	:	2/3.14159265358979323846264338327950288419716939937510/360/60/60},
-		"град":	{	long	:	"Грады",		func	:	2/3.14159265358979323846264338327950288419716939937510/360*0.9}
+		"°О"	:	{	long	:	"Обороты",	func	:	2*3.14159265358979323846264338327950288419716939937510},
+		"°У"	:	{	long	:	"Градусы",	func	:	2*3.14159265358979323846264338327950288419716939937510/360},
+		"'"		:	{	long	:	"Минуты",		func	:	2*3.14159265358979323846264338327950288419716939937510/360/60},
+		"\""	:	{	long	:	"Секунды",	func	:	2*3.14159265358979323846264338327950288419716939937510/360/60/60},
+		"град":	{	long	:	"Грады",		func	:	2*3.14159265358979323846264338327950288419716939937510/360*0.9}
 	},
 	"Ω,Телесный Угол"	:	{
 		"Герцы(доп СИ)"	:	fromGeneral("ср",	"Стерадианы",1)
@@ -421,10 +425,10 @@ props.units = {
 	"G,Электропроводность"	:	{
 		"Сименсы(доп СИ)"	:	fromGeneral("См",	"Сименсы",1)
 	},
-	",Радиоактивность"	:	{
+	"?,Радиоактивность"	:	{
 		"Сименсы(доп СИ)"	:	fromGeneral("Бк",	"Беккерели",1)
 	},
-	",Поглощенная радиация"	:	{
+	"?,Поглощенная радиация"	:	{
 		"Сименсы(доп СИ)"	:	fromGeneral("Гр",	"Греи",1)
 	},
 	"E,Эффективная радиация"	:	{
@@ -480,11 +484,83 @@ props.units["a,Ускорение"]=Object.assign(fromAction(props.units["v,Ск
 	"g"			:	{	long	:	"Ускорение	свободного	падения	Земли",	func	:	9.8}
 })
 
-props.units["Скорость передачи данных"]=Object.assign(fromAction(props.units["Объем информации"],props.units["t,Время"],"/",	function(a,b){return	a/b}),{
+props.units["-,Скорость передачи данных"]=Object.assign(fromAction(props.units["-,Объем информации"],props.units["t,Время"],"/",	function(a,b){return	a/b}),{
 })
-props.units["Расход массы"]=Object.assign(fromAction(props.units["m,Масса"],	props.units["t,Время"],"/",	function(a,b){return	a/b}),{
+props.units["?,Расход массы"]=Object.assign(fromAction(props.units["m,Масса"],	props.units["t,Время"],"/",	function(a,b){return	a/b}),{
 })
-props.units["Расход объема"]=Object.assign(fromAction(props.units["V,Объем"],	props.units["t,Время"],"/",	function(a,b){return	a/b}),{
+props.units["?,Расход объема"]=Object.assign(fromAction(props.units["V,Объем"],	props.units["t,Время"],"/",	function(a,b){return	a/b}),{
 })
-props.units["Расход топлива"]=Object.assign(fromAction(props.units["V,Объем"],props.units["s,Расстояние"],"/",	function(a,b){return	a/b}),{
+props.units["?,Расход топлива"]=Object.assign(fromAction(props.units["V,Объем"],props.units["s,Расстояние"],"/",	function(a,b){return	a/b}),{
 })
+props.unitGroups={
+	"Бытовые":[
+		"m,Масса",
+		"t,Время",
+		"s,Расстояние",
+		"T,Температура",
+		"∠,Плоский Угол",
+		"EW,Энергия",
+		"NPW,Мощность",
+		"p,Давление",
+		"n,Количество",
+		"S,Площадь",
+		"V,Объем",
+		"v,Скорость",
+		"?,Расход топлива",
+	],
+	"Физические":[
+		"m,Масса",
+		"t,Время",
+		"s,Расстояние",
+		"I,Сила тока",
+		"n,Количество вещества",
+		"I`v,Сила света",
+		"T,Температура",
+		"∠,Плоский Угол",
+		"Ω,Телесный Угол",
+		"ν,Частота",
+		"F,Сила",
+		"EW,Энергия",
+		"NPW,Мощность",
+		"p,Давление",
+		"φ`v,Световой поток",
+		"E`v,Освещенность",
+		"q,Электрозаряд",
+		"U,Напряжение",
+		"R,Сопротивление",
+		"C,Электроемкость",
+		"φ,Магнитный поток",
+		"B,Магнитная индукция",
+		"L,Индуктивность",
+		"G,Электропроводность",
+		"?,Радиоактивность",
+		"?,Поглощенная радиация",
+		"E,Эффективная радиация",
+		"W,Активность катализатора",
+		"a,Ускорение",
+		"S,Площадь",
+		"V,Объем",
+		"ρ,Плотность",
+		"v,Скорость",
+	],
+	"Разное":[
+		"?,Расход массы",
+		"?,Расход объема",
+	],
+	"Информатика":[
+		"-,Скорость передачи данных",
+		"-,Объем информации",
+		"ν,Частота",
+	]
+}
+props.unitGroups["Все"]=[]
+for(var v in props.unitGroups)
+	for(var v2 in props.unitGroups[v])
+	{
+		var ne=true
+		for(var v3 in props.unitGroups["Все"])
+			if(props.unitGroups["Все"][v3]==props.unitGroups[v][v2])
+			 ne=false
+		if(ne)
+			props.unitGroups["Все"].push(props.unitGroups[v][v2])
+	}
