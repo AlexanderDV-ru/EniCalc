@@ -1,10 +1,10 @@
-//--- Name: EniCalc/Vesion: 0.2.6a/Authors: AlexanderDV/Description: Main EniCalc .javascript. ---
+//--- Name: EniCalc/Vesion: 0.2.7a/Authors: AlexanderDV/Description: Main EniCalc .javascript. ---
 //--- Start of standard initialization
 //Program info
 var programInfo={
 	"packet" : "eniCalc",
 	"name" : "EniCalc",
-	"version" : "0.2.6a",
+	"version" : "0.2.7a",
 	"authors" : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -19,7 +19,7 @@ var getMsg=function(key, lang){
 	return props.msgs[lang||messagesLanguage][key]
 }
 // End of standard initialization ---
-var expressions=["10*a+10/2*a","10+a+(15+a)","(11+a)+(8-a)","1+2*a-(5+3*a)",   "5*4+1","(1+5)*4+1","((5))","(5*(3+4))","5*(2+(3+1)*2)"],prepared=[],countedInBrackets=[],counted=[],v=0
+var expressions=["10*a+10/2*a","10+a+(15+a)","(11+a)+(8-a)","1+2*a-(5+3*a)", "5*4+1","(1+5)*4+1","((5))","(5*(3+4))","5*(2+(3+1)*2)"],prepared=[],countedInBrackets=[],counted=[],v=0
 for(var v=0;v<expressions.length;v++)
 {
 	console.log("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");

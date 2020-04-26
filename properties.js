@@ -1,4 +1,4 @@
-//---	Name:	DefaultProperties/Vesion:	0.1.3a/Authors:	AlexanderDV/Description:	Default-properties	.javascript.	---
+//---	Name:	DefaultProperties/Vesion:	0.1.4a/Authors:	AlexanderDV/Description:	Default-properties	.js.	---
 var	props={}
 props.misc = {
 	editmode	:	false,
