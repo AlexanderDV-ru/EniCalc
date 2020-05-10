@@ -1,4 +1,4 @@
-<!--- Name: EniCalc/Vesion: 0.2.7a/Authors: AlexanderDV/Description: Main EniCalc .html. --->
+<!--- Name: EniCalc/Vesion: 0.2.8a/Authors: AlexanderDV/Description: Main EniCalc .html. --->
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -25,6 +25,16 @@
 		</style>
 	</head>
 	<body>
+		<div style="position:absolute;background-color: rgb(200,210,255)" id="fnCalcDiv">
+			<div id="fnCalcMoverDiv" class="mover">
+				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$fnCalc$"></span>
+			</div>
+			<textarea id="fnCalcExecArea"></textarea>
+			<br>
+			<button id="fnCalcButton" class="$calcFn$"></button>
+			<br>
+			<textarea id="fnCalcResultArea"></textarea>
+		</div>
 		<div style="position:absolute;background-color: rgb(200,210,255)" id="unitConverterDiv">
 			<div id="unitConverterMoverDiv" class="mover">
 				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$unitConverter$"></span>
@@ -125,6 +135,7 @@
 				<option>JavaScript code</option>
 				<option>Polish record</option>
 			</select>
+			<button id="clearSettingsButton" class="$clearSettings$">Scripts aren't working If you see this message!</button>
 		</div>
 		<div style="position:absolute;background-color: rgb(200,210,255)" id="byPreviousActionsDecomposeDiv">
 			<div id="byPreviousActionsDecomposeMoverDiv" class="mover">

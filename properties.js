@@ -1,8 +1,13 @@
-//---	Name:	DefaultProperties/Vesion:	0.1.4a/Authors:	AlexanderDV/Description:	Default-properties	.js.	---
+//---	Name:	DefaultProperties/Vesion:	0.1.5a/Authors:	AlexanderDV/Description:	Default-properties	.js.	---
 var	props={}
 props.misc = {
 	editmode	:	false,
 	polishmode	:	false
+}
+props.settings={
+	defaultSettings:{
+		countTypeSelect:"New default"
+	}
 }
 props.numberForms=mathsProps.numberForms
 props.variables = {
@@ -147,7 +152,10 @@ props.msgs = {
 		"variables"	:	"Variables",
 		"settings"	:	"Settings",
 		"countType"	:	"Count type",
-		"byPreviousActionsDecompose"	:	"By previous action decompose"
+		"byPreviousActionsDecompose"	:	"By previous action decompose",
+		"fnCalc"	:	"Function calculator",
+		"calcFn"	:	"Calculate function",
+		"clearSettings"	:	"Clear settings"
 	},
 	"ru"	:	{
 		"add"	:	"Добавить",
@@ -158,7 +166,10 @@ props.msgs = {
 		"variables"	:	"Переменные",
 		"settings"	:	"Настройки",
 		"countType"	:	"Тип вычисления",
-		"byPreviousActionsDecompose"	:	"Разложение по предыдущим действиям"
+		"byPreviousActionsDecompose"	:	"Разложение по предыдущим действиям",
+		"fnCalc"	:	"Вычислитель функций",
+		"calcFn"	:	"Вычислить функцию",
+		"clearSettings"	:	"Очистить найтройки"
 	}
 }
 //Formulas	of	unit	finding

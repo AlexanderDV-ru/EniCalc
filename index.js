@@ -1,10 +1,9 @@
-//--- Name: EniCalc/Vesion: 0.2.7a/Authors: AlexanderDV/Description: Main EniCalc .javascript. ---
+//--- Name: EniCalc/Vesion: 0.2.8a/Authors: AlexanderDV/Description: Main EniCalc .js. ---
 //--- Start of standard initialization
 //Program info
 var programInfo={
-	"packet" : "eniCalc",
 	"name" : "EniCalc",
-	"version" : "0.2.7a",
+	"version" : "0.2.8a",
 	"authors" : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -19,6 +18,89 @@ var getMsg=function(key, lang){
 	return props.msgs[lang||messagesLanguage][key]
 }
 // End of standard initialization ---
+
+//FnCalc-
+fnCalcButton.onclick=function(){
+	var fncs={
+		"=":{opr:true,func:function(formula,i){
+			fncs[formula[i-1]]={link:formula[i+1]};
+			formula.splice(i-1,3,formula[i-1])
+		}},
+		"#":{opr:true,func:function(formula,i){
+			var r=formula[i+1]+"#"+getVal(formula[i+1]);
+			fnCalcResultArea.value+=r+"\n";
+			console.log(r);
+			formula.splice(i,2,formula[i+1])
+		}},
+		"<":{opr:true,func:function(formula,i){
+			fncs[getVar(formula[i-1])]={val:eval(formula[i+1])};
+			formula.splice(i-1,3,formula[i-1])
+		}}
+	}
+	function getVal(link)
+	{
+		for(var v in fncs)
+			if(v==link)
+				return fncs[v].link?getVal(fncs[v].link):fncs[v].val
+		return link
+	}
+	function getVar(link)
+	{
+		for(var v in fncs)
+			if(v==link)
+				return fncs[v].link?getVar(fncs[v].link):v
+		return link
+	}
+	var exec=`m=55
+	n=m
+	n=0
+	5#1
+	5=3
+	5#1
+	5=5
+	n<60
+	n#y
+	m#1`
+	fnCalcResultArea.value=""
+	exec=fnCalcExecArea.value
+	console.log(exec);
+	for(var v in exec.split("\n"))
+	{
+		//console.log(exec.split("\n")[v]);
+	    var formula=[""]
+	    for(var s in exec.split("\n")[v])
+	    {
+	        formula[formula.length-1]+=exec.split("\n")[v][s]
+	        for(var v2 in fncs)
+			{
+				//console.log(formula[formula.length-1]);
+	            if(formula[formula.length-1].endsWith(v2)&&fncs[v2].opr)
+				{
+					var f=formula[formula.length-1]
+					formula[formula.length-1]=f.substr(0,f.length-f.match(v2)[0].length)
+	                formula[formula.length]=f.match(v2)[0]
+	                formula[formula.length]=""
+				}
+			}
+	    }
+		console.log(formula);
+	    for(;;)
+		{
+			var e=false
+	        for(var v2=0;v2<formula.length;v2++)
+				if(fncs[formula[v2]]&&fncs[formula[v2]].opr)
+				{
+					e=true
+					//console.log(formula);
+					fncs[formula[v2]].func(formula,v2)
+				}
+			if(!e)
+				break
+		}
+	}
+}
+//-FnCalc
+
 var expressions=["10*a+10/2*a","10+a+(15+a)","(11+a)+(8-a)","1+2*a-(5+3*a)", "5*4+1","(1+5)*4+1","((5))","(5*(3+4))","5*(2+(3+1)*2)"],prepared=[],countedInBrackets=[],counted=[],v=0
 for(var v=0;v<expressions.length;v++)
 {
@@ -479,6 +561,15 @@ function positeMovingElements(){
 
 	variablesDiv.style.left=0+"px"
 	variablesDiv.style.top=document.documentElement.clientHeight/2-variablesDiv.getBoundingClientRect().height/2+"px"
+
+	settingsDiv.style.left=0+"px"
+	settingsDiv.style.bottom=0+"px"
+
+	byPreviousActionsDecomposeDiv.style.left=document.documentElement.clientWidth/2-byPreviousActionsDecomposeDiv.getBoundingClientRect().width/2+"px"
+	byPreviousActionsDecomposeDiv.style.bottom=0+"px"
+
+	fnCalcDiv.style.right=0+"px"
+	fnCalcDiv.style.bottom=0+"px"
 }
 // Unit converter part
 for(var v2=0;document.getElementById("unitFieldNum"+v2);v2++){
@@ -630,6 +721,27 @@ graphicCanvas.height=60
 		}
 	context.putImageData(image, 0, 0)
 }
+function storageVal(key,val)
+{
+	var vals
+	try {
+		vals= JSON.parse(storage["EniCalc"])
+	} catch (e) {
+
+	}
+	if(!vals)
+		vals={}
+	if(arguments.length>=2)
+		vals[key]=val
+	storage["EniCalc"]=JSON.stringify(vals)
+	return vals[key]
+}
+function initSettings(){
+	countTypeSelect.value=storageVal("countTypeSelect")||props.settings.defaultSettings.countTypeSelect
+	countTypeSelect.onchange=function(){storageVal("countTypeSelect",countTypeSelect.value)}
+}
+initSettings()
+clearSettingsButton.onclick=function(){storage["EniCalc"]="";initSettings()}
 function typedCount(expression, resultType, variables, type, variablesJs) {
 	variables=variables||getVariables(variablesTextarea.value)
 	var str,num,res
