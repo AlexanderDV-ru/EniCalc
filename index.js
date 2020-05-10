@@ -1,22 +1,11 @@
-//--- Name: EniCalc/Vesion: 0.2.8a/Authors: AlexanderDV/Description: Main EniCalc .js. ---
-//--- Start of standard initialization
-//Program info
+//--- Name: EniCalc/Vesion: 0.2.9a/Authors: AlexanderDV/Description: Main EniCalc .js. ---
 var programInfo={
-	"name" : "EniCalc",
-	"version" : "0.2.8a",
-	"authors" : "AlexanderDV"
+	name : "EniCalc",
+	version : "0.2.9a",
+	authors : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
 document.title=programInfo.title
-// Universal local storage initialization
-var storage = window.localStorage
-
-// Messages language initialization by default value
-var messagesLanguage='ru'
-// Function for getting message by key
-var getMsg=function(key, lang){
-	return props.msgs[lang||messagesLanguage][key]
-}
 // End of standard initialization ---
 
 //FnCalc-
@@ -721,24 +710,9 @@ graphicCanvas.height=60
 		}
 	context.putImageData(image, 0, 0)
 }
-function storageVal(key,val)
-{
-	var vals
-	try {
-		vals= JSON.parse(storage["EniCalc"])
-	} catch (e) {
-
-	}
-	if(!vals)
-		vals={}
-	if(arguments.length>=2)
-		vals[key]=val
-	storage["EniCalc"]=JSON.stringify(vals)
-	return vals[key]
-}
 function initSettings(){
-	countTypeSelect.value=storageVal("countTypeSelect")||props.settings.defaultSettings.countTypeSelect
-	countTypeSelect.onchange=function(){storageVal("countTypeSelect",countTypeSelect.value)}
+	countTypeSelect.value=storageValue("countTypeSelect")||props.settings.defaultSettings.countTypeSelect
+	countTypeSelect.onchange=function(){storageValue("countTypeSelect",countTypeSelect.value)}
 }
 initSettings()
 clearSettingsButton.onclick=function(){storage["EniCalc"]="";initSettings()}
