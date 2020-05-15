@@ -135,10 +135,7 @@ if(storage[programInfo.packet+".calculatorKeyboard.save."+storage[programInfo.pa
 // Init mover-elements
 function initMovingElements(){
 	for(var v in document.getElementsByClassName("mover"))
-	{
 		addMovingElement(document.getElementsByClassName("mover")[v].parentNode, document.getElementsByClassName("mover")[v])
-		//document.getElementsByClassName("mover")[v].innerText=(document.getElementsByClassName("mover")[v].innerText||"").replace(/[$][m][o][v][e][$]/g,getMsg("move"))
-	}
 }
 //
 function setElementsTextTranslates(lang){
