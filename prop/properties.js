@@ -143,7 +143,7 @@ for(var v in props.keyboard.table)
 	}
 //	Messages	value-by-key	for	different	languages
 props.msgs = {
-	"en_US"	:	{
+	"en-US"	:	{
 		"add"	:	"Add",
 		"move"	:	"Move",
 		"graphicByFunction"	:	"Graphic by function",
