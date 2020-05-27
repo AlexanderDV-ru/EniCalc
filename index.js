@@ -139,9 +139,9 @@ function initMovingElements(){
 }
 //
 function setElementsTextTranslates(lang){
-	for(var v in props.msgs[lang||messagesLanguage])
+	for(var v in props.msgs[lang||props.msgsLang])
 		for(var v2 in document.getElementsByClassName("$"+v+"$"))
-			document.getElementsByClassName("$"+v+"$")[v2].innerText=props.msgs[lang||messagesLanguage][v]
+			document.getElementsByClassName("$"+v+"$")[v2].innerText=props.msgs[lang||props.msgsLang][v]
 }
 //
 var propCmdHandlers = {"boolean":function(args, variants, current, prop)

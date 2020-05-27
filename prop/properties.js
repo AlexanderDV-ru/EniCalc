@@ -143,7 +143,7 @@ for(var v in props.keyboard.table)
 	}
 //	Messages	value-by-key	for	different	languages
 props.msgs = {
-	"en"	:	{
+	"en_US"	:	{
 		"add"	:	"Add",
 		"move"	:	"Move",
 		"graphicByFunction"	:	"Graphic by function",
@@ -157,7 +157,7 @@ props.msgs = {
 		"calcFn"	:	"Calculate function",
 		"clearSettings"	:	"Clear settings"
 	},
-	"ru"	:	{
+	"ru-RU"	:	{
 		"add"	:	"Добавить",
 		"move"	:	"Двигать",
 		"graphicByFunction"	:	"График по функции",
@@ -597,7 +597,7 @@ function storageValue(key,val)
 }
 
 // Messages language initialization by default value
-var messagesLanguage='ru'
+props.msgsLang='ru-RU'
 // Function for getting message by key
 var getMsg=function(key, lang){
 	return props.msgs[lang||messagesLanguage][key]
