@@ -1,4 +1,3 @@
-//--- Name: EniCalc/Vesion: 0.2.9a/Authors: AlexanderDV/Description: Main EniCalc .js. ---
 var programInfo={
 	name : "EniCalc",
 	version : "0.2.9a",
