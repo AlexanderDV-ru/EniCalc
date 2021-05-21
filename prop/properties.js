@@ -1,4 +1,4 @@
-//---	Name:	DefaultProperties/Vesion:	0.1.6a/Authors:	AlexanderDV/Description:	Default-properties	.js.	---
+//---	Name:	DefaultProperties/Vesion:	0.1.7a/Authors:	AlexanderDV/Description:	Default-properties	.js.	---
 var	props={}
 props.misc = {
 	editmode	:	false,
@@ -149,6 +149,21 @@ props.msgs = {
 	"en-US"	:	{
 		"add"	:	"Add",
 		"move"	:	"Move",
+		//Examples generator
+		"examplesGenerator"	:	"Examples generator",
+		"right"	:	"Right",
+		"wrong"	:	"Wrong",
+		"addition"	:	"Addition",
+		"subtraction"	:	"Subtraction",
+		"multiplication"	:	"Multiplication",
+		"division"	:	"Division",
+		"remainder"	:	"Remainder",
+		"signs"	:	"Signs",
+		"min"	:	"Min",
+		"fixed"	:	"Fixed",
+		"action":	"Action",
+		"next"	:	"Next",
+		//
 		"graphic"	:	"Graphic",
 		"console"	:	"Console",
 		"unitConverter"	:	"Unit converter",
@@ -157,7 +172,6 @@ props.msgs = {
 		"settings"	:	"Settings",
 		"countType"	:	"Count type",
 		"byPreviousActionsDecompose"	:	"By previous action decompose",
-		"examplesGenerator"	:	"Examples generator",
 		"fnCalc"	:	"Function calculator",
 		"calcFn"	:	"Calculate function",
 		"clearSettings"	:	"Clear settings"
@@ -165,6 +179,21 @@ props.msgs = {
 	"ru-RU"	:	{
 		"add"	:	"Добавить",
 		"move"	:	"Двигать",
+		//Examples generator
+		"examplesGenerator"	:	"Генератор примеров",
+		"right"	:	"Верно",
+		"wrong"	:	"Неверно",
+		"addition"	:	"Сложение",
+		"subtraction"	:	"Вычитание",
+		"multiplication"	:	"Умножение",
+		"division"	:	"Деление",
+		"remainder"	:	"Остаток",
+		"signs"	:	"Знаки",
+		"min"	:	"Мин",
+		"fixed"	:	"Фикс",
+		"action":	"Действие",
+		"next"	:	"Далее",
+		//
 		"graphic"	:	"График",
 		"console"	:	"Консоль",
 		"unitConverter"	:	"Преобразователь единиц",
@@ -173,7 +202,6 @@ props.msgs = {
 		"settings"	:	"Настройки",
 		"countType"	:	"Тип вычисления",
 		"byPreviousActionsDecompose"	:	"Разложение по предыдущим действиям",
-		"examplesGenerator"	:	"Генератор примеров",
 		"fnCalc"	:	"Вычислитель функций",
 		"calcFn"	:	"Вычислить функцию",
 		"clearSettings"	:	"Очистить найтройки"
@@ -607,5 +635,10 @@ function storageValue(key,val)
 props.msgsLang='ru-RU'
 // Function for getting message by key
 var getMsg=function(key, lang){
-	return props.msgs[lang||messagesLanguage][key]
+	return props.msgs[lang||props.msgsLang][key]
+}
+var getKey=function(msg, lang){
+	for(let key in props.msgs[lang||props.msgsLang])
+		if(props.msgs[lang||props.msgsLang][key]==msg)
+			return key
 }

@@ -1,6 +1,6 @@
 var programInfo={
 	name : "EniCalc",
-	version : "0.3.4a",
+	version : "0.3.5a",
 	authors : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -758,17 +758,17 @@ nextBtn.onclick=()=>{
 	newField()
 }
 var lastVals=[]
-var actions={
-	"Сложение"	:	{
-		secondLessThenFirst:false,	name:"",	operator:"+",	extendedCol:-1,	extendedDisplay:"",	func:(v0,v1)=>+v0+(+v1)},
-	"Вычитание"	:	{
-		secondLessThenFirst:true,	name:"",	operator:"-",	extendedCol:-1,	extendedDisplay:"",	func:(v0,v1)=>v0-v1},
-	"Деление"	:	{
-		secondLessThenFirst:true,	name:"",	operator:"/",	extendedCol:-1,	extendedDisplay:"",	func:(v0,v1)=>v0/v1},
-	"Умножение"	:	{
-		secondLessThenFirst:false,	name:"",	operator:"*",	extendedCol:-1,	extendedDisplay:"",	func:(v0,v1)=>v0*v1},
-	"Деление с остатком"	:	{
-		secondLessThenFirst:true,	name:"",	operator:"/",	extendedCol:2,	extendedDisplay:" остаток ",	func:(v0,v1)=>[Math.floor(v0/v1),v0%v1]},
+var examplesActions={
+	"addition"	:	{
+		secondLessThenFirst:false,	operator:"+",	func:(v0,v1)=>+v0+(+v1)},
+	"subtraction"	:	{
+		secondLessThenFirst:true,	operator:"-",	func:(v0,v1)=>v0-v1},
+	"multiplication"	:	{
+		secondLessThenFirst:false,	operator:"*",	func:(v0,v1)=>v0*v1},
+	"division"	:	{
+		secondLessThenFirst:true,	operator:"/",	func:(v0,v1)=>v0/v1},
+	"remainder"	:	{
+		secondLessThenFirst:true,	operator:":",	func:(v0,v1)=>[Math.floor(v0/v1),v0%v1]},
 }
 var values=[1,2,3]
 var valuesPropsElems=[]
@@ -776,67 +776,76 @@ function valuePropsDivsFrom() {
 	for(var v in values)
 	{
 		var c=document.createElement("div")
+		c.classList.add("flexVer")
 		c.innerHTML=`
-		Signs`+values[v]+`<select id="signs`+v+`Select">
-			<option>1</option>
-			<option>2</option>
-			<option>3</option>
-			<option>4</option>
-		</select>
-		Min`+values[v]+`<input id="min`+v+`Input" value=0>
-		Fixed`+values[v]+`<input id="fixed`+v+`Input">`
+		<span class="flexHor">
+			<span class="flexVer">`+getMsg("signs")+values[v]+`</span>
+			<select style="width: max" id="signs`+v+`Select">
+				<option>1</option>
+				<option>2</option>
+				<option>3</option>
+				<option>4</option>
+			</select>
+		</span>
+		<span class="flexHor">
+			<span class="flexVer">`+getMsg("min")+values[v]+`</span>
+			<input class="flexVer" id="min`+v+`Input" value=0>
+		</span>
+		<span class="flexHor">
+			<span class="flexVer">`+getMsg("fixed")+values[v]+`</span>
+			<input class="flexVer" id="fixed`+v+`Input">
+		</span>`
 		valuesPropsDiv.appendChild(c)
 		valuesPropsElems.push({signsInput:eval("signs"+v+"Select"),minInput:eval("min"+v+"Input"),fixedInput:eval("fixed"+v+"Input")})
 	}
 }
 valuePropsDivsFrom()
-function actionSelectFrom(actions) {
+function actionSelectFrom(examplesActions) {
 	var genHtml=""
-	for(var name in actions)
-		genHtml+="<option>"+name+"</option>"
+	for(var name in examplesActions)
+		genHtml+="<option>"+getMsg(name)+"</option>"
 	actionSelect.innerHTML=genHtml
 }
-actionSelectFrom(actions)
+actionSelectFrom(examplesActions)
 
 function check() {
 	if(!rowCount)
 		return
-	var v0=eval("r_"+(rowCount-1)+"_c_"+0)
-	var v1=eval("r_"+(rowCount-1)+"_c_"+1)
-	var v2=eval("r_"+(rowCount-1)+"_c_"+2)
-	var v3=eval("r_"+(rowCount-1)+"_c_"+3)
-	var v4
-		try {
-			v4=eval("r_"+(rowCount-1)+"_c_"+4)
-		} catch (e) {
-
-		} finally {
-
+	var v=[]
+	for(var i=0;i<5;i++)
+	{
+		v[i]=document.getElementById("r_"+(rowCount-1)+"_c_"+i)
+		if(v[i])
+		{
+			v[i].contentEditable=false
+			v[i].readOnly=true
 		}
-	var inp=v0.className=="t_input"?v0:(v1.className=="t_input"?v1:v2)
-	v3.innerHTML=msgWindow(inp.value==(Array.isArray(lastVals[rowCount-1])?lastVals[rowCount-1][0]:lastVals[rowCount-1])&&(Array.isArray(lastVals[rowCount-1])?lastVals[rowCount-1][1]==v4.value:true)?"right":"wrong")
+	}
+	var inp=v[0].className=="t_input"?v[0]:(v[1].className=="t_input"?v[1]:v[2])
+	let r=inp.innerText==(Array.isArray(lastVals[rowCount-1])?lastVals[rowCount-1][0]:lastVals[rowCount-1])
+	if(Array.isArray(lastVals[rowCount-1]))
+		r=r&&lastVals[rowCount-1][1]==v[4].innerText
+	v[3].innerHTML=msgWindow(r?"right":"wrong")
+
 }
 function msgWindow(key) {
-	switch (key) {
-		case "right":
-			return "<span style=\"background:green;color:white\">"+"Right"+"</span>"
-		case "wrong":
-			return "<span style=\"background:red;color:white\">"+"Wrong"+"</span>"
-	}
+	return "<span class=\"$"+key+"$\" style=\"background:"+(key=="right"?"green":"red")+";color:white\">"+getMsg(key)+"</span>"
 }
 function newField() {
 	var genHtml=""
 	var vals=randNum()
-	vals.push(actions[actionSelect.value].func(vals[0],vals[1]))
+	vals.push(examplesActions[getKey(actionSelect.value)].func(vals[0],vals[1]))
 	var selVal=selRand()
-	genHtml+=elemByCol(vals,selVal,0)+actions[actionSelect.value].operator+elemByCol(vals,selVal,1)+"="+elemByCol(vals,selVal,2)+"<span id=\"r_"+rowCount+"_c_"+3+"\"></span>"
+	genHtml+=elemByCol(vals,selVal,0)+examplesActions[getKey(actionSelect.value)].operator+elemByCol(vals,selVal,1)+"="+elemByCol(vals,selVal,2)+"&thinsp;"+"<span id=\"r_"+rowCount+"_c_"+3+"\"></span>"
 	rowCount++
 	var nC=document.createElement("div")
 	nC.innerHTML=genHtml
 	examplesGen.appendChild(nC)
 }
 function elemByCol(vals, selVal,col) {
-	return elem(Array.isArray(vals[col])?vals[col][0]:vals[col],selVal==col?"input":"p1",col)+(Array.isArray(vals[col])?" остаток "+elem(vals[col][1],selVal==col?"input":"p1",4):"")
+	if(selVal==col)
+		lastVals.push(vals[col])
+	return elem(Array.isArray(vals[col])?vals[col][0]:vals[col],selVal==col?"input":"p1",col)+(Array.isArray(vals[col])?" "+getMsg(getKey(actionSelect.value))+":"+elem(vals[col][1],selVal==col?"input":"p1",4):"")
 }
 function selRand() {
 	return Math.floor(Math.random()*(valuesPropsElems.length-0.001))
@@ -845,7 +854,7 @@ function canSel(col) {
 	return fixedInputs[col].value==""
 }
 function randNum(max) {
-	var secondLessThenFirst=actions[actionSelect.value].secondLessThenFirst
+	var secondLessThenFirst=examplesActions[getKey(actionSelect.value)].secondLessThenFirst
 	var cantBe=secondLessThenFirst&&max!=undefined
 	var col=max!=undefined?1:0
 	var val=valuesPropsElems[col].fixedInput.value!=""?+valuesPropsElems[col].fixedInput.value:+valuesPropsElems[col].minInput.value+Math.floor(Math.random()*((cantBe?max:Math.pow(10,valuesPropsElems[col].signsInput.value))-valuesPropsElems[col].minInput.value))
@@ -865,16 +874,15 @@ function elem(val,type, col){
 			inner=sh
 			break;
 		case "input":
-			name="input"
-			lastVals.push(val)
-			props+=" value=\""+sh+"\""
+			name="span"//"input"
+			props+=" value=\""+(inner=sh)+"\" contenteditable=true"
 			break;
 		case "field":
-			name="input"
-			props+=" value=\""+sh+"\" editable=false"
+			name="span"//"input"
+			props+=" value=\""+(inner=sh)+"\" contenteditable=false readonly"
 			break;
 	}
-	return "<"+name+(props!=undefined?" "+props:"")+">"+(inner!=undefined?inner+"</"+name+">":"")
+	return "<"+name+(props!=undefined?" "+props:"")+">"+(name!="input"?inner+"</"+name+">":"")//needs !=undefined
 }
 
 //other

@@ -37,6 +37,22 @@
 			.movemin{
 				display: none;
 			}
+			.flexVer{
+				display: flex;
+				flex-direction: column;
+				flex-wrap: nowrap;
+				justify-content: flex-start;
+				align-items: stretch;
+				align-content: stretch;
+			}
+			.flexHor{
+				display: flex;
+				flex-direction: row;
+				flex-wrap: nowrap;
+				justify-content: space-between;
+				align-items: stretch;
+				align-content: stretch;
+			}
 		</style>
 	</head>
 	<body>
@@ -151,11 +167,11 @@
 
 		<div class="part" id="examplesGeneratorDiv">
 			<div id="examplesGeneratorMoverDiv" class="moverInit"></div>
-			<span>Action</span><select id="actionSelect"></select>
-			<div id="valuesPropsDiv"></div>
-			<button id="nextBtn">Next</button>
+			<span class="$action$"></span><select id="actionSelect"></select>
+			<div id="valuesPropsDiv" class="flexHor"></div>
+			<button class="$next$" id="nextBtn"></button>
 			<br>
-			<div id="examplesGen" style="vert"></div>
+			<div id="examplesGen" class="flexVer"></div>
 		</div>
 
 		<!-- Libs -->
