@@ -35,6 +35,9 @@ props.actions = {
 			{	name	:	"Factorial",	text	:	"!",	func	:	"function(a,b){var	r=1;for(var	v=b+1;v<=a;v++)r*=v;return	r}(a,b)",		a	:	2,	b	:	1	}
 		],
 		[
+			{	name	:	"Knut",			text	:	"knut",	func	:	"function(a,b){var	r=1;for(var	v=0;v<b;v++)r=Math.pow(a,r);return	r}(a,b)",		a	:	10,	b	:	2, prev:"^", rules	:	"d(^√)"	},
+		],
+		[
 			{	name	:	"Power",			text	:	"^",	func	:	"Math.pow(a,b)",		a	:	10,	b	:	2, pos:"√", prev:"*", rules	:	"d(*/)"	},
 			{	name	:	"Root",				text	:	"√",	func	:	"Math.pow(b,1/a)",	a	:	2,	b	:	4, neg:"^", rules	:	"d(*/)",rotated:true}
 		],
@@ -146,13 +149,15 @@ props.msgs = {
 	"en-US"	:	{
 		"add"	:	"Add",
 		"move"	:	"Move",
-		"graphicByFunction"	:	"Graphic by function",
+		"graphic"	:	"Graphic",
+		"console"	:	"Console",
 		"unitConverter"	:	"Unit converter",
 		"calculator"	:	"Calculator",
 		"variables"	:	"Variables",
 		"settings"	:	"Settings",
 		"countType"	:	"Count type",
 		"byPreviousActionsDecompose"	:	"By previous action decompose",
+		"examplesGenerator"	:	"Examples generator",
 		"fnCalc"	:	"Function calculator",
 		"calcFn"	:	"Calculate function",
 		"clearSettings"	:	"Clear settings"
@@ -160,13 +165,15 @@ props.msgs = {
 	"ru-RU"	:	{
 		"add"	:	"Добавить",
 		"move"	:	"Двигать",
-		"graphicByFunction"	:	"График по функции",
+		"graphic"	:	"График",
+		"console"	:	"Консоль",
 		"unitConverter"	:	"Преобразователь единиц",
 		"calculator"	:	"Калькулятор",
 		"variables"	:	"Переменные",
 		"settings"	:	"Настройки",
 		"countType"	:	"Тип вычисления",
 		"byPreviousActionsDecompose"	:	"Разложение по предыдущим действиям",
+		"examplesGenerator"	:	"Генератор примеров",
 		"fnCalc"	:	"Вычислитель функций",
 		"calcFn"	:	"Вычислить функцию",
 		"clearSettings"	:	"Очистить найтройки"

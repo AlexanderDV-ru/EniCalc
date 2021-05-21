@@ -1,6 +1,6 @@
 var programInfo={
 	name : "EniCalc",
-	version : "0.2.9a",
+	version : "0.3.4a",
 	authors : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -133,8 +133,16 @@ if(storage[programInfo.packet+".calculatorKeyboard.save."+storage[programInfo.pa
 	props.keyboard=JSON.parse(storage[programInfo.packet+".calculatorKeyboard.save."+storage[programInfo.packet+".calculatorKeyboard.last"]])
 // Init mover-elements
 function initMovingElements(){
-	for(var v in document.getElementsByClassName("mover"))
-		addMovingElement(document.getElementsByClassName("mover")[v].parentNode, document.getElementsByClassName("mover")[v])
+	let todel=[]
+	for(let mel of document.getElementsByClassName("moverInit"))
+	{
+		mel.innerHTML=`<span class="move">⇄</span><span class="$`+mel.id.replace("MoverDiv","")+`$"></span>`
+		mel.classList.add("mover")
+		todel.push(mel)
+		addMovingElement(mel.parentNode, mel)
+	}
+	for(let mel of todel)
+		mel.classList.remove("moverInit")
 }
 //
 function setElementsTextTranslates(lang){
@@ -544,8 +552,11 @@ function positeMovingElements(){
 	graphicDiv.style.right=0+"px"
 	graphicDiv.style.top=document.documentElement.clientHeight/2-graphicDiv.getBoundingClientRect().height/2+"px"
 
-	variablesDiv.style.left=0+"px"
-	variablesDiv.style.top=document.documentElement.clientHeight/2-variablesDiv.getBoundingClientRect().height/2+"px"
+	variablesDiv.style.right=0+"px"
+	variablesDiv.style.top=0+"px"//document.documentElement.clientHeight/2-variablesDiv.getBoundingClientRect().height/2+"px"
+
+	examplesGeneratorDiv.style.left=0+"px"
+	examplesGeneratorDiv.style.top=document.documentElement.clientHeight/2-variablesDiv.getBoundingClientRect().height/2+"px"
 
 	settingsDiv.style.left=0+"px"
 	settingsDiv.style.bottom=0+"px"
@@ -741,6 +752,180 @@ function typedCount(expression, resultType, variables, type, variablesJs) {
 	else str=res
 	return (resultType=="number"?(str?stringToNumber(str):num):(resultType=="string"?(num?numberToString(num):str):res))
 }
+//Examples generator part
+nextBtn.onclick=()=>{
+	check()
+	newField()
+}
+var lastVals=[]
+var actions={
+	"Сложение"	:	{
+		secondLessThenFirst:false,	name:"",	operator:"+",	extendedCol:-1,	extendedDisplay:"",	func:(v0,v1)=>+v0+(+v1)},
+	"Вычитание"	:	{
+		secondLessThenFirst:true,	name:"",	operator:"-",	extendedCol:-1,	extendedDisplay:"",	func:(v0,v1)=>v0-v1},
+	"Деление"	:	{
+		secondLessThenFirst:true,	name:"",	operator:"/",	extendedCol:-1,	extendedDisplay:"",	func:(v0,v1)=>v0/v1},
+	"Умножение"	:	{
+		secondLessThenFirst:false,	name:"",	operator:"*",	extendedCol:-1,	extendedDisplay:"",	func:(v0,v1)=>v0*v1},
+	"Деление с остатком"	:	{
+		secondLessThenFirst:true,	name:"",	operator:"/",	extendedCol:2,	extendedDisplay:" остаток ",	func:(v0,v1)=>[Math.floor(v0/v1),v0%v1]},
+}
+var values=[1,2,3]
+var valuesPropsElems=[]
+function valuePropsDivsFrom() {
+	for(var v in values)
+	{
+		var c=document.createElement("div")
+		c.innerHTML=`
+		Signs`+values[v]+`<select id="signs`+v+`Select">
+			<option>1</option>
+			<option>2</option>
+			<option>3</option>
+			<option>4</option>
+		</select>
+		Min`+values[v]+`<input id="min`+v+`Input" value=0>
+		Fixed`+values[v]+`<input id="fixed`+v+`Input">`
+		valuesPropsDiv.appendChild(c)
+		valuesPropsElems.push({signsInput:eval("signs"+v+"Select"),minInput:eval("min"+v+"Input"),fixedInput:eval("fixed"+v+"Input")})
+	}
+}
+valuePropsDivsFrom()
+function actionSelectFrom(actions) {
+	var genHtml=""
+	for(var name in actions)
+		genHtml+="<option>"+name+"</option>"
+	actionSelect.innerHTML=genHtml
+}
+actionSelectFrom(actions)
+
+function check() {
+	if(!rowCount)
+		return
+	var v0=eval("r_"+(rowCount-1)+"_c_"+0)
+	var v1=eval("r_"+(rowCount-1)+"_c_"+1)
+	var v2=eval("r_"+(rowCount-1)+"_c_"+2)
+	var v3=eval("r_"+(rowCount-1)+"_c_"+3)
+	var v4
+		try {
+			v4=eval("r_"+(rowCount-1)+"_c_"+4)
+		} catch (e) {
+
+		} finally {
+
+		}
+	var inp=v0.className=="t_input"?v0:(v1.className=="t_input"?v1:v2)
+	v3.innerHTML=msgWindow(inp.value==(Array.isArray(lastVals[rowCount-1])?lastVals[rowCount-1][0]:lastVals[rowCount-1])&&(Array.isArray(lastVals[rowCount-1])?lastVals[rowCount-1][1]==v4.value:true)?"right":"wrong")
+}
+function msgWindow(key) {
+	switch (key) {
+		case "right":
+			return "<span style=\"background:green;color:white\">"+"Right"+"</span>"
+		case "wrong":
+			return "<span style=\"background:red;color:white\">"+"Wrong"+"</span>"
+	}
+}
+function newField() {
+	var genHtml=""
+	var vals=randNum()
+	vals.push(actions[actionSelect.value].func(vals[0],vals[1]))
+	var selVal=selRand()
+	genHtml+=elemByCol(vals,selVal,0)+actions[actionSelect.value].operator+elemByCol(vals,selVal,1)+"="+elemByCol(vals,selVal,2)+"<span id=\"r_"+rowCount+"_c_"+3+"\"></span>"
+	rowCount++
+	var nC=document.createElement("div")
+	nC.innerHTML=genHtml
+	examplesGen.appendChild(nC)
+}
+function elemByCol(vals, selVal,col) {
+	return elem(Array.isArray(vals[col])?vals[col][0]:vals[col],selVal==col?"input":"p1",col)+(Array.isArray(vals[col])?" остаток "+elem(vals[col][1],selVal==col?"input":"p1",4):"")
+}
+function selRand() {
+	return Math.floor(Math.random()*(valuesPropsElems.length-0.001))
+}
+function canSel(col) {
+	return fixedInputs[col].value==""
+}
+function randNum(max) {
+	var secondLessThenFirst=actions[actionSelect.value].secondLessThenFirst
+	var cantBe=secondLessThenFirst&&max!=undefined
+	var col=max!=undefined?1:0
+	var val=valuesPropsElems[col].fixedInput.value!=""?+valuesPropsElems[col].fixedInput.value:+valuesPropsElems[col].minInput.value+Math.floor(Math.random()*((cantBe?max:Math.pow(10,valuesPropsElems[col].signsInput.value))-valuesPropsElems[col].minInput.value))
+	return max!=undefined?val:[val,randNum(val)]
+}
+
+var valIn={input:false,field:true,p1:true}
+
+var generatedHtml=""
+var rowCount=0
+function elem(val,type, col){
+	var sh=valIn&&valIn[type]?val:""
+	var name,props="id=\""+"r_"+rowCount+"_c_"+col+"\" class=\""+"t_"+type+"\"",inner
+	switch (type) {
+		default:
+			name=type
+			inner=sh
+			break;
+		case "input":
+			name="input"
+			lastVals.push(val)
+			props+=" value=\""+sh+"\""
+			break;
+		case "field":
+			name="input"
+			props+=" value=\""+sh+"\" editable=false"
+			break;
+	}
+	return "<"+name+(props!=undefined?" "+props:"")+">"+(inner!=undefined?inner+"</"+name+">":"")
+}
+
+//other
+let otherP=()=>{
+	const _2sqr2=Math.pow(2,0.5)
+	const _2sqr2pow2sqr2=Math.pow(_2sqr2,_2sqr2)
+	let hyper=(h/*hyperacy*/,c/*count*/,n/*number*/)=>{
+		if(h==-1)
+			return ++n
+		let r=0//result
+		for(let i=0;i<c;i++)
+			r=hyper(h-1,i==0?n:r,n)
+		return r
+	}
+	let hyper2=(h/*hyperacy*/,c/*count*/,n/*number*/)=>{
+		if(h==-1)
+			return "("+n+"'"+c+")"
+		let r="("+n+")"//result
+		for(let i=0;i<c;i++)
+			r="("+n+"+"+hyper2(n,h-1,r)+")"
+		return r
+	}
+	let hyper_power=(h/*hyperacy*/,c/*count*/,n/*number*/)=>{
+		let signs=["'","+","*","^","^^","^^^"]
+		let r=[n+signs[h]+c,n+""]
+		r[-3]=h
+		r[-2]=c
+		r[-1]=n
+		if(h==0){r[1]=++n+"";return r}
+		for(let i=0;i<c;i++)
+		{
+			r[1]="("+r[1]+signs[h-1]+n+")"
+			r[2]=r[1].replace("("+hyper_power(h-1,n,n)[0]+")",hyper_power(h-1,n,n)[1])
+			r[3]=hyper_power(h-1,r[3],n)[1]
+		}
+		return r
+	}
+	let costyl=(x)=>[1.00,0.99,0.970864542482,0.9,0.865,0.8,0.78,0.72,0.70,0.65][x]
+	let f=(x)=>Math.pow(x,_2sqr2pow2sqr2*costyl(x))
+	for(let n=0;n<20;n++)
+		console.log(n,f(n))
+
+	for(let x=0;x<5;x++)
+	for(let y=0;y<3;y++)
+	for(let z=0;z<3;z++){
+		let h=x,c=y,n=z,r=hyper(h,c,n),str=hyper_power(h,c,n)
+		console.log(/*x,h,c,r,*/str/*,x+(h==0?"+":(h==1?"*":("^")))+c+"="+r*/)
+	}
+}
+//Realistic mathematical universal numbers
+
 //
 updateCalculatorKeyboard()
 updateUnitConverter()

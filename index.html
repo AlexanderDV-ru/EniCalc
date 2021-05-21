@@ -15,29 +15,41 @@
 				width: 300px;
 				height: 120px;
 			}
+			:focus{
+				outline:0px;
+			}
 			.maxWidth {
 				width: 100%;
 			}
 			.maxHeight {
 				height: 100%;
 			}
+			#examplesGen,.t_input{
+				font-size: x-large;
+			}
+			.part{
+				position:absolute;
+				background-color: rgb(200,210,255);
+			}
+			.mover{
+				background-color: white;
+			}
+			.movemin{
+				display: none;
+			}
 		</style>
 	</head>
 	<body>
-		<div style="position:absolute;background-color: rgb(200,210,255)" id="fnCalcDiv">
-			<div id="fnCalcMoverDiv" class="mover">
-				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$fnCalc$"></span>
-			</div>
+		<div class="part" id="fnCalcDiv">
+			<div id="fnCalcMoverDiv" class="moverInit"></div>
 			<textarea id="fnCalcExecArea"></textarea>
 			<br>
 			<button id="fnCalcButton" class="$calcFn$"></button>
 			<br>
 			<textarea id="fnCalcResultArea"></textarea>
 		</div>
-		<div style="position:absolute;background-color: rgb(200,210,255)" id="unitConverterDiv">
-			<div id="unitConverterMoverDiv" class="mover">
-				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$unitConverter$"></span>
-			</div>
+		<div class="part" id="unitConverterDiv">
+			<div id="unitConverterMoverDiv" class="moverInit"></div>
 			<table id="unitConverterTable">
 				<tr>
 					<td colspan="3">
@@ -63,10 +75,8 @@
 			</table>
 			<button id="addUnitFieldButton" class="$add$">Scripts aren't working If you see this message!</button>
 		</div>
-		<div style="position:absolute;background-color: rgb(200,210,255)" id="graphicDiv">
-			<div id="graphicMoverDiv" class="mover">
-				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$graphicByFunction$"></span>
-			</div>
+		<div class="part" id="graphicDiv">
+			<div id="graphicMoverDiv" class="moverInit"></div>
 			<canvas id="graphicCanvas"></canvas>
 			<br>
 			<input type="number" id="graphicXOffsetInput" value="-50">
@@ -83,10 +93,8 @@
 			<input id="graphicFunction1Input" value="(y==-x)*0.5">
 			<input type="color" id="graphicColor1Input">
 		</div>
-		<div style="position:absolute;background-color: rgb(200,210,255)" id="calculatorDiv">
-			<div id="calculatorMoverDiv" class="mover">
-				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$calculator$"></span>
-			</div>
+		<div class="part" id="calculatorDiv">
+			<div id="calculatorMoverDiv" class="moverInit"></div>
 			<table id="calculatorTable">
 				<tr>
 					<td>
@@ -116,16 +124,12 @@
 				</tr>
 			</table>
 		</div>
-		<div style="position:absolute;background-color: rgb(200,210,255)" id="variablesDiv">
-			<div id="variablesMoverDiv" class="mover">
-				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$variables$"></span>
-			</div>
+		<div class="part" id="variablesDiv">
+			<div id="variablesMoverDiv" class="moverInit"></div>
 			<textarea class="maxWidth" style="min-width: 193px;border-width: 2px 0px 2px 0px;" id="variablesTextarea">a=0=0</textarea>
 		</div>
-		<div style="position:absolute;background-color: rgb(200,210,255)" id="settingsDiv">
-			<div id="settingsMoverDiv" class="mover">
-				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$settings$"></span>
-			</div>
+		<div class="part" id="settingsDiv">
+			<div id="settingsMoverDiv" class="moverInit"></div>
 			<span class="$countType$"></span>
 			<select class="maxWidth" id="countTypeSelect">
 				<option>New default</option>
@@ -136,13 +140,23 @@
 			</select>
 			<button id="clearSettingsButton" class="$clearSettings$">Scripts aren't working If you see this message!</button>
 		</div>
-		<div style="position:absolute;background-color: rgb(200,210,255)" id="byPreviousActionsDecomposeDiv">
-			<div id="byPreviousActionsDecomposeMoverDiv" class="mover">
-				<span class="$move$">Scripts aren't working If you see this message!</span> - <span class="$byPreviousActionsDecompose$"></span>
-			</div>
+		<div class="part" id="byPreviousActionsDecomposeDiv">
+			<div id="byPreviousActionsDecomposeMoverDiv" class="moverInit"></div>
 			<textarea class="maxWidth" style="min-width: 193px;border-width: 2px 0px 2px 0px;" id="byPreviousActionsDecomposeTextarea"></textarea>
 		</div>
-		<textarea id="consoleTextarea"></textarea>
+		<div class="part" id="consoleDiv">
+			<div id="consoleMoverDiv" class="moverInit"></div>
+			<textarea id="consoleTextarea"></textarea>
+		</div>
+
+		<div class="part" id="examplesGeneratorDiv">
+			<div id="examplesGeneratorMoverDiv" class="moverInit"></div>
+			<span>Action</span><select id="actionSelect"></select>
+			<div id="valuesPropsDiv"></div>
+			<button id="nextBtn">Next</button>
+			<br>
+			<div id="examplesGen" style="vert"></div>
+		</div>
 
 		<!-- Libs -->
 
