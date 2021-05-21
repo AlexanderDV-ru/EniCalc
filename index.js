@@ -1,6 +1,6 @@
 var programInfo={
 	name : "EniCalc",
-	version : "0.3.5a",
+	version : "0.3.6a",
 	authors : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -926,14 +926,95 @@ let otherP=()=>{
 		console.log(n,f(n))
 
 	for(let x=0;x<5;x++)
-	for(let y=0;y<3;y++)
-	for(let z=0;z<3;z++){
-		let h=x,c=y,n=z,r=hyper(h,c,n),str=hyper_power(h,c,n)
-		console.log(/*x,h,c,r,*/str/*,x+(h==0?"+":(h==1?"*":("^")))+c+"="+r*/)
-	}
+		for(let y=0;y<3;y++)
+			for(let z=0;z<3;z++){
+				let h=x,c=y,n=z,r=hyper(h,c,n),str=hyper_power(h,c,n)
+				console.log(/*x,h,c,r,*/str/*,x+(h==0?"+":(h==1?"*":("^")))+c+"="+r*/)
+			}
 }
 //Realistic mathematical universal numbers
+let ntz=(n)=>Number.isNaN(+n)?0:+n
+let opn=(o,x,y)=>o==">"?(x>y?1:(x<y?-1:0)):x+y
+let log0=""
+let operate=(operator,...operands)=>{
+	operands=Array.isArray(operands)?(operands.length==1&&Array.isArray(operands[0])?operands[0]:operands):[operands]
 
+	switch (operator) {
+		case "+":
+			let naturals	=	[operands[0].natural,	operands[1].natural]
+			let rotations	=	[operands[0].rotation,	operands[1].rotation]
+			naturals[-2]	=	""
+			naturals[-3]	=	"0"
+			rotations[-2]	=	rotations[-3]	=	operate(">",operands[0],operands[1]).rotation
+			for(let i=0;i<Math.max(naturals[0].length,naturals[1].length);i++)
+			{
+				let r=ntz(naturals[0][i])*(rotations[0]>=2?-1:+1)+ntz(naturals[1][i])*(rotations[1]>=2?-1:+1)
+				//rotations[-2]==2?10-r:r
+				log0+=ntz(naturals[0][i])+"+"+ntz(naturals[1][i])+"="+r+" "+(rotations[-2]==2?-1:1)+"\n"
+				naturals[-2]+=((r<0?-1:1)*(rotations[-2]==2?-1:1)<0?10-r:(r<0?-r:r))%10
+				naturals[-3]+=(/*(r<0?-1:1)**/(rotations[-2]==2?-1:1)>=0?(r-r%10)/10:(r<0&&!((rotations[0]>=2)!=(rotations[1]>=2))?1:0))
+			}
+			let remus=[null,null,new Remu(naturals[-2],rotations[-2]),new Remu(naturals[-3],rotations[-3])]
+			return naturals[-3].replace(/[0]+/,"")!=""?operate("+",remus[2],remus[3]):remus[2]
+		case "-":return operate("+",operands[0],operands[1].rotated())
+		case ">":
+			let t=0,m=(operands[0].rotation==2||operands[1].rotation==2?-1:1)//*(operands[1].rotation==2?-1:1)
+			t=t!=0?t:opn(">",operands[1].rotation,operands[0].rotation)
+			if(t!=0)
+				return new Remu(1,t!=1?2:0)
+			t=t!=0?t:opn(">",operands[0].natural.length,operands[1].natural.length)
+			for(let i=operands[0].natural.length-1;i>=0;i--)
+			{
+				if(t!=0)
+					return new Remu(1,t!=m?2:0)
+				t=t!=0?t:opn(">",operands[0].natural[i],operands[1].natural[i])
+			}
+			return new Remu(t==0?0:1,t!=m?2:0)
+		default:
+
+	}
+}
+function Remu(n,r){
+	if(n instanceof Remu||r!=undefined){
+		let u=r==undefined
+		this.natural=(u?n.natural:n)+""
+		this.rotation=(4+(u?n.rotation:r)%4)%4
+	}
+	else {
+		n+=""
+		this.natural=""
+		this.rotation=n.startsWith("-")?2:0
+		for(;n.startsWith("-")||n.startsWith("0");)
+			n=n.substr(1)
+		for(let l of n+"")
+			this.natural=l+this.natural
+	}
+	this.rotated=(rot)=>new Remu(this.natural,this.rotation+(rot!=undefined?rot:2))
+	this.toString=(showDefault)=>{
+		let natural1=""
+		for(let l of this.natural)
+			natural1=l+natural1
+		for(;natural1.startsWith("0");)
+			natural1=natural1.substr(1)
+		return (this.rotation>=2?"-":(showDefault?"+":""))+natural1+(this.rotation%2==1?"i":(showDefault?"n":""))
+	}
+	this.toNumber=()=>ntz(+this.toString())
+	//this.operate=(operator,...operands)=>operate(operator,[this].push(Array.isArray(operands)?operands:[operands]))
+}
+let remus=[new Remu("14789632512345678909876543210"),new Remu("555")]
+console.log("test start");
+let log="",o="+",n,m
+for(let x=-20;x<20;x++)
+	for(let y=-20;y<20;y++)
+	{
+		n=opn(o,x,y)
+		m=operate(o,new Remu(x),new Remu(y))
+		t=m.toNumber()
+		log+=n!=t?(x+o+y+"="+n+" "+t+"\n"):""
+	}
+console.log(log+"test end");
+console.log(log0);
+console.log(operate("+",remus[0],remus[0]).toString());
 //
 updateCalculatorKeyboard()
 updateUnitConverter()
