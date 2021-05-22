@@ -72,52 +72,52 @@ props.keyboard = {
 	default	:	{	text	:	null,	func	:	"enter(key.text)",	disabled	:	false},
 	table	:	[
 		[
-			{	name	:	"MemoryClear",	text	:	"MC",	func	:	"",	disabled	:	true	},
-			{	name	:	"MemoryR",			text	:	"MR",	func	:	"",	disabled	:	true	},
-			{	name	:	"MemorySave",		text	:	"MS",	func	:	"",	disabled	:	true	},
-			{	name	:	"MemoryMinus",	text	:	"M-",	func	:	"",	disabled	:	true	},
-			{	name	:	"MemoryPlus",		text	:	"M+",	func	:	"",	disabled	:	true	}
+			{	name	:	"MemoryClear",			text	:	"MC",		func	:	"",	disabled	:	true	},
+			{	name	:	"MemoryR",				text	:	"MR",		func	:	"",	disabled	:	true	},
+			{	name	:	"MemorySave",			text	:	"MS",		func	:	"",	disabled	:	true	},
+			{	name	:	"MemoryMinus",			text	:	"M-",		func	:	"",	disabled	:	true	},
+			{	name	:	"MemoryPlus",			text	:	"M+",		func	:	"",	disabled	:	true	}
 		],
 		[
-			{	name	:	"Left",					text	:	"◄",		func	:	"left()",			},
-			{	name	:	"Right",				text	:	"►",		func	:	"right()",		},
-			{	name	:	"Clear",				text	:	"C",		func	:	"clear()",		},
-			{	name	:	"Backspace",		text	:	"←",		func	:	"backspace()"	}
+			{	name	:	"Left",					text	:	1?"←"	:"►",func	:	"left()",			},
+			{	name	:	"Right",				text	:	1?"→"	:"►",func	:	"right()",		},
+			{	name	:	"Clear",				text	:	1?"CA"	:"C",func	:	"clear()",		},
+			{	name	:	"Backspace",			text	:	1?"◄"	:"←",func	:	"backspace()"	}
 		],
 		[
-			{	name	:	"BracketLeft",	text	:	"(",		func	:	"enter('(')"		},
-			{	name	:	"BracketRight",	text	:	")",		func	:	"enter(')')"		},
-			{	name	:	"Comma",				text	:	",	",	func	:	"enter(',')"		}
+			{	name	:	"BracketLeft",			text	:	"(",		func	:	"enter('(')"		},
+			{	name	:	"BracketRight",			text	:	")",		func	:	"enter(')')"		},
+			{	name	:	"Comma",				text	:	",	",		func	:	"enter(',')"		}
 		],
 		[
 			{	name	:	"Equals",				text	:	"==",		func	:	"enter('==')"		},
 			{	name	:	"More",					text	:	">",		func	:	"enter('>')"		},
 			{	name	:	"Less",					text	:	"<",		func	:	"enter('<')"		},
-			{	name	:	"MoreOrEquals",	text	:	">=",		func	:	"enter('>=')"		},
-			{	name	:	"LessOrEquals",	text	:	"<=",		func	:	"enter('<=')"		},
-			{	name	:	"NotEquals",		text	:	"`=",		func	:	"enter('`=')"		}
+			{	name	:	"MoreOrEquals",			text	:	">=",		func	:	"enter('>=')"		},
+			{	name	:	"LessOrEquals",			text	:	"<=",		func	:	"enter('<=')"		},
+			{	name	:	"NotEquals",			text	:	"`=",		func	:	"enter('`=')"		}
 		],
 		[
 			{	name	:	"And",					text	:	"&&",		func	:	"enter('&&')"		},
-			{	name	:	"Or",						text	:	"||",		func	:	"enter('||')"		},
+			{	name	:	"Or",					text	:	"||",		func	:	"enter('||')"		},
 			{	name	:	"Not",					text	:	"`",		func	:	"enter('`')"		}
 		],
 		[
-			{	name	:	"Remainder",		text	:	"#",		func	:	"enter('#')",	},
+			{	name	:	"Remainder",			text	:	"#",		func	:	"enter('#')",	},
 			{	name	:	"Root",					text	:	"√",		func	:	"enter('√')",	},
 			{	name	:	"Power",				text	:	"^",		func	:	"enter('^')",	},
-			{	name	:	"Factorial",		text	:	"!",		func	:	"enter('!')"	}
+			{	name	:	"Factorial",			text	:	"!",		func	:	"enter('!')"	}
 		],
 		[
-			{	name	:	"DivideWithoutRemainder",				text	:	":",		func	:	"enter(':')"	},
+			{	name	:	"DivideWithoutRemainder",text	:	":",		func	:	"enter(':')"	},
 			{	name	:	"Divide",				text	:	"/",		func	:	"enter('/')"	},
 			{	name	:	"Seven",				text	:	"7",		func	:	"enter('7')"	},
 			{	name	:	"Eight",				text	:	"8",		func	:	"enter('8')"	},
 			{	name	:	"Nine",					text	:	"9",		func	:	"enter('9')"	}
 		],
 		[
-			{	name	:	"Percent",			text	:	"%",		func	:	"enter('%')"	},
-			{	name	:	"Multiply",			text	:	"*",		func	:	"enter('*')"	},
+			{	name	:	"Percent",				text	:	"%",		func	:	"enter('%')"	},
+			{	name	:	"Multiply",				text	:	"*",		func	:	"enter('*')"	},
 			{	name	:	"Four",					text	:	"4",		func	:	"enter('4')"	},
 			{	name	:	"Five",					text	:	"5",		func	:	"enter('5')"	},
 			{	name	:	"Six",					text	:	"6",		func	:	"enter('6')"	}
@@ -611,7 +611,31 @@ for(var v in props.unitGroups)
 			props.unitGroups["Все"].push(props.unitGroups[v][v2])
 	}
 
-
+props.remu={}
+function InternalValues(){
+	this.fr=this.fullRotation=4
+	this.zr=this.zeroRotation=this.fullRotation*0
+	this.hr=this.halfRotation=this.fullRotation/2
+	this.ir=this.imaginaryRotation=this.fullRotation/4
+	this.rx=this.radix=10
+	props.remu.iv=props.remu.internalValues=this
+}
+function InternalSymbols(){
+	let example={"i":"i","n":"n","+":"+","-":"-"}
+	for(let e in example)
+		this[e]=example[e]
+	props.remu.is=props.remu.internalSymbols=this
+}
+function ExternalSymbols(){
+	let example={"i":"i","n":"n","+":"+","-":"-"}
+	for(let e in example)
+		this[e]=example[e]
+	props.remu.es=props.remu.externalSymbols=this
+}
+new InternalValues()
+new InternalSymbols()
+new ExternalSymbols()
+console.log(props.remu);
 
 // Universal local storage initialization
 var storage = window.localStorage

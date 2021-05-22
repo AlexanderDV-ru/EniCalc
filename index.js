@@ -1,6 +1,6 @@
 var programInfo={
 	name : "EniCalc",
-	version : "0.3.6a",
+	version : "0.3.8a",
 	authors : "AlexanderDV"
 }
 programInfo.title= programInfo.name + " v" + programInfo.version + " by " + programInfo.authors
@@ -934,29 +934,51 @@ let otherP=()=>{
 }
 //Realistic mathematical universal numbers
 let ntz=(n)=>Number.isNaN(+n)?0:+n
-let opn=(o,x,y)=>o==">"?(x>y?1:(x<y?-1:0)):x+y
+let opn=(o,x,y)=>{
+	switch (o) {
+		case "+":
+			return x+y
+		case "-":
+			return x-y
+		case "*":
+			return x*y
+		case "/":
+			return x/y
+		case ">":
+			return (x>y?1:(x<y?-1:0))
+		default:
+
+	}
+}
 let log0=""
 let operate=(operator,...operands)=>{
 	operands=Array.isArray(operands)?(operands.length==1&&Array.isArray(operands[0])?operands[0]:operands):[operands]
 
 	switch (operator) {
 		case "+":
-			let naturals	=	[operands[0].natural,	operands[1].natural]
-			let rotations	=	[operands[0].rotation,	operands[1].rotation]
-			naturals[-2]	=	""
-			naturals[-3]	=	"0"
-			rotations[-2]	=	rotations[-3]	=	operate(">",operands[0],operands[1]).rotation
-			for(let i=0;i<Math.max(naturals[0].length,naturals[1].length);i++)
+			let ons=[operands[0].natural,operands[1].natural],rns=["","0"]
+			let rot=operate(">",new Remu(ons[0],0),new Remu(ons[1],0)).rotation
+			let ors=[operands[0].rotation,operands[1].rotation],rrs=[rot<2?ors[0]:ors[1],rot<2?ors[1]:ors[0]]
+			//log0+=ors[0]+" "+ons[0]+" "+ors[1]+" "+ons[1]+" "+rot+" "+rrs[0]+"\n"
+			for(let i=0;i<Math.max(ons[0].length,ons[1].length);i++)
 			{
-				let r=ntz(naturals[0][i])*(rotations[0]>=2?-1:+1)+ntz(naturals[1][i])*(rotations[1]>=2?-1:+1)
-				//rotations[-2]==2?10-r:r
-				log0+=ntz(naturals[0][i])+"+"+ntz(naturals[1][i])+"="+r+" "+(rotations[-2]==2?-1:1)+"\n"
-				naturals[-2]+=((r<0?-1:1)*(rotations[-2]==2?-1:1)<0?10-r:(r<0?-r:r))%10
-				naturals[-3]+=(/*(r<0?-1:1)**/(rotations[-2]==2?-1:1)>=0?(r-r%10)/10:(r<0&&!((rotations[0]>=2)!=(rotations[1]>=2))?1:0))
+				let r=ntz(ons[0][i])*(ors[0]>=2?-1:+1)+ntz(ons[1][i])*(ors[1]>=2?-1:+1)
+				//if(ntz(ons[0][i])*(ors[0]>=2?-1:+1)==-9&&ntz(ons[1][i])*(ors[1]>=2?-1:+1)==-9)
+				//log0+=ntz(ons[0][i])*(ors[0]>=2?-1:+1)+"+"+ntz(ons[1][i])*(ors[1]>=2?-1:+1)+"="+r+" "+(rrs[0]==2?-1:1)+" "+(r>0&&rrs[0]==2?1:(r-r%10)/10)+" "
+				let ro=(r<0?-r:r)
+				rns[0]+=(r<0&&rrs[0]==0?10+r:(r<0||rrs[0]==2?10-r:ro))%10
+				rns[1]+=r>0&&rrs[0]==2?1:(r<0&&rrs[0]==0?1:(ro-ro%10)/10)
 			}
-			let remus=[null,null,new Remu(naturals[-2],rotations[-2]),new Remu(naturals[-3],rotations[-3])]
-			return naturals[-3].replace(/[0]+/,"")!=""?operate("+",remus[2],remus[3]):remus[2]
+			let remus=[new Remu(rns[0],rrs[0],operands[0].divider),new Remu(rns[1],rrs[1])]
+			//log0+=ors[0]+" "+ons[0]+" "+ors[1]+" "+ons[1]+" "+rns[0]+" "+rns[1]+"\n"
+			return rns[1].replace(/[0]+/,"")!=""?operate("+",remus[0],remus[1]):remus[0]
 		case "-":return operate("+",operands[0],operands[1].rotated())
+		case "*":{
+			let result=new Remu(0,0,operands[0].divider)
+			for(let i=0;i<Math.max(operands[1].toNumber(),-operands[1].toNumber());i++)
+				result=operate(operands[1].toNumber()<0?"-":"+",result,operands[0])
+			return result
+		}
 		case ">":
 			let t=0,m=(operands[0].rotation==2||operands[1].rotation==2?-1:1)//*(operands[1].rotation==2?-1:1)
 			t=t!=0?t:opn(">",operands[1].rotation,operands[0].rotation)
@@ -974,47 +996,91 @@ let operate=(operator,...operands)=>{
 
 	}
 }
-function Remu(n,r){
-	if(n instanceof Remu||r!=undefined){
-		let u=r==undefined
-		this.natural=(u?n.natural:n)+""
-		this.rotation=(4+(u?n.rotation:r)%4)%4
+let naturalUpdate=(str)=>{
+	str=(str+"").replace(new RegExp("[^"+mathsProps.numberForms.default.digits+"]","g"),"")
+	for(;str.endsWith("0");)
+		str=str.substr(0,str.length-1)
+	return str
+}
+function Remu(n,r,d){
+	//Functions
+	this.update=()=>{
+		this.natural=naturalUpdate(this.natural)
+
+		let fr=this.internalValues.fullRotation
+		this.rotation=this.natural==""?undefined:(fr+(this.rotation||0)%fr)%fr
+
+		this.divider=naturalUpdate(this.divider)||"1"
+
+		this.numerator=this.natural
+		this.denominator=this.divider
 	}
-	else {
-		n+=""
-		this.natural=""
-		this.rotation=n.startsWith("-")?2:0
-		for(;n.startsWith("-")||n.startsWith("0");)
-			n=n.substr(1)
-		for(let l of n+"")
-			this.natural=l+this.natural
-	}
-	this.rotated=(rot)=>new Remu(this.natural,this.rotation+(rot!=undefined?rot:2))
+	this.rotated=(rot)=>new Remu(this.natural,this.rotation+(rot!=undefined?rot:this.internalValues.halfRotation))
+	this.operated=(operator,operands)=>operate(operator,Array.isArray(operands)?[this,...operands]:[this,operands])
 	this.toString=(showDefault)=>{
-		let natural1=""
+		let natural1="",sd=showDefault
 		for(let l of this.natural)
 			natural1=l+natural1
 		for(;natural1.startsWith("0");)
 			natural1=natural1.substr(1)
-		return (this.rotation>=2?"-":(showDefault?"+":""))+natural1+(this.rotation%2==1?"i":(showDefault?"n":""))
+		return (this.rotation>=this.internalValues.halfRotation?this.externalSymbols["-"]:(showDefault?this.externalSymbols["+"]:""))+natural1+(this.rotation%this.internalValues.halfRotation==this.internalValues.imaginaryRotation?this.externalSymbols["i"]:(showDefault?this.externalSymbols["n"]:""))
 	}
-	this.toNumber=()=>ntz(+this.toString())
+	this.fromString=(str)=>{
+		str+=""
+		this.natural=""
+		this.rotation=str.startsWith("-")?this.internalValues.halfRotation:this.internalValues.zeroRotation
+		for(let l of str)
+			this.natural=l+this.natural
+		this.update()
+	}
+	this.fromRemu=(remu)=>{
+		this.natural=remu.natural
+		this.rotation=remu.rotation
+		this.divider=remu.divider
+		this.update()
+	}
+	this.fromArray=(arr)=>{
+		this.natural=arr[0]
+		this.rotation=arr[1]
+		this.divider=arr[2]
+		this.update()
+	}
+	this.toNumber=()=>ntz(+this.toString())/this.divider
+	this.fromNumber=(num)=>{
+		this.fromString(num+"")
+		this.update()
+	}
+
+	let u=(r==undefined)
+	for(let e in props.remu)
+		this[e]=props.remu[e]
+	if(n instanceof Remu)
+		this.fromRemu(n)
+	else if(!u)
+		this.fromArray([n,r,d])
+	else if(Array.isArray(n))
+		this.fromArray(n)
+	else this.fromString(n)
+	this.update()
 	//this.operate=(operator,...operands)=>operate(operator,[this].push(Array.isArray(operands)?operands:[operands]))
 }
 let remus=[new Remu("14789632512345678909876543210"),new Remu("555")]
 console.log("test start");
-let log="",o="+",n,m
-for(let x=-20;x<20;x++)
-	for(let y=-20;y<20;y++)
+let log="",o="*",n,m
+for(let a=-20;a<200;a++)
+	for(let b=-20;b<20;b++)
 	{
+		//let x=Math.floor(Math.random()*10000000000000),y=Math.floor(Math.random()*10000000000000)
+		let x=a,y=b
 		n=opn(o,x,y)
 		m=operate(o,new Remu(x),new Remu(y))
 		t=m.toNumber()
 		log+=n!=t?(x+o+y+"="+n+" "+t+"\n"):""
 	}
-console.log(log+"test end");
+console.log(log+log.split("\n").length+"test end");
 console.log(log0);
 console.log(operate("+",remus[0],remus[0]).toString());
+console.log(new Remu(new Remu("10").natural,2,3).operated("*",new Remu(3)).toNumber());
 //
 updateCalculatorKeyboard()
 updateUnitConverter()
